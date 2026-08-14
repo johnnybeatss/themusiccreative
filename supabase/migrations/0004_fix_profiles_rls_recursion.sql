@@ -1,0 +1,25 @@
+-- Fixes an infinite-recursion bug introduced in 0003_roles.sql.
+--
+-- The "owner can read all profiles" policy queried `profiles` from
+-- inside its own USING clause. Evaluating that subquery requires
+-- re-checking profiles' RLS policies, which re-triggers this same
+-- policy, forever — Postgres aborts with "infinite recursion detected
+-- in policy for relation \"profiles\"". Every authenticated read of
+-- `profiles` failed as a result, and since getMyRole() (src/lib/supabase/
+-- role.ts) treats any query error as "no role", nobody's role tier —
+-- not even the owner's — ever showed up in the app, despite the
+-- underlying data being correct (the Supabase SQL Editor runs with
+-- elevated privileges that bypass RLS entirely, so the bug was
+-- invisible there).
+--
+-- Nothing in the app currently reads another user's profile row —
+-- getMyRole() only selects the signed-in user's own row — so this
+-- policy isn't needed yet. Dropping it leaves "users can read own
+-- profile" as the only SELECT policy on profiles, which is
+-- non-recursive (auth.uid() = id, no subquery back into profiles).
+--
+-- If a future member-management view needs to list everyone's role,
+-- reintroduce owner-wide read access via a SECURITY DEFINER function
+-- instead of a raw self-referencing subquery, to avoid this recursion.
+
+drop policy if exists "owner can read all profiles" on profiles;

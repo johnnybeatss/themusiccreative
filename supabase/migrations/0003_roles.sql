@@ -37,6 +37,11 @@ create policy "owner can read all profiles" on profiles for select
       select 1 from profiles p where p.id = auth.uid() and p.role = 'owner'
     )
   );
+-- NOTE: the policy above causes infinite recursion (it queries
+-- `profiles` from within a policy on `profiles`) and is dropped in
+-- 0004_fix_profiles_rls_recursion.sql. Left in place here so this file
+-- still reflects exactly what actually ran in production; see 0004 for
+-- the fix and the full explanation.
 
 -- No insert/update/delete policies for regular users on purpose — roles
 -- are assigned by hand in the Supabase dashboard (SQL editor or Table
