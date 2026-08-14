@@ -1,13 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import Reveal from "@/components/Reveal";
+import TeamTabs, { type TeamMember } from "@/components/TeamTabs";
 
-type Member = {
-  id: string;
-  name: string;
-  role: string;
-  bio: string | null;
-  photo_url: string | null;
-};
+type Member = TeamMember;
 
 async function getMembers(): Promise<Member[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
@@ -35,42 +29,13 @@ export default async function TeamPage() {
       </p>
 
       {members.length === 0 ? (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <Reveal delay={0}>
-            <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-              <p className="font-semibold text-ivory">
-                Johnny Sanford — &quot;johnnybeatss&quot;
-              </p>
-              <p className="text-sm text-steel-light">President</p>
-              <p className="mt-2 text-sm text-ivory">
-                Producer + Visionary. Credits include Sexyy Red, Loe Shimmy,
-                Jeremiah, El Snappo, Fattmack, and more. Landed on Apple
-                Music charts 4 times.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-              <p className="font-semibold text-ivory">Edward Chirino</p>
-              <p className="text-sm text-steel-light">Vice President</p>
-              <p className="mt-2 text-sm text-ivory">
-                Creative Director. 1M+ streams across streaming platforms,
-                6+ years of professional audio recording experience.
-              </p>
-            </div>
-          </Reveal>
-        </div>
+        <p className="mt-6 text-steel-light">
+          No E-Board members added yet — fills in as members are added from
+          the E-Board area.
+        </p>
       ) : (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          {members.map((m, i) => (
-            <Reveal key={m.id} delay={i * 0.05}>
-              <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-                <p className="font-semibold text-ivory">{m.name}</p>
-                <p className="text-sm text-steel-light">{m.role}</p>
-                {m.bio && <p className="mt-2 text-sm text-ivory">{m.bio}</p>}
-              </div>
-            </Reveal>
-          ))}
+        <div className="mt-6">
+          <TeamTabs members={members} />
         </div>
       )}
 
