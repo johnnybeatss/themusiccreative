@@ -4,16 +4,12 @@ export default function HomePage() {
   return (
     <div>
       <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
-        <div className="relative">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -left-10 -top-16 h-64 w-64 rounded-full bg-gold opacity-20 blur-3xl"
-          />
-          <h1 className="relative bg-gradient-to-r from-gold-light via-gold to-ivory bg-clip-text font-display text-4xl leading-tight tracking-wide text-transparent sm:text-5xl">
+        <div>
+          <h1 className="font-display text-4xl leading-tight tracking-wide text-ivory sm:text-5xl">
             WHERE IDEAS TURN INTO REALITY
           </h1>
-          <div className="relative mt-4 h-1 w-16 bg-gold" />
-          <p className="relative mt-6 text-steel-light">
+          <div className="mt-4 h-1 w-16 bg-gold" />
+          <p className="mt-6 text-steel-light">
             A student-led community bringing together producers, artists,
             DJs, songwriters, and music industry professionals on campus —
             collaborate, network, and grow within the music industry.
@@ -21,11 +17,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto w-full max-w-xs sm:max-w-none">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 scale-90 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] bg-gold opacity-10 blur-2xl"
-          />
-          <div className="relative overflow-hidden rounded-[60%_40%_30%_70%/60%_30%_70%_40%] border border-navy-800 bg-navy-900">
+          <div className="overflow-hidden rounded-3xl border border-navy-800 bg-navy-900">
             <Image
               src="/logo.jpg"
               alt="The Music Creative @ FIU"
@@ -35,7 +27,7 @@ export default function HomePage() {
               priority
             />
           </div>
-          <div className="absolute -bottom-6 left-1/2 w-56 -translate-x-1/2 rounded-xl border border-navy-800 bg-navy-900/90 p-4 shadow-lg shadow-gold/10 backdrop-blur-md sm:-bottom-4 sm:-left-6 sm:translate-x-0">
+          <div className="absolute -bottom-6 left-1/2 w-56 -translate-x-1/2 rounded-xl border border-navy-800 bg-navy-900 p-4 sm:-bottom-4 sm:-left-4 sm:translate-x-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-gold">
               Est. 2025
             </p>

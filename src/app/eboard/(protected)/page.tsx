@@ -70,7 +70,7 @@ export default function EboardHomePage() {
           <li key={s.href}>
             <Link
               href={s.href}
-              className="group flex items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10"
+              className="group flex items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

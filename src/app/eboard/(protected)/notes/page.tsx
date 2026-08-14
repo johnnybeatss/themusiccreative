@@ -41,7 +41,7 @@ export default async function NotesPage() {
           {notes.map((n) => (
             <li
               key={n.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10"
+              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="font-semibold text-ivory">{n.title}</p>

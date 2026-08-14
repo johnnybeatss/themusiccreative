@@ -42,7 +42,7 @@ export default async function EventsPage() {
           {events.map((e) => (
             <li
               key={e.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10"
+              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold"
             >
               <p className="font-semibold text-ivory">{e.name}</p>
               <p className="text-sm text-steel-light">

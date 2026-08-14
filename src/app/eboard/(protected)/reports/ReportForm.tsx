@@ -39,7 +39,7 @@ export default function ReportForm() {
             type="date"
             name="week_of"
             required
-            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
           />
         </label>
         <label className="block text-sm">
@@ -49,7 +49,7 @@ export default function ReportForm() {
             name="submitted_by"
             required
             placeholder="Your name"
-            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
           />
         </label>
       </div>
@@ -58,7 +58,7 @@ export default function ReportForm() {
         <textarea
           name="summary"
           rows={3}
-          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
         />
       </label>
       <label className="block text-sm">
@@ -66,14 +66,14 @@ export default function ReportForm() {
         <textarea
           name="action_items"
           rows={2}
-          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
         />
       </label>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 shadow-lg shadow-gold/20 transition-all hover:bg-gold-light hover:shadow-gold/30 disabled:opacity-50"
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Submitting..." : "Submit report"}
       </button>

@@ -68,12 +68,12 @@ export default function EboardLoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@fiu.edu"
-          className="w-full rounded-lg border border-navy-800 bg-navy-900 px-3 py-2 text-sm text-ivory placeholder:text-steel-light transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+          className="w-full rounded-lg border border-navy-800 bg-navy-900 px-3 py-2 text-sm text-ivory placeholder:text-steel-light transition-colors focus:border-gold focus:outline-none"
         />
         <button
           type="submit"
           disabled={status === "sending"}
-          className="w-full rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-navy-950 shadow-lg shadow-gold/20 transition-all hover:bg-gold-light hover:shadow-gold/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {status === "sending" ? "Sending..." : "Send sign-in link"}
         </button>
