@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EboardNav from "@/components/EboardNav";
@@ -42,9 +41,7 @@ export default async function EboardProtectedLayout({
 
   return (
     <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
-      <Suspense fallback={null}>
-        <SessionGuard />
-      </Suspense>
+      <SessionGuard />
       <EboardNav />
       <div className="min-w-0 flex-1">{children}</div>
     </div>

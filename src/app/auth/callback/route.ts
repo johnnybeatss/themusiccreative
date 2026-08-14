@@ -13,13 +13,20 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // `welcome=1` is a one-time signal for SessionGuard: it marks this
-      // load as the result of a real, just-completed sign-in (as opposed
-      // to a plain page load on a lingering cookie), so it knows to start
-      // trusting this browser session. Stripped from the URL immediately
-      // on the client.
-      const separator = next.includes("?") ? "&" : "?";
-      return NextResponse.redirect(`${origin}${next}${separator}welcome=1`);
+      const response = NextResponse.redirect(`${origin}${next}`);
+      // Short-lived marker cookie (NOT the auth session — that's set
+      // separately by the Supabase server client above) that tells
+      // SessionGuard "a real sign-in just completed in this browser tab."
+      // This is a plain cookie we control directly, since @supabase/ssr
+      // always overwrites maxAge on its own auth cookies with its own
+      // default (confirmed by reading the installed package's source) —
+      // it can't be repurposed for a short-lived flag like this.
+      response.cookies.set("eboard_fresh_login", "1", {
+        maxAge: 60,
+        path: "/",
+        sameSite: "lax",
+      });
+      return response;
     }
   }
 

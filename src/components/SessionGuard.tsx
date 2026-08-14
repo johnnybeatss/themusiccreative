@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 // Enforces two session rules for the E-Board area, layered on top of
@@ -18,9 +18,11 @@ import { createClient } from "@/lib/supabase/client";
 //    stays valid for a long time no matter what. Instead we use
 //    sessionStorage as a tripwire — it's cleared when the browser is fully
 //    closed (all tabs/windows) but survives reloads and navigation within
-//    the same browser session. The marker is only ever set in two places:
-//    here, right after the `welcome=1` flag from a fresh magic-link
-//    callback, or implicitly by staying within the same tab.
+//    the same browser session. The marker gets set the moment this
+//    component sees the `eboard_fresh_login` cookie that /auth/callback
+//    sets right after a real sign-in (read directly from document.cookie
+//    on mount — no client-side routing/URL-parsing involved, so there's no
+//    render-timing window where this can miss it).
 //
 // Caveat (worth knowing, not a bug): sessionStorage is per-tab, so opening
 // the E-Board area fresh in a brand-new tab of an already-open browser will
@@ -30,6 +32,7 @@ import { createClient } from "@/lib/supabase/client";
 // intentionally errs toward asking for sign-in a bit more often, not less.
 const IDLE_LIMIT_MS = 5 * 60 * 1000;
 const SESSION_MARKER = "eboard-session-active";
+const FRESH_LOGIN_COOKIE = "eboard_fresh_login";
 const ACTIVITY_EVENTS = [
   "mousemove",
   "mousedown",
@@ -38,10 +41,14 @@ const ACTIVITY_EVENTS = [
   "touchstart",
 ] as const;
 
+function hasFreshLoginCookie() {
+  return document.cookie
+    .split("; ")
+    .some((row) => row === `${FRESH_LOGIN_COOKIE}=1`);
+}
+
 export default function SessionGuard() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -54,15 +61,11 @@ export default function SessionGuard() {
       router.replace("/eboard/login");
     }
 
-    const justSignedIn = searchParams.get("welcome") === "1";
-
-    if (justSignedIn) {
+    if (hasFreshLoginCookie()) {
       sessionStorage.setItem(SESSION_MARKER, "1");
-      // Strip the one-time flag so it can't linger in the URL/history.
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("welcome");
-      const query = params.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname);
+      // Consume it — one flag per sign-in, not needed again until the next
+      // login. Not load-bearing for security, just tidy.
+      document.cookie = `${FRESH_LOGIN_COOKIE}=; Max-Age=0; path=/`;
     } else if (!sessionStorage.getItem(SESSION_MARKER)) {
       // A valid-looking cookie session exists (we're inside the protected
       // layout at all), but this tab has no record of a sign-in happening
@@ -87,8 +90,7 @@ export default function SessionGuard() {
         window.removeEventListener(evt, resetIdleTimer)
       );
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [router]);
 
   return null;
 }

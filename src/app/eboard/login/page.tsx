@@ -1,17 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 // Invite-only magic-link sign-in. There is no password and no public
 // sign-up — an account only works if it was created for that email from
 // the Supabase dashboard (Authentication > Users > Invite user).
 export default function EboardLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <EboardLoginForm />
+    </Suspense>
+  );
+}
+
+function EboardLoginForm() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle"
   );
   const [error, setError] = useState("");
+
+  // Surface *why* a magic-link click bounced back here. The most common
+  // cause isn't a bug in this app — email providers (Outlook Safe Links,
+  // Gmail's link scanner, etc.) sometimes "pre-visit" links in an email to
+  // scan them for safety before you ever click. Since a magic-link code is
+  // single-use, that pre-visit burns it, and your real click then fails.
+  useEffect(() => {
+    if (searchParams.get("error") === "auth-failed") {
+      setStatus("error");
+      setError(
+        "That sign-in link didn't work — it may have expired or already been used (some email apps \"scan\" links automatically, which can use it up before you click). Request a new one below."
+      );
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
