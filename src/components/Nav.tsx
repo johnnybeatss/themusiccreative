@@ -14,6 +14,7 @@ const links = [
   { href: "/calendar", label: "Calendar" },
   { href: "/team", label: "Team" },
   { href: "/merch", label: "Merch" },
+  { href: "/feedback", label: "Feedback" },
 ];
 
 export default function Nav() {

@@ -6,9 +6,10 @@ import {
   FolderOpen,
   StickyNote,
   PartyPopper,
+  MessageSquare,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
-import type { MemberRole } from "@/lib/supabase/role";
+import type { MyProfile } from "@/lib/supabase/role";
 
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
@@ -17,9 +18,10 @@ const links = [
   { href: "/eboard/calendar", label: "Meeting Calendar", icon: Calendar },
   { href: "/eboard/resources", label: "Drive Resources", icon: FolderOpen },
   { href: "/eboard/notes", label: "Leadership Notes", icon: StickyNote },
+  { href: "/eboard/feedback", label: "Feedback", icon: MessageSquare },
 ];
 
-const ROLE_LABELS: Record<MemberRole, string> = {
+const ROLE_LABELS: Record<MyProfile["role"], string> = {
   owner: "Owner",
   admin: "Admin",
   eboard: "E-Board",
@@ -28,14 +30,14 @@ const ROLE_LABELS: Record<MemberRole, string> = {
 // Vertical sidebar for the E-Board section — stacked as a left rail on
 // sm+ screens, and as a compact vertical list above the content on mobile
 // (see layout.tsx for the flex-col/flex-row switch).
-export default function EboardNav({ role }: { role: MemberRole | null }) {
+export default function EboardNav({ profile }: { profile: MyProfile | null }) {
   return (
     <nav className="flex flex-col gap-1 border-b border-navy-800 pb-6 sm:w-52 sm:shrink-0 sm:border-b-0 sm:border-r sm:border-navy-800 sm:pb-0 sm:pr-6">
-      {role && (
+      {profile && (
         <p className="mb-2 px-3 text-xs uppercase tracking-wide text-steel-light">
           Signed in as{" "}
           <span className="font-semibold text-gold">
-            {ROLE_LABELS[role]}
+            {ROLE_LABELS[profile.role]}
           </span>
         </p>
       )}
@@ -59,6 +61,19 @@ export default function EboardNav({ role }: { role: MemberRole | null }) {
         >
           ← Public site
         </Link>
+        <div className="flex items-center justify-between gap-2 px-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-ivory">
+              {profile?.displayName || "Set your name"}
+            </p>
+            <Link
+              href="/eboard/profile"
+              className="text-xs text-steel-light hover:text-gold"
+            >
+              Edit name
+            </Link>
+          </div>
+        </div>
         <div className="px-3">
           <SignOutButton />
         </div>

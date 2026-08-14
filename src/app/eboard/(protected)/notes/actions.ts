@@ -35,6 +35,7 @@ export async function createNote(
   const { error } = await supabase.from("leadership_notes").insert({
     title,
     body: body || null,
+    author_id: user.id,
   });
 
   if (error) {

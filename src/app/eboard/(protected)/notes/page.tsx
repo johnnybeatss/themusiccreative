@@ -8,19 +8,20 @@ type Note = {
   title: string;
   body: string | null;
   updated_at: string;
+  author: { display_name: string | null } | null;
 };
 
 async function getNotes(): Promise<Note[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("leadership_notes")
-    .select("*")
+    .select("*, author:profiles(display_name)")
     .order("updated_at", { ascending: false });
   if (error) {
     console.error("Failed to load leadership notes:", error.message);
     return [];
   }
-  return data ?? [];
+  return (data as unknown as Note[]) ?? [];
 }
 
 export default async function NotesPage() {
@@ -60,6 +61,9 @@ export default async function NotesPage() {
                   {n.body}
                 </p>
               )}
+              <p className="mt-2 text-xs text-steel-light">
+                Posted by {n.author?.display_name || "an E-Board member"}
+              </p>
             </li>
           ))}
         </ul>

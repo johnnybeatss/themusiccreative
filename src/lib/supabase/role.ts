@@ -27,3 +27,24 @@ export async function getMyRole(): Promise<MemberRole | null> {
 export function canManage(role: MemberRole | null): boolean {
   return role === "owner" || role === "admin";
 }
+
+export type MyProfile = { role: MemberRole; displayName: string | null };
+
+// Same fail-closed behavior as getMyRole(), but also returns display_name
+// for pages that need to show/edit it (e.g. /eboard/profile).
+export async function getMyProfile(): Promise<MyProfile | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role, display_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { role: data.role as MemberRole, displayName: data.display_name };
+}

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole } from "@/lib/supabase/role";
+import { getMyProfile } from "@/lib/supabase/role";
 import EboardNav from "@/components/EboardNav";
 import SessionGuard from "@/components/SessionGuard";
 
@@ -40,12 +40,12 @@ export default async function EboardProtectedLayout({
     redirect("/eboard/login");
   }
 
-  const role = await getMyRole();
+  const profile = await getMyProfile();
 
   return (
     <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
       <SessionGuard />
-      <EboardNav role={role} />
+      <EboardNav profile={profile} />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   );

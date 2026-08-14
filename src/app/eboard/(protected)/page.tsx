@@ -5,6 +5,7 @@ import {
   FolderOpen,
   StickyNote,
   PartyPopper,
+  MessageSquare,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 
@@ -14,6 +15,12 @@ const sections = [
     label: "Events",
     description: "Add, edit, and remove what shows on the public Events page.",
     icon: PartyPopper,
+  },
+  {
+    href: "/eboard/feedback",
+    label: "Feedback",
+    description: "Responses from the public feedback board — private to E-Board.",
+    icon: MessageSquare,
   },
   {
     href: "/eboard/reports",
