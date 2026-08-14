@@ -1,0 +1,61 @@
+"use client";
+
+import { useState } from "react";
+import StatusPill from "@/components/StatusPill";
+import EventForm from "./EventForm";
+import { deleteEvent } from "./actions";
+
+type Event = {
+  id: string;
+  name: string;
+  date: string;
+  location: string | null;
+  type: string;
+  status: string;
+};
+
+export default function EventListItem({ event }: { event: Event }) {
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return <EventForm event={event} onDone={() => setEditing(false)} />;
+  }
+
+  return (
+    <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-semibold text-ivory">{event.name}</p>
+        <StatusPill status={event.status} />
+      </div>
+      <p className="mt-1 text-sm text-steel-light">
+        {new Date(event.date).toLocaleString()}
+        {event.location ? ` · ${event.location}` : ""} · {event.type}
+      </p>
+      <div className="mt-3 flex items-center gap-4">
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="text-xs text-steel-light hover:text-gold"
+        >
+          Edit
+        </button>
+        <form
+          action={deleteEvent}
+          onSubmit={(e) => {
+            if (!confirm(`Delete "${event.name}"? This can't be undone.`)) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <input type="hidden" name="id" value={event.id} />
+          <button
+            type="submit"
+            className="text-xs text-steel-light hover:text-red-400"
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

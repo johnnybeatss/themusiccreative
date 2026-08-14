@@ -5,11 +5,13 @@ import {
   Calendar,
   FolderOpen,
   StickyNote,
+  PartyPopper,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/eboard/events", label: "Events", icon: PartyPopper },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },
   { href: "/eboard/calendar", label: "Meeting Calendar", icon: Calendar },
   { href: "/eboard/resources", label: "Drive Resources", icon: FolderOpen },

@@ -1,8 +1,20 @@
 import Link from "next/link";
-import { FileText, Calendar, FolderOpen, StickyNote } from "lucide-react";
+import {
+  FileText,
+  Calendar,
+  FolderOpen,
+  StickyNote,
+  PartyPopper,
+} from "lucide-react";
 import Reveal from "@/components/Reveal";
 
 const sections = [
+  {
+    href: "/eboard/events",
+    label: "Events",
+    description: "Add, edit, and remove what shows on the public Events page.",
+    icon: PartyPopper,
+  },
   {
     href: "/eboard/reports",
     label: "Weekly Reports",
