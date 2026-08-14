@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SignOutButton from "@/components/SignOutButton";
 
 const links = [
   { href: "/eboard", label: "Dashboard" },
@@ -20,9 +21,12 @@ export default function EboardNav() {
           </li>
         ))}
       </ul>
-      <Link href="/" className="text-sm text-neutral-500 hover:underline">
-        ← Public site
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link href="/" className="text-sm text-neutral-500 hover:underline">
+          ← Public site
+        </Link>
+        <SignOutButton />
+      </div>
     </nav>
   );
 }
