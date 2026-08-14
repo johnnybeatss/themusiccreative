@@ -1,24 +1,52 @@
+import Image from "next/image";
+
 export default function HomePage() {
   return (
     <div>
-      <div className="relative">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-10 -top-16 h-64 w-64 rounded-full bg-gold opacity-20 blur-3xl"
-        />
-        <h1 className="relative bg-gradient-to-r from-gold-light via-gold to-ivory bg-clip-text font-display text-4xl tracking-wide text-transparent sm:text-6xl">
-          THE MUSIC CREATIVE
-        </h1>
+      <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-10 -top-16 h-64 w-64 rounded-full bg-gold opacity-20 blur-3xl"
+          />
+          <h1 className="relative bg-gradient-to-r from-gold-light via-gold to-ivory bg-clip-text font-display text-4xl leading-tight tracking-wide text-transparent sm:text-5xl">
+            WHERE IDEAS TURN INTO REALITY
+          </h1>
+          <div className="relative mt-4 h-1 w-16 bg-gold" />
+          <p className="relative mt-6 text-steel-light">
+            A student-led community bringing together producers, artists,
+            DJs, songwriters, and music industry professionals on campus —
+            collaborate, network, and grow within the music industry.
+          </p>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-xs sm:max-w-none">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 scale-90 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] bg-gold opacity-10 blur-2xl"
+          />
+          <div className="relative overflow-hidden rounded-[60%_40%_30%_70%/60%_30%_70%_40%] border border-navy-800 bg-navy-900">
+            <Image
+              src="/logo.jpg"
+              alt="The Music Creative @ FIU"
+              width={480}
+              height={480}
+              className="h-full w-full object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute -bottom-6 left-1/2 w-56 -translate-x-1/2 rounded-xl border border-navy-800 bg-navy-900/90 p-4 shadow-lg shadow-gold/10 backdrop-blur-md sm:-bottom-4 sm:-left-6 sm:translate-x-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gold">
+              Est. 2025
+            </p>
+            <p className="mt-1 text-sm text-ivory">
+              Producers · DJs · Songwriters · Industry Pros
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="mt-3 h-1 w-16 bg-gold" />
-      <div className="mt-6 space-y-4 text-steel-light">
-        <p>
-          The Music Creative is a student-led community designed to bring
-          together producers, artists, DJs, songwriters, and music industry
-          professionals on campus. Our mission is to create a space where
-          creative individuals can collaborate, network, and grow within the
-          music industry.
-        </p>
+
+      <div className="mt-16 space-y-4 text-steel-light sm:mt-20">
         <p>
           We host workshops, networking events, beat showcases, and
           collaborations that help members sharpen their skills, share
