@@ -35,7 +35,7 @@ export default async function TeamPage() {
 
       {members.length === 0 ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-lg border border-navy-800 bg-navy-900 p-4">
+          <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10">
             <p className="font-semibold text-ivory">
               Johnny Sanford — &quot;johnnybeatss&quot;
             </p>
@@ -46,7 +46,7 @@ export default async function TeamPage() {
               charts 4 times.
             </p>
           </div>
-          <div className="rounded-lg border border-navy-800 bg-navy-900 p-4">
+          <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10">
             <p className="font-semibold text-ivory">Edward Chirino</p>
             <p className="text-sm text-steel-light">Vice President</p>
             <p className="mt-2 text-sm text-ivory">
@@ -60,7 +60,7 @@ export default async function TeamPage() {
           {members.map((m) => (
             <li
               key={m.id}
-              className="rounded-lg border border-navy-800 bg-navy-900 p-4"
+              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10"
             >
               <p className="font-semibold text-ivory">{m.name}</p>
               <p className="text-sm text-steel-light">{m.role}</p>
@@ -74,7 +74,7 @@ export default async function TeamPage() {
         <h2 className="font-display text-xl tracking-wide text-ivory">
           FOUNDERS
         </h2>
-        <div className="mt-3 rounded-lg border border-navy-800 bg-navy-900 p-4">
+        <div className="mt-3 rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10">
           <p className="font-semibold text-ivory">
             Adrian Pedron — &quot;Nugxs&quot;
           </p>

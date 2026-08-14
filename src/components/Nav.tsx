@@ -11,7 +11,7 @@ const links = [
 
 export default function Nav() {
   return (
-    <header className="border-b border-navy-800 bg-navy-900">
+    <header className="sticky top-0 z-50 border-b border-navy-800/60 bg-navy-900/70 backdrop-blur-md">
       <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-3">
           <Image
@@ -19,7 +19,7 @@ export default function Nav() {
             alt="The Music Creative @ FIU"
             width={40}
             height={40}
-            className="rounded-md"
+            className="rounded-lg"
           />
           <span className="hidden font-display text-lg tracking-wide text-ivory sm:inline">
             THE MUSIC CREATIVE

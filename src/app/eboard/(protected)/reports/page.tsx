@@ -41,7 +41,7 @@ export default async function ReportsPage() {
           {reports.map((r) => (
             <li
               key={r.id}
-              className="rounded-lg border border-navy-800 bg-navy-900 p-4"
+              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:shadow-lg hover:shadow-gold/10"
             >
               <p className="font-semibold text-ivory">
                 Week of {new Date(r.week_of).toLocaleDateString()} —{" "}

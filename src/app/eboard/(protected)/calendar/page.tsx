@@ -14,7 +14,7 @@ export default function EboardCalendarPage() {
         with specific people → &quot;Make changes to events&quot;), not
         through this site.
       </p>
-      <div className="mt-6 overflow-hidden rounded-lg border border-navy-800">
+      <div className="mt-6 overflow-hidden rounded-xl border border-navy-800">
         <iframe
           src={CALENDAR_EMBED_URL}
           style={{ border: 0 }}

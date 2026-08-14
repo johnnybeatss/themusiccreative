@@ -27,7 +27,7 @@ export default function NoteForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="mt-6 space-y-3 rounded-lg border border-navy-800 bg-navy-900 p-4"
+      className="mt-6 space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-4"
     >
       <h2 className="font-display text-lg tracking-wide text-ivory">
         ADD A NOTE
@@ -38,7 +38,7 @@ export default function NoteForm() {
           type="text"
           name="title"
           required
-          className="mt-1 w-full rounded-md border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory focus:border-gold focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
         />
       </label>
       <label className="block text-sm">
@@ -46,14 +46,14 @@ export default function NoteForm() {
         <textarea
           name="body"
           rows={4}
-          className="mt-1 w-full rounded-md border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory focus:border-gold focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
         />
       </label>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 shadow-lg shadow-gold/20 transition-all hover:bg-gold-light hover:shadow-gold/30 disabled:opacity-50"
       >
         {isPending ? "Saving..." : "Add note"}
       </button>

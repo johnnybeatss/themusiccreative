@@ -1,10 +1,16 @@
 export default function HomePage() {
   return (
     <div>
-      <h1 className="font-display text-4xl tracking-wide text-ivory sm:text-5xl">
-        THE MUSIC CREATIVE
-      </h1>
-      <div className="mt-2 h-1 w-16 bg-gold" />
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-10 -top-16 h-64 w-64 rounded-full bg-gold opacity-20 blur-3xl"
+        />
+        <h1 className="relative bg-gradient-to-r from-gold-light via-gold to-ivory bg-clip-text font-display text-4xl tracking-wide text-transparent sm:text-6xl">
+          THE MUSIC CREATIVE
+        </h1>
+      </div>
+      <div className="mt-3 h-1 w-16 bg-gold" />
       <div className="mt-6 space-y-4 text-steel-light">
         <p>
           The Music Creative is a student-led community designed to bring

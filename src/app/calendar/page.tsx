@@ -8,7 +8,7 @@ export default function CalendarPage() {
         CLUB CALENDAR
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <div className="mt-6 overflow-hidden rounded-lg border border-navy-800">
+      <div className="mt-6 overflow-hidden rounded-xl border border-navy-800">
         <iframe
           src={CALENDAR_EMBED_URL}
           style={{ border: 0 }}

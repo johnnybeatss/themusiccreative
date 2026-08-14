@@ -28,8 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-navy-950 font-sans text-ivory antialiased">
+        <div className="bg-grain" aria-hidden="true" />
         <Nav />
-        <main className="mx-auto max-w-4xl px-4 py-10">{children}</main>
+        <main className="relative mx-auto max-w-4xl px-4 py-10">
+          {children}
+        </main>
       </body>
     </html>
   );
