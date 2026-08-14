@@ -39,9 +39,9 @@ export default async function EboardProtectedLayout({
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
       <EboardNav />
-      <div className="mt-6">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

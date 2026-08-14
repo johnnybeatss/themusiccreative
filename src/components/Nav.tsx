@@ -35,8 +35,8 @@ export default function Nav() {
     <header
       className={`sticky top-0 z-50 border-b transition-all duration-500 ${
         scrolled
-          ? "border-navy-800/60 bg-navy-900/90 backdrop-blur-md"
-          : "border-transparent bg-transparent"
+          ? "border-navy-800 bg-abyss/95 backdrop-blur-lg"
+          : "border-navy-800/50 bg-abyss/70 backdrop-blur-md"
       }`}
     >
       <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
@@ -53,19 +53,27 @@ export default function Nav() {
           </span>
         </Link>
 
-        <ul className="hidden gap-6 text-sm font-medium sm:flex">
-          {links.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                data-active={pathname === l.href}
-                className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden items-center gap-6 sm:flex">
+          <ul className="flex gap-6 text-sm font-medium">
+            {links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  data-active={pathname === l.href}
+                  className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/eboard/login"
+            className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+          >
+            E-Board
+          </Link>
+        </div>
 
         <button
           type="button"
@@ -102,6 +110,19 @@ export default function Nav() {
                   </Link>
                 </motion.li>
               ))}
+              <motion.li
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: links.length * 0.06 }}
+                className="mt-4 border-t border-navy-800 pt-4"
+              >
+                <Link
+                  href="/eboard/login"
+                  className="inline-block rounded-full border border-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-gold"
+                >
+                  E-Board Login
+                </Link>
+              </motion.li>
             </ul>
           </motion.div>
         )}

@@ -8,6 +8,7 @@
  * star icons already in the logo.
  */
 @theme {
+  --color-abyss: #090b14;
   --color-navy-950: #10141f;
   --color-navy-900: #1c2136;
   --color-navy-800: #262d47;
