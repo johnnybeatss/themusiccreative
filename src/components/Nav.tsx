@@ -68,7 +68,7 @@ export default function Nav() {
             ))}
           </ul>
           <Link
-            href="/eboard/login"
+            href="/eboard"
             className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
           >
             E-Board
@@ -117,10 +117,10 @@ export default function Nav() {
                 className="mt-4 border-t border-navy-800 pt-4"
               >
                 <Link
-                  href="/eboard/login"
+                  href="/eboard"
                   className="inline-block rounded-full border border-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-gold"
                 >
-                  E-Board Login
+                  E-Board
                 </Link>
               </motion.li>
             </ul>
