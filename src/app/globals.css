@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/*
+ * The Music Creative @ FIU — design tokens.
+ * Colors sampled directly from the club logo (public/logo.jpg), except
+ * `gold`, which is the one addition: navy alone reads calm/corporate, and
+ * gold gives the "bold, energetic" pop for CTAs/links while echoing the
+ * star icons already in the logo.
+ */
+@theme {
+  --color-navy-950: #10141f;
+  --color-navy-900: #1c2136;
+  --color-navy-800: #262d47;
+  --color-navy-700: #333c5c;
+  --color-steel: #3b4c6a;
+  --color-steel-light: #8a97b3;
+  --color-ivory: #eef0f5;
+  --color-gold: #f2b134;
+  --color-gold-light: #f7c65c;
+
+  --font-display: var(--font-anton), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
+}

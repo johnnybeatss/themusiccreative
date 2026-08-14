@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
+import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
+
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-anton",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "The Music Creative @ FIU",
@@ -14,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-white text-neutral-900 antialiased">
+    <html lang="en" className={`${anton.variable} ${inter.variable}`}>
+      <body className="min-h-screen bg-navy-950 font-sans text-ivory antialiased">
         <Nav />
         <main className="mx-auto max-w-4xl px-4 py-10">{children}</main>
       </body>

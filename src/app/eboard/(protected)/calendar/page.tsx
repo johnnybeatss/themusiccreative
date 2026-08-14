@@ -4,14 +4,17 @@ const CALENDAR_EMBED_URL =
 export default function EboardCalendarPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold">Meeting Calendar</h1>
-      <p className="mt-2 text-sm text-neutral-500">
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        MEETING CALENDAR
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <p className="mt-4 text-sm text-steel-light">
         Same calendar as the public page. To edit events, use Google
         Calendar directly — edit access is granted there (Settings → Share
         with specific people → &quot;Make changes to events&quot;), not
         through this site.
       </p>
-      <div className="mt-6 overflow-hidden rounded-lg border border-neutral-200">
+      <div className="mt-6 overflow-hidden rounded-lg border border-navy-800">
         <iframe
           src={CALENDAR_EMBED_URL}
           style={{ border: 0 }}
@@ -24,7 +27,7 @@ export default function EboardCalendarPage() {
         href="https://calendar.google.com/calendar/r"
         target="_blank"
         rel="noreferrer"
-        className="mt-4 inline-block text-sm underline"
+        className="mt-4 inline-block text-sm text-gold underline"
       >
         Open Google Calendar ↗
       </a>

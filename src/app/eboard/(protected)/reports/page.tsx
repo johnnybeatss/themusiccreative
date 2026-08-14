@@ -26,26 +26,31 @@ export default async function ReportsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Weekly Reports</h1>
-      <p className="mt-2 text-sm text-neutral-500">
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        WEEKLY REPORTS
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <p className="mt-4 text-sm text-steel-light">
         Submit form coming in Phase 4 — read-only list for now.
       </p>
       {reports.length === 0 ? (
-        <p className="mt-4 text-neutral-500">No reports yet.</p>
+        <p className="mt-4 text-steel-light">No reports yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {reports.map((r) => (
             <li
               key={r.id}
-              className="rounded-lg border border-neutral-200 p-4"
+              className="rounded-lg border border-navy-800 bg-navy-900 p-4"
             >
-              <p className="font-semibold">
+              <p className="font-semibold text-ivory">
                 Week of {new Date(r.week_of).toLocaleDateString()} —{" "}
                 {r.submitted_by}
               </p>
-              {r.summary && <p className="mt-2 text-sm">{r.summary}</p>}
+              {r.summary && (
+                <p className="mt-2 text-sm text-ivory">{r.summary}</p>
+              )}
               {r.action_items && (
-                <p className="mt-2 text-sm text-neutral-500">
+                <p className="mt-2 text-sm text-steel-light">
                   Action items: {r.action_items}
                 </p>
               )}

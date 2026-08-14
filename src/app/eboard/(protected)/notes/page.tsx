@@ -25,22 +25,27 @@ export default async function NotesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Leadership Notes</h1>
-      <p className="mt-2 text-sm text-neutral-500">
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        LEADERSHIP NOTES
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <p className="mt-4 text-sm text-steel-light">
         Free-form internal notes. Editing UI coming in Phase 4.
       </p>
       {notes.length === 0 ? (
-        <p className="mt-4 text-neutral-500">No notes yet.</p>
+        <p className="mt-4 text-steel-light">No notes yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {notes.map((n) => (
             <li
               key={n.id}
-              className="rounded-lg border border-neutral-200 p-4"
+              className="rounded-lg border border-navy-800 bg-navy-900 p-4"
             >
-              <p className="font-semibold">{n.title}</p>
+              <p className="font-semibold text-ivory">{n.title}</p>
               {n.body && (
-                <p className="mt-2 whitespace-pre-wrap text-sm">{n.body}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm text-ivory">
+                  {n.body}
+                </p>
               )}
             </li>
           ))}

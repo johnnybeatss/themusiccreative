@@ -38,10 +38,14 @@ export default function EboardLoginPage() {
   if (status === "sent") {
     return (
       <div className="mx-auto max-w-sm py-10">
-        <h1 className="text-2xl font-bold">Check your email</h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          We sent a sign-in link to <span className="font-medium">{email}</span>.
-          Click it to get into the E-Board area — no password needed.
+        <h1 className="font-display text-2xl tracking-wide text-ivory">
+          CHECK YOUR EMAIL
+        </h1>
+        <div className="mt-2 h-1 w-16 bg-gold" />
+        <p className="mt-6 text-sm text-steel-light">
+          We sent a sign-in link to{" "}
+          <span className="font-medium text-ivory">{email}</span>. Click it
+          to get into the E-Board area — no password needed.
         </p>
       </div>
     );
@@ -49,8 +53,11 @@ export default function EboardLoginPage() {
 
   return (
     <div className="mx-auto max-w-sm py-10">
-      <h1 className="text-2xl font-bold">E-Board Login</h1>
-      <p className="mt-2 text-sm text-neutral-500">
+      <h1 className="font-display text-2xl tracking-wide text-ivory">
+        E-BOARD LOGIN
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <p className="mt-6 text-sm text-steel-light">
         Access is invite-only. Enter the email your account was created
         with and we&apos;ll send you a sign-in link — no password needed.
       </p>
@@ -61,16 +68,18 @@ export default function EboardLoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@fiu.edu"
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-navy-800 bg-navy-900 px-3 py-2 text-sm text-ivory placeholder:text-steel-light focus:border-gold focus:outline-none"
         />
         <button
           type="submit"
           disabled={status === "sending"}
-          className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+          className="w-full rounded-md bg-gold px-3 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {status === "sending" ? "Sending..." : "Send sign-in link"}
         </button>
-        {status === "error" && <p className="text-sm text-red-600">{error}</p>}
+        {status === "error" && (
+          <p className="text-sm text-red-400">{error}</p>
+        )}
       </form>
     </div>
   );

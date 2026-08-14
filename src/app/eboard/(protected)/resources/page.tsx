@@ -19,7 +19,10 @@ const links = [
 export default function ResourcesPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold">Drive Resources</h1>
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        DRIVE RESOURCES
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
       <ul className="mt-6 space-y-3">
         {links.map((l) => (
           <li key={l.href}>
@@ -27,7 +30,7 @@ export default function ResourcesPage() {
               href={l.href}
               target="_blank"
               rel="noreferrer"
-              className="text-sm underline"
+              className="text-sm text-gold underline"
             >
               {l.label} ↗
             </a>

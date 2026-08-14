@@ -4,8 +4,11 @@ const CALENDAR_EMBED_URL =
 export default function CalendarPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold">Club Calendar</h1>
-      <div className="mt-6 overflow-hidden rounded-lg border border-neutral-200">
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        CLUB CALENDAR
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <div className="mt-6 overflow-hidden rounded-lg border border-navy-800">
         <iframe
           src={CALENDAR_EMBED_URL}
           style={{ border: 0 }}

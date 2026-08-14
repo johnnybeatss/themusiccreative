@@ -24,29 +24,32 @@ export default async function TeamPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Meet the E-Board</h1>
-      <p className="mt-2 text-sm text-neutral-500">
+      <h1 className="font-display text-3xl tracking-wide text-ivory">
+        MEET THE E-BOARD
+      </h1>
+      <div className="mt-2 h-1 w-16 bg-gold" />
+      <p className="mt-4 text-sm text-steel-light">
         Full roster still being finalized — fills in as members are added
         (Phase 2/6).
       </p>
 
       {members.length === 0 ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-lg border border-neutral-200 p-4">
-            <p className="font-semibold">
+          <div className="rounded-lg border border-navy-800 bg-navy-900 p-4">
+            <p className="font-semibold text-ivory">
               Johnny Sanford — &quot;johnnybeatss&quot;
             </p>
-            <p className="text-sm text-neutral-500">President</p>
-            <p className="mt-2 text-sm">
+            <p className="text-sm text-steel-light">President</p>
+            <p className="mt-2 text-sm text-ivory">
               Producer + Visionary. Credits include Sexyy Red, Loe Shimmy,
               Jeremiah, El Snappo, Fattmack, and more. Landed on Apple Music
               charts 4 times.
             </p>
           </div>
-          <div className="rounded-lg border border-neutral-200 p-4">
-            <p className="font-semibold">Edward Chirino</p>
-            <p className="text-sm text-neutral-500">Vice President</p>
-            <p className="mt-2 text-sm">
+          <div className="rounded-lg border border-navy-800 bg-navy-900 p-4">
+            <p className="font-semibold text-ivory">Edward Chirino</p>
+            <p className="text-sm text-steel-light">Vice President</p>
+            <p className="mt-2 text-sm text-ivory">
               Creative Director. 1M+ streams across streaming platforms, 6+
               years of professional audio recording experience.
             </p>
@@ -57,24 +60,28 @@ export default async function TeamPage() {
           {members.map((m) => (
             <li
               key={m.id}
-              className="rounded-lg border border-neutral-200 p-4"
+              className="rounded-lg border border-navy-800 bg-navy-900 p-4"
             >
-              <p className="font-semibold">{m.name}</p>
-              <p className="text-sm text-neutral-500">{m.role}</p>
-              {m.bio && <p className="mt-2 text-sm">{m.bio}</p>}
+              <p className="font-semibold text-ivory">{m.name}</p>
+              <p className="text-sm text-steel-light">{m.role}</p>
+              {m.bio && <p className="mt-2 text-sm text-ivory">{m.bio}</p>}
             </li>
           ))}
         </ul>
       )}
 
-      <div className="mt-10 border-t border-neutral-200 pt-6">
-        <h2 className="text-lg font-semibold">Founders</h2>
-        <div className="mt-3 rounded-lg border border-neutral-200 p-4">
-          <p className="font-semibold">Adrian Pedron — &quot;Nugxs&quot;</p>
-          <p className="text-sm text-neutral-500">
+      <div className="mt-10 border-t border-navy-800 pt-6">
+        <h2 className="font-display text-xl tracking-wide text-ivory">
+          FOUNDERS
+        </h2>
+        <div className="mt-3 rounded-lg border border-navy-800 bg-navy-900 p-4">
+          <p className="font-semibold text-ivory">
+            Adrian Pedron — &quot;Nugxs&quot;
+          </p>
+          <p className="text-sm text-steel-light">
             Co-Founder (graduated, no longer active)
           </p>
-          <p className="mt-2 text-sm">
+          <p className="mt-2 text-sm text-ivory">
             Music/vocal production, recording, mixing, mastering.
           </p>
         </div>
