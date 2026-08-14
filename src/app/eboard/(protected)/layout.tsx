@@ -2,7 +2,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EboardNav from "@/components/EboardNav";
 
-export default async function EboardLayout({
+// Wraps every /eboard/* route EXCEPT /eboard/login (which lives outside
+// this (protected) route group, so it's never gated). This split fixes an
+// infinite-redirect bug: gating /eboard/login too meant an unauthenticated
+// visit redirected to /eboard/login, which re-ran this same check, which
+// redirected again, forever.
+export default async function EboardProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
