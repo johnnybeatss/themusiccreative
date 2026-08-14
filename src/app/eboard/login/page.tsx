@@ -42,11 +42,19 @@ function EboardLoginForm() {
     setStatus("sending");
     setError("");
 
+    // IMPORTANT: do NOT use window.location.origin here. If someone submits
+    // this form from a stale/preview URL (an old Vercel deployment link,
+    // etc.), that wrong origin gets permanently baked into this specific
+    // magic-link email. NEXT_PUBLIC_SITE_URL is fixed at build time to the
+    // real production domain, so every email always points to the one
+    // correct place regardless of what URL the browser happened to be on.
     const supabase = createClient();
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     });
 
