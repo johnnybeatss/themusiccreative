@@ -55,12 +55,6 @@ export default function EboardNav({ profile }: { profile: MyProfile | null }) {
         ))}
       </ul>
       <div className="mt-6 flex flex-col gap-3 border-t border-navy-800 pt-4">
-        <Link
-          href="/"
-          className="px-3 text-sm text-steel-light hover:text-gold"
-        >
-          ← Public site
-        </Link>
         <div className="flex items-center justify-between gap-2 px-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-ivory">

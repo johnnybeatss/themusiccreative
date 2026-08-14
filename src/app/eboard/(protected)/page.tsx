@@ -60,10 +60,10 @@ export default function EboardHomePage() {
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {sections.map((s, i) => (
-          <Reveal key={s.href} delay={i * 0.05}>
+          <Reveal key={s.href} delay={i * 0.05} className="h-full">
             <Link
               href={s.href}
-              className="group flex items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
+              className="group flex h-full items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
             >
               <s.icon
                 className="mt-0.5 h-6 w-6 shrink-0 text-steel-light transition-colors group-hover:text-gold"
