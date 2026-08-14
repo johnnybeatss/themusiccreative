@@ -1,12 +1,6 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
-
-const gallery = [
-  { src: "/photos/group-photo.jpg", alt: "The Music Creative members outside Studio24" },
-  { src: "/photos/dj-decks.jpg", alt: "A member DJing on Pioneer decks" },
-  { src: "/photos/guitar-lounge.jpg", alt: "Members playing acoustic guitar together" },
-  { src: "/photos/dj-workshop.jpg", alt: "A DJ workshop hosted at FIU" },
-];
+import VideoWheel from "@/components/VideoWheel";
 
 export default function HomePage() {
   return (
@@ -46,15 +40,40 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="mt-16 space-y-4 text-steel-light sm:mt-20">
-        <p>
+      <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-5 sm:items-center sm:gap-10">
+        <p className="text-steel-light sm:col-span-3">
           We host workshops, networking events, beat showcases, and
           collaborations that help members sharpen their skills, share
           opportunities, and gain exposure. Whether you&apos;re looking to
           produce, perform, or connect with others in the industry, The
           Music Creative is where ideas turn into reality.
         </p>
-        <p className="font-semibold text-ivory">
+        <Reveal delay={0.05}>
+          <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:col-span-2">
+            <Image
+              src="/photos/guitar-lounge.jpg"
+              alt="Members playing acoustic guitar together"
+              width={400}
+              height={300}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </Reveal>
+      </div>
+
+      <div className="mt-10 grid gap-8 sm:grid-cols-5 sm:items-center sm:gap-10">
+        <Reveal delay={0.05}>
+          <div className="order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:order-1 sm:col-span-2">
+            <Image
+              src="/photos/group-photo.jpg"
+              alt="The Music Creative members outside Studio24"
+              width={400}
+              height={300}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </Reveal>
+        <p className="order-1 font-semibold text-ivory sm:order-2 sm:col-span-3">
           Our Goal: Build a supportive music community at FIU that empowers
           students to take their creativity to the next level.
         </p>
@@ -62,24 +81,16 @@ export default function HomePage() {
 
       <div className="mt-16 sm:mt-20">
         <h2 className="font-display text-2xl tracking-wide text-ivory">
-          FROM THE CLUB
+          STRAIGHT FROM THE FEED
         </h2>
         <div className="mt-2 h-1 w-16 bg-gold" />
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {gallery.map((photo, i) => (
-            <Reveal key={photo.src} delay={i * 0.05}>
-              <div className="aspect-square overflow-hidden rounded-xl border border-navy-800">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={300}
-                  height={300}
-                  className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <p className="mt-3 max-w-md text-sm text-steel-light">
+          Drag through, or just watch it drift — tap any clip to catch the
+          full video on Instagram.
+        </p>
+        <Reveal delay={0.1}>
+          <VideoWheel />
+        </Reveal>
       </div>
     </div>
   );
