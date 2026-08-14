@@ -45,11 +45,18 @@ export default function TeamTabs({ members }: { members: TeamMember[] }) {
         >
           <div className="aspect-[3/4] w-full max-w-[220px] overflow-hidden rounded-2xl border border-navy-800 bg-navy-900">
             {active.photo_url ? (
+              // unoptimized: Next's built-in image optimizer was
+              // intermittently serving unrelated cached content for this
+              // path instead of the actual file (confirmed via direct
+              // network/pixel inspection — the raw file itself always
+              // loads correctly). Bypassing the optimizer serves the file
+              // directly and sidesteps whatever's going wrong there.
               <Image
                 src={active.photo_url}
                 alt={active.name}
                 width={440}
                 height={587}
+                unoptimized
                 className="h-full w-full object-cover"
               />
             ) : (
