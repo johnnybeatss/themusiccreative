@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import Reveal from "@/components/Reveal";
+import StatusPill from "@/components/StatusPill";
 
 type Opportunity = {
   id: string;
@@ -37,29 +39,29 @@ export default async function OpportunitiesPage() {
           connected (Phase 2).
         </p>
       ) : (
-        <ul className="mt-6 space-y-4">
-          {opportunities.map((o) => (
-            <li
-              key={o.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold"
-            >
-              <p className="font-semibold text-ivory">{o.title}</p>
-              <p className="text-sm text-steel-light">
-                {o.type} · {o.status}
-              </p>
-              {o.contact_link && (
-                <a
-                  href={o.contact_link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-block text-sm text-gold underline"
-                >
-                  {o.contact_link}
-                </a>
-              )}
-            </li>
+        <div className="mt-6 space-y-4">
+          {opportunities.map((o, i) => (
+            <Reveal key={o.id} delay={i * 0.05}>
+              <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-semibold text-ivory">{o.title}</p>
+                  <StatusPill status={o.status} />
+                </div>
+                <p className="mt-1 text-sm text-steel-light">{o.type}</p>
+                {o.contact_link && (
+                  <a
+                    href={o.contact_link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-block text-sm text-gold underline"
+                  >
+                    {o.contact_link}
+                  </a>
+                )}
+              </div>
+            </Reveal>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

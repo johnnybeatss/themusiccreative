@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import Reveal from "@/components/Reveal";
 
 type Member = {
   id: string;
@@ -35,39 +36,42 @@ export default async function TeamPage() {
 
       {members.length === 0 ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-            <p className="font-semibold text-ivory">
-              Johnny Sanford — &quot;johnnybeatss&quot;
-            </p>
-            <p className="text-sm text-steel-light">President</p>
-            <p className="mt-2 text-sm text-ivory">
-              Producer + Visionary. Credits include Sexyy Red, Loe Shimmy,
-              Jeremiah, El Snappo, Fattmack, and more. Landed on Apple Music
-              charts 4 times.
-            </p>
-          </div>
-          <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-            <p className="font-semibold text-ivory">Edward Chirino</p>
-            <p className="text-sm text-steel-light">Vice President</p>
-            <p className="mt-2 text-sm text-ivory">
-              Creative Director. 1M+ streams across streaming platforms, 6+
-              years of professional audio recording experience.
-            </p>
-          </div>
+          <Reveal delay={0}>
+            <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+              <p className="font-semibold text-ivory">
+                Johnny Sanford — &quot;johnnybeatss&quot;
+              </p>
+              <p className="text-sm text-steel-light">President</p>
+              <p className="mt-2 text-sm text-ivory">
+                Producer + Visionary. Credits include Sexyy Red, Loe Shimmy,
+                Jeremiah, El Snappo, Fattmack, and more. Landed on Apple
+                Music charts 4 times.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+              <p className="font-semibold text-ivory">Edward Chirino</p>
+              <p className="text-sm text-steel-light">Vice President</p>
+              <p className="mt-2 text-sm text-ivory">
+                Creative Director. 1M+ streams across streaming platforms,
+                6+ years of professional audio recording experience.
+              </p>
+            </div>
+          </Reveal>
         </div>
       ) : (
-        <ul className="mt-6 grid gap-6 sm:grid-cols-2">
-          {members.map((m) => (
-            <li
-              key={m.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold"
-            >
-              <p className="font-semibold text-ivory">{m.name}</p>
-              <p className="text-sm text-steel-light">{m.role}</p>
-              {m.bio && <p className="mt-2 text-sm text-ivory">{m.bio}</p>}
-            </li>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+          {members.map((m, i) => (
+            <Reveal key={m.id} delay={i * 0.05}>
+              <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+                <p className="font-semibold text-ivory">{m.name}</p>
+                <p className="text-sm text-steel-light">{m.role}</p>
+                {m.bio && <p className="mt-2 text-sm text-ivory">{m.bio}</p>}
+              </div>
+            </Reveal>
           ))}
-        </ul>
+        </div>
       )}
 
       <div className="mt-10 border-t border-navy-800 pt-6">

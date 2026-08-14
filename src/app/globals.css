@@ -21,3 +21,23 @@
   --font-display: var(--font-anton), sans-serif;
   --font-sans: var(--font-inter), sans-serif;
 }
+
+/* Thin gold bar that grows in under a nav link on hover/active. */
+.nav-link-underline {
+  position: relative;
+}
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  background-color: var(--color-gold);
+  transition: width 0.2s ease, left 0.2s ease;
+}
+.nav-link-underline:hover::after,
+.nav-link-underline[data-active="true"]::after {
+  width: 100%;
+  left: 0;
+}

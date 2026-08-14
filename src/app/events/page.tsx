@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import Reveal from "@/components/Reveal";
+import StatusPill from "@/components/StatusPill";
 
 type Event = {
   id: string;
@@ -38,20 +40,22 @@ export default async function EventsPage() {
           (Phase 2) and events are entered.
         </p>
       ) : (
-        <ul className="mt-6 space-y-4">
-          {events.map((e) => (
-            <li
-              key={e.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold"
-            >
-              <p className="font-semibold text-ivory">{e.name}</p>
-              <p className="text-sm text-steel-light">
-                {new Date(e.date).toLocaleString()}
-                {e.location ? ` · ${e.location}` : ""} · {e.type}
-              </p>
-            </li>
+        <div className="mt-6 space-y-4">
+          {events.map((e, i) => (
+            <Reveal key={e.id} delay={i * 0.05}>
+              <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-semibold text-ivory">{e.name}</p>
+                  <StatusPill status={e.status} />
+                </div>
+                <p className="mt-1 text-sm text-steel-light">
+                  {new Date(e.date).toLocaleString()}
+                  {e.location ? ` · ${e.location}` : ""} · {e.type}
+                </p>
+              </div>
+            </Reveal>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
