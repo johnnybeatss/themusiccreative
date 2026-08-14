@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getMyRole, canManage } from "@/lib/supabase/role";
 
 export type EventFormState = { error: string | null };
 
@@ -48,6 +49,9 @@ export async function createEvent(
   if (!user) {
     return { error: "You must be signed in to add an event." };
   }
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can add events." };
+  }
 
   const { error, values } = parseEventForm(formData);
   if (error || !values) return { error };
@@ -70,6 +74,9 @@ export async function updateEvent(
   } = await supabase.auth.getUser();
   if (!user) {
     return { error: "You must be signed in to edit an event." };
+  }
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can edit events." };
   }
 
   const id = formData.get("id") as string;
@@ -95,6 +102,7 @@ export async function deleteEvent(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+  if (!canManage(await getMyRole())) return;
 
   const id = formData.get("id") as string;
   if (!id) return;

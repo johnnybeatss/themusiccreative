@@ -8,6 +8,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
+import type { MemberRole } from "@/lib/supabase/role";
 
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
@@ -18,12 +19,26 @@ const links = [
   { href: "/eboard/notes", label: "Leadership Notes", icon: StickyNote },
 ];
 
+const ROLE_LABELS: Record<MemberRole, string> = {
+  owner: "Owner",
+  admin: "Admin",
+  eboard: "E-Board",
+};
+
 // Vertical sidebar for the E-Board section — stacked as a left rail on
 // sm+ screens, and as a compact vertical list above the content on mobile
 // (see layout.tsx for the flex-col/flex-row switch).
-export default function EboardNav() {
+export default function EboardNav({ role }: { role: MemberRole | null }) {
   return (
     <nav className="flex flex-col gap-1 border-b border-navy-800 pb-6 sm:w-52 sm:shrink-0 sm:border-b-0 sm:border-r sm:border-navy-800 sm:pb-0 sm:pr-6">
+      {role && (
+        <p className="mb-2 px-3 text-xs uppercase tracking-wide text-steel-light">
+          Signed in as{" "}
+          <span className="font-semibold text-gold">
+            {ROLE_LABELS[role]}
+          </span>
+        </p>
+      )}
       <ul className="flex flex-col gap-1">
         {links.map((l) => (
           <li key={l.href}>

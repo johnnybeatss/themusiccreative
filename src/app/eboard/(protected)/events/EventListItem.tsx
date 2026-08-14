@@ -14,7 +14,13 @@ type Event = {
   status: string;
 };
 
-export default function EventListItem({ event }: { event: Event }) {
+export default function EventListItem({
+  event,
+  editable,
+}: {
+  event: Event;
+  editable: boolean;
+}) {
   const [editing, setEditing] = useState(false);
 
   if (editing) {
@@ -31,31 +37,33 @@ export default function EventListItem({ event }: { event: Event }) {
         {new Date(event.date).toLocaleString()}
         {event.location ? ` · ${event.location}` : ""} · {event.type}
       </p>
-      <div className="mt-3 flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-xs text-steel-light hover:text-gold"
-        >
-          Edit
-        </button>
-        <form
-          action={deleteEvent}
-          onSubmit={(e) => {
-            if (!confirm(`Delete "${event.name}"? This can't be undone.`)) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <input type="hidden" name="id" value={event.id} />
+      {editable && (
+        <div className="mt-3 flex items-center gap-4">
           <button
-            type="submit"
-            className="text-xs text-steel-light hover:text-red-400"
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-xs text-steel-light hover:text-gold"
           >
-            Delete
+            Edit
           </button>
-        </form>
-      </div>
+          <form
+            action={deleteEvent}
+            onSubmit={(e) => {
+              if (!confirm(`Delete "${event.name}"? This can't be undone.`)) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <input type="hidden" name="id" value={event.id} />
+            <button
+              type="submit"
+              className="text-xs text-steel-light hover:text-red-400"
+            >
+              Delete
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

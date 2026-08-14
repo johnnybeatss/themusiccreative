@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getMyRole, canManage } from "@/lib/supabase/role";
 
 export type NoteFormState = { error: string | null };
 
-// RLS on leadership_notes already restricts INSERT/UPDATE to authenticated
-// users (see supabase/migrations/0001_init.sql). There's no DELETE policy
-// in that migration, so deleteNote will fail closed until one is added —
-// flagged in the delete handler below rather than silently no-op-ing.
+// RLS on leadership_notes restricts INSERT/UPDATE/DELETE to owner/admin
+// (see supabase/migrations/0003_roles.sql) — that's the real enforcement.
+// The role checks below just give eboard-tier users a clear message
+// instead of a confusing raw RLS error.
 export async function createNote(
   _prevState: NoteFormState,
   formData: FormData
@@ -19,6 +20,9 @@ export async function createNote(
   } = await supabase.auth.getUser();
   if (!user) {
     return { error: "You must be signed in to add a note." };
+  }
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can add notes." };
   }
 
   const title = formData.get("title") as string;
@@ -47,6 +51,7 @@ export async function deleteNote(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+  if (!canManage(await getMyRole())) return;
 
   const id = formData.get("id") as string;
   if (!id) return;

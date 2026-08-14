@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getMyRole, canManage } from "@/lib/supabase/role";
 import NoteForm from "./NoteForm";
 import DeleteNoteButton from "./DeleteNoteButton";
 
@@ -23,7 +24,8 @@ async function getNotes(): Promise<Note[]> {
 }
 
 export default async function NotesPage() {
-  const notes = await getNotes();
+  const [notes, role] = await Promise.all([getNotes(), getMyRole()]);
+  const editable = canManage(role);
 
   return (
     <div>
@@ -31,8 +33,14 @@ export default async function NotesPage() {
         LEADERSHIP NOTES
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
+      {!editable && (
+        <p className="mt-4 text-sm text-steel-light">
+          Viewing only — adding and removing notes is limited to owner/admin
+          accounts.
+        </p>
+      )}
 
-      <NoteForm />
+      {editable && <NoteForm />}
 
       {notes.length === 0 ? (
         <p className="mt-6 text-steel-light">No notes yet.</p>
@@ -45,7 +53,7 @@ export default async function NotesPage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="font-semibold text-ivory">{n.title}</p>
-                <DeleteNoteButton id={n.id} />
+                {editable && <DeleteNoteButton id={n.id} />}
               </div>
               {n.body && (
                 <p className="mt-2 whitespace-pre-wrap text-sm text-ivory">

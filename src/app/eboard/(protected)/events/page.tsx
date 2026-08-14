@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getMyRole, canManage } from "@/lib/supabase/role";
 import EventForm from "./EventForm";
 import EventListItem from "./EventListItem";
 
@@ -28,7 +29,8 @@ async function getEvents(): Promise<Event[]> {
 // /events page just reads from the same table and is read-only by RLS
 // (public SELECT only, no write policy for anonymous users).
 export default async function EventsAdminPage() {
-  const events = await getEvents();
+  const [events, role] = await Promise.all([getEvents(), getMyRole()]);
+  const editable = canManage(role);
 
   return (
     <div>
@@ -37,17 +39,19 @@ export default async function EventsAdminPage() {
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
-        Manage what shows up on the public Events page.
+        {editable
+          ? "Manage what shows up on the public Events page."
+          : "What's currently on the public Events page. Adding, editing, and removing events is limited to owner/admin accounts."}
       </p>
 
-      <EventForm />
+      {editable && <EventForm />}
 
       {events.length === 0 ? (
         <p className="mt-6 text-steel-light">No events yet.</p>
       ) : (
         <div className="mt-6 space-y-4">
           {events.map((e) => (
-            <EventListItem key={e.id} event={e} />
+            <EventListItem key={e.id} event={e} editable={editable} />
           ))}
         </div>
       )}
