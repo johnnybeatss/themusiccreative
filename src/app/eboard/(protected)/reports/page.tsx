@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import ReportForm from "./ReportForm";
 
 type Report = {
   id: string;
@@ -30,11 +31,11 @@ export default async function ReportsPage() {
         WEEKLY REPORTS
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <p className="mt-4 text-sm text-steel-light">
-        Submit form coming in Phase 4 — read-only list for now.
-      </p>
+
+      <ReportForm />
+
       {reports.length === 0 ? (
-        <p className="mt-4 text-steel-light">No reports yet.</p>
+        <p className="mt-6 text-steel-light">No reports yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {reports.map((r) => (

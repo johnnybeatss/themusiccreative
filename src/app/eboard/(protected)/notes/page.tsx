@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import NoteForm from "./NoteForm";
+import DeleteNoteButton from "./DeleteNoteButton";
 
 type Note = {
   id: string;
@@ -29,11 +31,11 @@ export default async function NotesPage() {
         LEADERSHIP NOTES
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <p className="mt-4 text-sm text-steel-light">
-        Free-form internal notes. Editing UI coming in Phase 4.
-      </p>
+
+      <NoteForm />
+
       {notes.length === 0 ? (
-        <p className="mt-4 text-steel-light">No notes yet.</p>
+        <p className="mt-6 text-steel-light">No notes yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {notes.map((n) => (
@@ -41,7 +43,10 @@ export default async function NotesPage() {
               key={n.id}
               className="rounded-lg border border-navy-800 bg-navy-900 p-4"
             >
-              <p className="font-semibold text-ivory">{n.title}</p>
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold text-ivory">{n.title}</p>
+                <DeleteNoteButton id={n.id} />
+              </div>
               {n.body && (
                 <p className="mt-2 whitespace-pre-wrap text-sm text-ivory">
                   {n.body}
