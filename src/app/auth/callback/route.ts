@@ -13,7 +13,13 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      // `welcome=1` is a one-time signal for SessionGuard: it marks this
+      // load as the result of a real, just-completed sign-in (as opposed
+      // to a plain page load on a lingering cookie), so it knows to start
+      // trusting this browser session. Stripped from the URL immediately
+      // on the client.
+      const separator = next.includes("?") ? "&" : "?";
+      return NextResponse.redirect(`${origin}${next}${separator}welcome=1`);
     }
   }
 
