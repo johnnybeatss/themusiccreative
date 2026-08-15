@@ -54,8 +54,8 @@ export default function TeamTabs({ members }: { members: TeamMember[] }) {
               <Image
                 src={active.photo_url}
                 alt={active.name}
-                width={440}
-                height={587}
+                width={800}
+                height={1214}
                 unoptimized
                 className="h-full w-full object-cover"
               />
