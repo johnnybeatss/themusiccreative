@@ -1,9 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import VideoWheel from "@/components/VideoWheel";
+import VideoWheel, { type FeedVideo } from "@/components/VideoWheel";
+import { createClient } from "@/lib/supabase/server";
 
-export default function HomePage() {
+const BUCKET = "feed-videos";
+
+async function getFeedVideos(): Promise<FeedVideo[]> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("feed_videos")
+    .select("id, storage_path, caption, instagram_url")
+    .order("sort_order", { ascending: true });
+  if (error) {
+    console.error("Failed to load feed videos:", error.message);
+    return [];
+  }
+  return (data ?? []).map((v) => ({
+    id: v.id,
+    caption: v.caption,
+    instagram_url: v.instagram_url,
+    video_url: supabase.storage.from(BUCKET).getPublicUrl(v.storage_path)
+      .data.publicUrl,
+  }));
+}
+
+export default async function HomePage() {
+  const videos = await getFeedVideos();
+
   return (
     <div>
       <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
@@ -86,19 +111,21 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="mt-16 sm:mt-20">
-        <h2 className="font-display text-2xl tracking-wide text-ivory">
-          STRAIGHT FROM THE FEED
-        </h2>
-        <div className="mt-2 h-1 w-16 bg-gold" />
-        <p className="mt-3 max-w-md text-sm text-steel-light">
-          Drag through, or just watch it drift — tap any clip to catch the
-          full video on Instagram.
-        </p>
-        <Reveal delay={0.1}>
-          <VideoWheel />
-        </Reveal>
-      </div>
+      {videos.length > 0 && (
+        <div className="mt-16 sm:mt-20">
+          <h2 className="font-display text-2xl tracking-wide text-ivory">
+            STRAIGHT FROM THE FEED
+          </h2>
+          <div className="mt-2 h-1 w-16 bg-gold" />
+          <p className="mt-3 max-w-md text-sm text-steel-light">
+            Drag through, or just watch it drift — tap any clip to catch the
+            full video on Instagram.
+          </p>
+          <Reveal delay={0.1}>
+            <VideoWheel videos={videos} />
+          </Reveal>
+        </div>
+      )}
     </div>
   );
 }
