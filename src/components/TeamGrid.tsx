@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Instagram, Linkedin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 
 export type TeamMember = {
@@ -9,6 +10,8 @@ export type TeamMember = {
   role: string;
   bio: string | null;
   photo_url: string | null;
+  instagram_url?: string | null;
+  linkedin_url?: string | null;
 };
 
 export default function TeamGrid({ members }: { members: TeamMember[] }) {
@@ -46,6 +49,32 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
               <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-gold">
                 {m.role}
               </p>
+              {(m.instagram_url || m.linkedin_url) && (
+                <div className="mt-2 flex items-center gap-3">
+                  {m.instagram_url && (
+                    <a
+                      href={m.instagram_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${m.name} on Instagram`}
+                      className="text-steel-light transition-colors hover:text-gold"
+                    >
+                      <Instagram size={16} />
+                    </a>
+                  )}
+                  {m.linkedin_url && (
+                    <a
+                      href={m.linkedin_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${m.name} on LinkedIn`}
+                      className="text-steel-light transition-colors hover:text-gold"
+                    >
+                      <Linkedin size={16} />
+                    </a>
+                  )}
+                </div>
+              )}
               {m.bio && (
                 <p className="mt-3 text-sm leading-relaxed text-ivory">
                   {m.bio}
