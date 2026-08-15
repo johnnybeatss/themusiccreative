@@ -79,13 +79,19 @@ export default async function HomePage() {
       </div>
 
       <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
-        <p className="text-lg font-semibold text-ivory">
-          We host workshops, networking events, beat showcases, and
-          collaborations that help members sharpen their skills, share
-          opportunities, and gain exposure. Whether you&apos;re looking to
-          produce, perform, or connect with others in the industry, The
-          Music Creative is where ideas turn into reality.
-        </p>
+        <div>
+          <p className="font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
+            WHAT WE DO
+          </p>
+          <div className="mt-3 h-1 w-16 bg-gold" />
+          <p className="mt-4 text-lg font-semibold text-ivory">
+            We host workshops, networking events, beat showcases, and
+            collaborations that help members sharpen their skills, share
+            opportunities, and gain exposure. Whether you&apos;re looking to
+            produce, perform, or connect with others in the industry, The
+            Music Creative is where ideas turn into reality.
+          </p>
+        </div>
         <Reveal delay={0.05}>
           <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800">
             <Image
