@@ -4,18 +4,23 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 
-export type VideoFormState = { error: string | null };
+// The video file itself is uploaded client-side, directly from the browser
+// to Supabase Storage (see VideoUploadForm.tsx) — not through this Server
+// Action. Vercel Functions hard-cap request bodies at 4.5MB platform-wide
+// (separate from, and stricter than, Next.js's own serverActions
+// bodySizeLimit config), so routing a multi-MB video through here would
+// fail regardless of that config. This action only ever handles small text
+// fields plus the storage path of an already-uploaded file.
 
-const BUCKET = "feed-videos";
-// Matches the Supabase free-tier global file size cap (Storage Settings).
-// If the project moves to Pro, this can go up, but 50MB is already large
-// for a short muted background clip.
-const MAX_FILE_BYTES = 50 * 1024 * 1024;
-
-export async function uploadVideo(
-  _prevState: VideoFormState,
-  formData: FormData
-): Promise<VideoFormState> {
+export async function saveFeedVideo({
+  storagePath,
+  caption,
+  instagramUrl,
+}: {
+  storagePath: string;
+  caption: string;
+  instagramUrl: string;
+}): Promise<{ error: string | null }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,45 +29,22 @@ export async function uploadVideo(
   if (!canManage(await getMyRole())) {
     return { error: "Only owner/admin accounts can add videos." };
   }
-
-  const file = formData.get("file") as File | null;
-  const caption = ((formData.get("caption") as string) || "").trim();
-  const instagramUrl = ((formData.get("instagram_url") as string) || "").trim();
-
-  if (!file || file.size === 0) return { error: "Choose a video file." };
-  if (!caption) return { error: "Caption is required." };
-  if (!instagramUrl) return { error: "Instagram link is required." };
-  if (!file.type.startsWith("video/")) {
-    return { error: "That file isn't a video." };
+  if (!storagePath || !caption.trim() || !instagramUrl.trim()) {
+    return { error: "Missing required fields." };
   }
-  if (file.size > MAX_FILE_BYTES) {
-    return { error: "Video is too large — keep it under 50MB." };
-  }
-
-  const ext = file.name.split(".").pop() || "mp4";
-  const path = `${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, file, { contentType: file.type });
-  if (uploadError) return { error: uploadError.message };
 
   // New videos go to the end of the wheel.
   const { count } = await supabase
     .from("feed_videos")
     .select("id", { count: "exact", head: true });
 
-  const { error: insertError } = await supabase.from("feed_videos").insert({
-    storage_path: path,
-    caption,
-    instagram_url: instagramUrl,
+  const { error } = await supabase.from("feed_videos").insert({
+    storage_path: storagePath,
+    caption: caption.trim(),
+    instagram_url: instagramUrl.trim(),
     sort_order: count ?? 0,
   });
-  if (insertError) {
-    // Don't leave an orphaned file if the row insert failed.
-    await supabase.storage.from(BUCKET).remove([path]);
-    return { error: insertError.message };
-  }
+  if (error) return { error: error.message };
 
   revalidatePath("/eboard/videos");
   revalidatePath("/");
@@ -89,7 +71,7 @@ export async function deleteVideo(formData: FormData) {
 
   if (storagePath) {
     const { error: storageError } = await supabase.storage
-      .from(BUCKET)
+      .from("feed-videos")
       .remove([storagePath]);
     if (storageError) {
       console.error("Failed to delete video file:", storageError.message);

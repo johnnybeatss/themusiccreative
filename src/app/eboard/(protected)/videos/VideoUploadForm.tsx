@@ -1,32 +1,78 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { uploadVideo, type VideoFormState } from "./actions";
+import { useRef, useState, type FormEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { saveFeedVideo } from "./actions";
 
-const initialState: VideoFormState = { error: null };
+const BUCKET = "feed-videos";
+// Matches the Supabase free-tier global file size cap (Storage Settings).
+const MAX_FILE_BYTES = 50 * 1024 * 1024;
 
 export default function VideoUploadForm() {
-  const [state, formAction, isPending] = useActionState(
-    uploadVideo,
-    initialState
-  );
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const mounted = useRef(false);
 
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const file = formData.get("file") as File | null;
+    const caption = ((formData.get("caption") as string) || "").trim();
+    const instagramUrl = (
+      (formData.get("instagram_url") as string) || ""
+    ).trim();
+
+    if (!file || file.size === 0) return setError("Choose a video file.");
+    if (!caption) return setError("Caption is required.");
+    if (!instagramUrl) return setError("Instagram link is required.");
+    if (!file.type.startsWith("video/")) {
+      return setError("That file isn't a video.");
     }
-    if (state.error === null) {
+    if (file.size > MAX_FILE_BYTES) {
+      return setError("Video is too large — keep it under 50MB.");
+    }
+
+    setPending(true);
+    // Uploaded directly from the browser to Supabase Storage, bypassing
+    // Vercel's serverless functions entirely — they hard-cap request
+    // bodies at 4.5MB, which any real video file exceeds.
+    const supabase = createClient();
+    const ext = file.name.split(".").pop() || "mp4";
+    const path = `${crypto.randomUUID()}.${ext}`;
+
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type });
+      if (uploadError) {
+        setError(uploadError.message);
+        return;
+      }
+
+      const result = await saveFeedVideo({
+        storagePath: path,
+        caption,
+        instagramUrl,
+      });
+      if (result.error) {
+        // Don't leave an orphaned file if the row insert failed.
+        await supabase.storage.from(BUCKET).remove([path]);
+        setError(result.error);
+        return;
+      }
+
       formRef.current?.reset();
+    } finally {
+      setPending(false);
     }
-  }, [state]);
+  }
 
   return (
     <form
       ref={formRef}
-      action={formAction}
+      onSubmit={handleSubmit}
       className="mt-6 space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-4"
     >
       <h2 className="font-display text-lg tracking-wide text-ivory">
@@ -66,13 +112,13 @@ export default function VideoUploadForm() {
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>
-      {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
-        disabled={isPending}
+        disabled={pending}
         className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
       >
-        {isPending ? "Uploading..." : "Add video"}
+        {pending ? "Uploading..." : "Add video"}
       </button>
     </form>
   );
