@@ -42,23 +42,6 @@ export default async function TeamPage() {
           <TeamGrid members={members} />
         </div>
       )}
-
-      <div className="mt-10 border-t border-navy-800 pt-6">
-        <h2 className="font-display text-xl tracking-wide text-ivory">
-          FOUNDERS
-        </h2>
-        <div className="mt-3 rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-          <p className="font-semibold text-ivory">
-            Adrian Pedron — &quot;Nugxs&quot;
-          </p>
-          <p className="text-sm text-steel-light">
-            Co-Founder (graduated, no longer active)
-          </p>
-          <p className="mt-2 text-sm text-ivory">
-            Music/vocal production, recording, mixing, mastering.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
