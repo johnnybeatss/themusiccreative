@@ -31,8 +31,20 @@ export default async function HomePage() {
 
   return (
     <div>
-      <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
-        <div>
+      <div className="relative min-h-[460px] overflow-hidden rounded-3xl border border-navy-800 sm:min-h-[540px]">
+        <Image
+          src="/photos/concert-band.jpg"
+          alt="A live show hosted by The Music Creative"
+          fill
+          priority
+          className="object-cover"
+        />
+        {/* Dark scrim behind the text (left side), fading out toward the
+            right so the photo itself still reads clearly. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/75 to-navy-950/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-transparent to-transparent" />
+
+        <div className="relative flex h-full flex-col justify-center px-6 py-12 sm:max-w-lg sm:px-10">
           <h1 className="font-display text-4xl leading-tight tracking-wide text-ivory sm:text-5xl">
             WHERE IDEAS TURN INTO REALITY
           </h1>
@@ -44,31 +56,19 @@ export default async function HomePage() {
           </p>
           <Link
             href="/join"
-            className="mt-6 inline-block rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+            className="mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
           >
             Join The Music Creative
           </Link>
         </div>
 
-        <div className="relative mx-auto w-full max-w-xs sm:max-w-none">
-          <div className="aspect-[61/63] overflow-hidden rounded-3xl border border-navy-800 bg-navy-900">
-            <Image
-              src="/photos/concert-band.jpg"
-              alt="A live show hosted by The Music Creative"
-              width={610}
-              height={630}
-              className="h-full w-full object-cover"
-              priority
-            />
-          </div>
-          <div className="absolute -bottom-6 left-1/2 w-56 -translate-x-1/2 rounded-xl border border-navy-800 bg-navy-900 p-4 sm:-bottom-4 sm:-left-4 sm:translate-x-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gold">
-              Est. 2025
-            </p>
-            <p className="mt-1 text-sm text-ivory">
-              Producers · DJs · Songwriters · Industry Pros
-            </p>
-          </div>
+        <div className="absolute bottom-6 right-6 hidden rounded-xl border border-navy-800 bg-navy-900/90 p-4 backdrop-blur-sm sm:block">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gold">
+            Est. 2025
+          </p>
+          <p className="mt-1 text-sm text-ivory">
+            Producers · DJs · Songwriters · Industry Pros
+          </p>
         </div>
       </div>
 
