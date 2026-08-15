@@ -44,7 +44,7 @@ export default function Nav() {
             : "border-navy-800/50 bg-abyss/70 backdrop-blur-md"
         }`}
       >
-        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-8 px-4 py-3">
+        <nav className="mx-auto flex max-w-6xl items-center px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <Image
               src="/logo.jpg"
@@ -58,20 +58,27 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-6 sm:flex">
-            <ul className="flex gap-6 text-sm font-medium">
-              {links.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    data-active={pathname === l.href}
-                    className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Fixed gap (ml-10) from the logo, not viewport-dependent, so the
+              rhythm next to "Home" always matches the gaps between the
+              other links — no more crowding or ballooning as the header
+              widens. */}
+          <ul className="ml-10 hidden gap-6 text-sm font-medium sm:flex">
+            {links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  data-active={pathname === l.href}
+                  className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* ml-auto absorbs the leftover header width, pinning E-Board +
+              Instagram to the right edge regardless of viewport. */}
+          <div className="ml-auto hidden items-center gap-4 sm:flex">
             <Link
               href="/eboard"
               className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
@@ -94,7 +101,7 @@ export default function Nav() {
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
-            className="text-ivory sm:hidden"
+            className="ml-auto text-ivory sm:hidden"
           >
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
