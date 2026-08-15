@@ -58,11 +58,10 @@ export default function Nav() {
             </span>
           </Link>
 
-          {/* Fixed gap (ml-10) from the logo, not viewport-dependent, so the
-              rhythm next to "Home" always matches the gaps between the
-              other links — no more crowding or ballooning as the header
-              widens. */}
-          <ul className="ml-10 hidden gap-6 text-sm font-medium sm:flex">
+          {/* flex-1 + justify-between spreads the links evenly across the
+              space between the logo and the E-Board/Instagram cluster,
+              instead of bunching them together right after the logo. */}
+          <ul className="ml-10 hidden flex-1 justify-between text-sm font-medium sm:flex">
             {links.map((l) => (
               <li key={l.href}>
                 <Link
@@ -76,9 +75,10 @@ export default function Nav() {
             ))}
           </ul>
 
-          {/* ml-auto absorbs the leftover header width, pinning E-Board +
-              Instagram to the right edge regardless of viewport. */}
-          <div className="ml-auto hidden items-center gap-4 sm:flex">
+          {/* The ul above is flex-1 and already consumes the leftover
+              header width, so this just needs a fixed gap rather than
+              ml-auto to stay pinned to the right edge. */}
+          <div className="ml-6 hidden items-center gap-4 sm:flex">
             <Link
               href="/eboard"
               className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
