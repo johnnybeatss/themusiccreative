@@ -72,8 +72,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-5 sm:items-center sm:gap-10">
-        <p className="text-steel-light sm:col-span-3">
+      <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
+        <p className="text-steel-light">
           We host workshops, networking events, beat showcases, and
           collaborations that help members sharpen their skills, share
           opportunities, and gain exposure. Whether you&apos;re looking to
@@ -81,12 +81,12 @@ export default async function HomePage() {
           Music Creative is where ideas turn into reality.
         </p>
         <Reveal delay={0.05}>
-          <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:col-span-2">
+          <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800">
             <Image
-              src="/photos/guitar-lounge.jpg"
-              alt="Members playing acoustic guitar together"
-              width={400}
-              height={300}
+              src="/photos/studio-group.jpg"
+              alt="The Music Creative members outside Studio24 after a group workout"
+              width={828}
+              height={992}
               className="h-full w-full object-cover"
             />
           </div>
