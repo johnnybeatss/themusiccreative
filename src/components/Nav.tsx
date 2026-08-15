@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Instagram, Menu, X } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home" },
@@ -16,6 +16,8 @@ const links = [
   { href: "/merch", label: "Merch" },
   { href: "/feedback", label: "Feedback" },
 ];
+
+const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -70,6 +72,21 @@ export default function Nav() {
                 </li>
               ))}
             </ul>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="text-steel-light transition-colors hover:text-gold"
+            >
+              <Instagram size={18} />
+            </a>
+            <Link
+              href="/join"
+              className="rounded-full bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+            >
+              Join
+            </Link>
             <Link
               href="/eboard"
               className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
@@ -125,14 +142,29 @@ export default function Nav() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: links.length * 0.06 }}
-                className="mt-4 border-t border-navy-800 pt-4"
+                className="mt-4 flex flex-wrap items-center gap-3 border-t border-navy-800 pt-4"
               >
+                <Link
+                  href="/join"
+                  className="inline-block rounded-full bg-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-navy-950"
+                >
+                  Join
+                </Link>
                 <Link
                   href="/eboard"
                   className="inline-block rounded-full border border-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-gold"
                 >
                   E-Board
                 </Link>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram"
+                  className="text-steel-light transition-colors hover:text-gold"
+                >
+                  <Instagram size={22} />
+                </a>
               </motion.li>
             </ul>
           </motion.div>

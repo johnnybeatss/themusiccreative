@@ -1,4 +1,6 @@
-import MerchGrid from "@/components/MerchGrid";
+import { Instagram } from "lucide-react";
+
+const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function MerchPage() {
   return (
@@ -8,13 +10,19 @@ export default function MerchPage() {
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
-        The merch line is still in the works — drops are coming soon. Filter
-        by category to see what to expect.
+        The merch line is still in the works — drops are coming soon.
+        Follow us on Instagram to be the first to know when it goes live.
       </p>
 
-      <div className="mt-6">
-        <MerchGrid />
-      </div>
+      <a
+        href={INSTAGRAM_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+      >
+        <Instagram size={18} />
+        Follow @themusiccreativefiu
+      </a>
     </div>
   );
 }

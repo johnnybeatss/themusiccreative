@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import VideoWheel from "@/components/VideoWheel";
 
@@ -16,6 +17,12 @@ export default function HomePage() {
             DJs, songwriters, and music industry professionals on campus —
             collaborate, network, and grow within the music industry.
           </p>
+          <Link
+            href="/join"
+            className="mt-6 inline-block rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+          >
+            Join The Music Creative
+          </Link>
         </div>
 
         <div className="relative mx-auto w-full max-w-xs sm:max-w-none">

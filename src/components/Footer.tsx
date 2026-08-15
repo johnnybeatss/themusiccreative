@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { Instagram } from "lucide-react";
 import NewsletterForm from "./NewsletterForm";
+
+const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function Footer() {
   return (
@@ -11,9 +14,19 @@ export default function Footer() {
           </Link>
           <NewsletterForm />
         </div>
-        <p className="mt-8 text-center sm:text-left">
-          &copy; {new Date().getFullYear()} The Music Creative @ FIU.
-        </p>
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} The Music Creative @ FIU.</p>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+            className="flex items-center gap-2 text-steel-light transition-colors hover:text-gold"
+          >
+            <Instagram size={18} />
+            <span>@themusiccreativefiu</span>
+          </a>
+        </div>
       </div>
     </footer>
   );

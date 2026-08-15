@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -16,10 +17,30 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const SITE_URL = "https://themusiccreative.org";
+const SITE_TITLE = "The Music Creative @ FIU";
+const SITE_DESCRIPTION =
+  "A student-led community for producers, artists, DJs, songwriters, and music industry pros at FIU.";
+
 export const metadata: Metadata = {
-  title: "The Music Creative @ FIU",
-  description:
-    "A student-led community for producers, artists, DJs, songwriters, and music industry pros at FIU.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: `%s · ${SITE_TITLE}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_TITLE,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
@@ -35,6 +56,7 @@ export default function RootLayout({
           <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
