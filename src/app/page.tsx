@@ -79,7 +79,7 @@ export default async function HomePage() {
       </div>
 
       <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
-        <p className="text-steel-light">
+        <p className="text-lg font-semibold text-ivory">
           We host workshops, networking events, beat showcases, and
           collaborations that help members sharpen their skills, share
           opportunities, and gain exposure. Whether you&apos;re looking to
@@ -99,9 +99,9 @@ export default async function HomePage() {
         </Reveal>
       </div>
 
-      <div className="mt-10 grid gap-8 sm:grid-cols-5 sm:items-center sm:gap-10">
+      <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:items-center sm:gap-10">
         <Reveal delay={0.05}>
-          <div className="order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:order-1 sm:col-span-2">
+          <div className="order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:order-1">
             <Image
               src="/photos/stage-purple.jpg"
               alt="A band performing live at a Music Creative show"
@@ -111,12 +111,12 @@ export default async function HomePage() {
             />
           </div>
         </Reveal>
-        <div className="order-1 sm:order-2 sm:col-span-3">
+        <div className="order-1 sm:order-2">
           <p className="font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
             OUR GOAL
           </p>
           <div className="mt-3 h-1 w-16 bg-gold" />
-          <p className="mt-4 text-lg text-steel-light">
+          <p className="mt-4 text-lg font-semibold text-ivory">
             Build a supportive music community at FIU that empowers
             students to take their creativity to the next level.
           </p>
