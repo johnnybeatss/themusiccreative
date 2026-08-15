@@ -35,7 +35,7 @@ export default async function HomePage() {
           entire viewport width, regardless of how narrow the page content
           column is. left-1/2 + -translate-x-1/2 re-centers a 100vw-wide box
           under a constrained parent. */}
-      <div className="relative left-1/2 -mt-10 min-h-[460px] w-screen -translate-x-1/2 overflow-hidden border-b border-navy-800 sm:min-h-[540px]">
+      <div className="relative left-1/2 -mt-10 min-h-[380px] w-screen -translate-x-1/2 overflow-hidden border-b border-navy-800 sm:min-h-[440px]">
         <Image
           src="/photos/concert-band.jpg"
           alt="A live show hosted by The Music Creative"
