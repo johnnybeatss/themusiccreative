@@ -16,16 +16,24 @@ export default function Footer() {
         </div>
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} The Music Creative @ FIU.</p>
-          <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Instagram"
-            className="flex items-center gap-2 text-steel-light transition-colors hover:text-gold"
-          >
-            <Instagram size={18} />
-            <span>@themusiccreativefiu</span>
-          </a>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/join"
+              className="font-semibold text-gold transition-colors hover:text-gold-light"
+            >
+              Join the club →
+            </Link>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="flex items-center gap-2 text-steel-light transition-colors hover:text-gold"
+            >
+              <Instagram size={18} />
+              <span>@themusiccreativefiu</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -45,7 +45,7 @@ export default function Nav() {
         }`}
       >
         <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex shrink-0 items-center gap-3">
             <Image
               src="/logo.jpg"
               alt="The Music Creative @ FIU"
@@ -53,7 +53,7 @@ export default function Nav() {
               height={40}
               className="rounded-lg"
             />
-            <span className="hidden font-display text-lg tracking-wide text-ivory sm:inline">
+            <span className="hidden whitespace-nowrap font-display text-lg tracking-wide text-ivory sm:inline">
               THE MUSIC CREATIVE
             </span>
           </Link>
@@ -72,6 +72,13 @@ export default function Nav() {
                 </li>
               ))}
             </ul>
+            <Link
+              href="/eboard"
+              className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+            >
+              E-Board
+            </Link>
+            <div className="h-4 w-px bg-navy-800" />
             <a
               href={INSTAGRAM_URL}
               target="_blank"
@@ -81,18 +88,6 @@ export default function Nav() {
             >
               <Instagram size={18} />
             </a>
-            <Link
-              href="/join"
-              className="rounded-full bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
-            >
-              Join
-            </Link>
-            <Link
-              href="/eboard"
-              className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
-            >
-              E-Board
-            </Link>
           </div>
 
           <button
