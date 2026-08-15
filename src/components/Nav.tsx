@@ -44,7 +44,7 @@ export default function Nav() {
             : "border-navy-800/50 bg-abyss/70 backdrop-blur-md"
         }`}
       >
-        <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-8 px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <Image
               src="/logo.jpg"
