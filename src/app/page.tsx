@@ -26,7 +26,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto w-full max-w-xs sm:max-w-none">
-          <div className="overflow-hidden rounded-3xl border border-navy-800 bg-navy-900">
+          <div className="aspect-[61/63] overflow-hidden rounded-3xl border border-navy-800 bg-navy-900">
             <Image
               src="/photos/concert-band.jpg"
               alt="A live show hosted by The Music Creative"
