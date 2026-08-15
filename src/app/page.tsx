@@ -31,7 +31,11 @@ export default async function HomePage() {
 
   return (
     <div>
-      <div className="relative min-h-[460px] overflow-hidden rounded-3xl border border-navy-800 sm:min-h-[540px]">
+      {/* Full-bleed: breaks out of <main>'s max-w-4xl column to span the
+          entire viewport width, regardless of how narrow the page content
+          column is. left-1/2 + -translate-x-1/2 re-centers a 100vw-wide box
+          under a constrained parent. */}
+      <div className="relative left-1/2 -mt-10 min-h-[460px] w-screen -translate-x-1/2 overflow-hidden border-b border-navy-800 sm:min-h-[540px]">
         <Image
           src="/photos/concert-band.jpg"
           alt="A live show hosted by The Music Creative"
@@ -44,22 +48,24 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/75 to-navy-950/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-transparent to-transparent" />
 
-        <div className="relative flex h-full flex-col justify-center px-6 py-12 sm:max-w-lg sm:px-10">
-          <h1 className="font-display text-4xl leading-tight tracking-wide text-ivory sm:text-5xl">
-            WHERE IDEAS TURN INTO REALITY
-          </h1>
-          <div className="mt-4 h-1 w-16 bg-gold" />
-          <p className="mt-6 text-steel-light">
-            A student-led community bringing together producers, artists,
-            DJs, songwriters, and music industry professionals on campus —
-            collaborate, network, and grow within the music industry.
-          </p>
-          <Link
-            href="/join"
-            className="mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
-          >
-            Join The Music Creative
-          </Link>
+        <div className="relative mx-auto flex h-full max-w-4xl flex-col justify-center px-6 py-12 sm:px-10">
+          <div className="sm:max-w-lg">
+            <h1 className="font-display text-4xl leading-tight tracking-wide text-ivory sm:text-5xl">
+              WHERE IDEAS TURN INTO REALITY
+            </h1>
+            <div className="mt-4 h-1 w-16 bg-gold" />
+            <p className="mt-6 text-steel-light">
+              A student-led community bringing together producers, artists,
+              DJs, songwriters, and music industry professionals on campus —
+              collaborate, network, and grow within the music industry.
+            </p>
+            <Link
+              href="/join"
+              className="mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+            >
+              Join The Music Creative
+            </Link>
+          </div>
         </div>
 
         <div className="absolute bottom-6 right-6 hidden rounded-xl border border-navy-800 bg-navy-900/90 p-4 backdrop-blur-sm sm:block">
