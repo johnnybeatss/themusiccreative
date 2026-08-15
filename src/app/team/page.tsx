@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import TeamTabs, { type TeamMember } from "@/components/TeamTabs";
+import TeamGrid, { type TeamMember } from "@/components/TeamGrid";
 
 type Member = TeamMember;
 
@@ -35,7 +35,7 @@ export default async function TeamPage() {
         </p>
       ) : (
         <div className="mt-6">
-          <TeamTabs members={members} />
+          <TeamGrid members={members} />
         </div>
       )}
 
