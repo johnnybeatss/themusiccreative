@@ -75,12 +75,17 @@ export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
   const [paused, setPaused] = useState(false);
   const [containerW, setContainerW] = useState(0);
 
-  const items = Array.from({ length: REPEAT }, () => videos).flat();
+  // Repeating is what makes the drag-to-drift illusion work, but with a
+  // single video it just shows the same card sitting next to itself —
+  // reads as a bug, not a carousel. Below 2 distinct videos, render once
+  // with no repeat, no drift, and no drag.
+  const canDrift = videos.length > 1;
+  const items = canDrift ? Array.from({ length: REPEAT }, () => videos).flat() : videos;
   const ITEM_W = CARD_W + GAP;
   const SET_W = videos.length * ITEM_W;
   const TRACK_W = items.length * ITEM_W;
 
-  const x = useMotionValue(-SET_W);
+  const x = useMotionValue(canDrift ? -SET_W : 0);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -91,7 +96,7 @@ export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
   }, []);
 
   useAnimationFrame((_, delta) => {
-    if (paused || draggingRef.current || videos.length === 0) return;
+    if (!canDrift || paused || draggingRef.current) return;
     let next = x.get() - (delta / 1000) * DRIFT_SPEED;
     // Content repeats every SET_W, so once we've drifted a full set past the
     // start, jump forward by exactly one set — visually seamless since the
@@ -119,7 +124,7 @@ export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
         <motion.div
           className="flex"
           style={{ x, gap: GAP }}
-          drag="x"
+          drag={canDrift ? "x" : false}
           dragConstraints={{ left: -(TRACK_W - containerW), right: 0 }}
           dragElastic={0.08}
           onDragStart={() => {
