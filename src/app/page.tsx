@@ -103,18 +103,24 @@ export default async function HomePage() {
         <Reveal delay={0.05}>
           <div className="order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:order-1 sm:col-span-2">
             <Image
-              src="/photos/group-photo.jpg"
-              alt="The Music Creative members outside Studio24"
-              width={400}
-              height={300}
+              src="/photos/stage-purple.jpg"
+              alt="A band performing live at a Music Creative show"
+              width={828}
+              height={1093}
               className="h-full w-full object-cover"
             />
           </div>
         </Reveal>
-        <p className="order-1 font-semibold text-ivory sm:order-2 sm:col-span-3">
-          Our Goal: Build a supportive music community at FIU that empowers
-          students to take their creativity to the next level.
-        </p>
+        <div className="order-1 sm:order-2 sm:col-span-3">
+          <p className="font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
+            OUR GOAL
+          </p>
+          <div className="mt-3 h-1 w-16 bg-gold" />
+          <p className="mt-4 text-lg text-steel-light">
+            Build a supportive music community at FIU that empowers
+            students to take their creativity to the next level.
+          </p>
+        </div>
       </div>
 
       {videos.length > 0 && (
