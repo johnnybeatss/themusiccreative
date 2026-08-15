@@ -6,7 +6,11 @@ type Member = TeamMember;
 async function getMembers(): Promise<Member[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase.from("e_board_members").select("*");
+  const { data, error } = await supabase
+    .from("e_board_members")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
   if (error) {
     console.error("Failed to load e-board members:", error.message);
     return [];
