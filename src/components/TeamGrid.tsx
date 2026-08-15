@@ -13,11 +13,11 @@ export type TeamMember = {
 
 export default function TeamGrid({ members }: { members: TeamMember[] }) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-6">
       {members.map((m, i) => (
         <Reveal key={m.id} delay={i * 0.05}>
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold">
-            <div className="aspect-[3/4] w-full bg-navy-950">
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold sm:flex-row">
+            <div className="aspect-[3/4] w-full shrink-0 bg-navy-950 sm:w-56">
               {m.photo_url ? (
                 // unoptimized: see TeamGrid/TeamTabs history — the Next.js
                 // image optimizer intermittently served stale/unrelated
@@ -39,7 +39,7 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
                 </div>
               )}
             </div>
-            <div className="flex flex-1 flex-col p-4">
+            <div className="flex flex-1 flex-col justify-center p-6">
               <p className="font-display text-xl tracking-wide text-ivory">
                 {m.name}
               </p>
