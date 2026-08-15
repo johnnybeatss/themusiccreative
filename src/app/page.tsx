@@ -30,8 +30,8 @@ export default function HomePage() {
             <Image
               src="/photos/concert-band.jpg"
               alt="A live show hosted by The Music Creative"
-              width={610}
-              height={630}
+              width={828}
+              height={1098}
               className="h-full w-full object-cover"
               priority
             />
