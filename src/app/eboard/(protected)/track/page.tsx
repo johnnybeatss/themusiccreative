@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, isOwner } from "@/lib/supabase/role";
 import TrackUploadForm from "./TrackUploadForm";
-import { deleteWeeklyTrack } from "./actions";
+import TrackDeleteForm from "./TrackDeleteForm";
 
 const BUCKET = "weekly-track";
 
@@ -58,32 +58,11 @@ export default async function WeeklyTrackAdminPage() {
             preload="none"
           />
           {editable && (
-            <form
-              action={deleteWeeklyTrack}
-              onSubmit={(e) => {
-                if (
-                  !confirm(
-                    `Remove "${track.track_title}" and hide the player site-wide?`
-                  )
-                ) {
-                  e.preventDefault();
-                }
-              }}
-              className="mt-3"
-            >
-              <input type="hidden" name="id" value={track.id} />
-              <input
-                type="hidden"
-                name="storage_path"
-                value={track.storage_path}
-              />
-              <button
-                type="submit"
-                className="text-xs text-steel-light hover:text-red-400"
-              >
-                Remove featured track
-              </button>
-            </form>
+            <TrackDeleteForm
+              id={track.id}
+              trackTitle={track.track_title}
+              storagePath={track.storage_path}
+            />
           )}
         </div>
       ) : (
