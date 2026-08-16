@@ -11,7 +11,7 @@ import {
   Music,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
-import type { MyProfile } from "@/lib/supabase/role";
+import { canManage, type MyProfile } from "@/lib/supabase/role";
 
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
@@ -34,7 +34,20 @@ const ROLE_LABELS: Record<MyProfile["role"], string> = {
 // Vertical sidebar for the E-Board section — stacked as a left rail on
 // sm+ screens, and as a compact vertical list above the content on mobile
 // (see layout.tsx for the flex-col/flex-row switch).
-export default function EboardNav({ profile }: { profile: MyProfile | null }) {
+export default function EboardNav({
+  profile,
+  unreadFeedbackCount = 0,
+}: {
+  profile: MyProfile | null;
+  unreadFeedbackCount?: number;
+}) {
+  // Feedback responses are owner/admin-only (see
+  // supabase/migrations/0011_feedback_admin_only.sql) — no point showing
+  // eboard-tier members a link that just RLS-blocks them once clicked.
+  const visibleLinks = links.filter(
+    (l) => l.href !== "/eboard/feedback" || canManage(profile?.role ?? null)
+  );
+
   return (
     <nav className="flex flex-col gap-1 border-b border-navy-800 pb-6 sm:w-52 sm:shrink-0 sm:border-b-0 sm:border-r sm:border-navy-800 sm:pb-0 sm:pr-6">
       {profile && (
@@ -46,14 +59,19 @@ export default function EboardNav({ profile }: { profile: MyProfile | null }) {
         </p>
       )}
       <ul className="flex flex-col gap-1">
-        {links.map((l) => (
+        {visibleLinks.map((l) => (
           <li key={l.href}>
             <Link
               href={l.href}
               className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-steel-light transition-colors hover:bg-navy-900 hover:text-gold"
             >
               <l.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-              {l.label}
+              <span className="flex-1">{l.label}</span>
+              {l.href === "/eboard/feedback" && unreadFeedbackCount > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
+                  {unreadFeedbackCount}
+                </span>
+              )}
             </Link>
           </li>
         ))}

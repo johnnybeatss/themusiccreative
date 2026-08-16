@@ -8,6 +8,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
+import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 
 const sections = [
   {
@@ -48,7 +50,17 @@ const sections = [
   },
 ];
 
-export default function EboardHomePage() {
+export default async function EboardHomePage() {
+  const [role, unreadFeedbackCount] = await Promise.all([
+    getMyRole(),
+    getUnreadFeedbackCount(),
+  ]);
+  // Feedback responses are owner/admin-only — see
+  // supabase/migrations/0011_feedback_admin_only.sql.
+  const visibleSections = sections.filter(
+    (s) => s.href !== "/eboard/feedback" || canManage(role)
+  );
+
   return (
     <div>
       <h1 className="font-display text-3xl tracking-wide text-ivory">
@@ -59,12 +71,17 @@ export default function EboardHomePage() {
         Internal tools — none of this is visible on the public site.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        {sections.map((s, i) => (
+        {visibleSections.map((s, i) => (
           <Reveal key={s.href} delay={i * 0.05} className="h-full">
             <Link
               href={s.href}
-              className="group flex h-full items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
+              className="group relative flex h-full items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
             >
+              {s.href === "/eboard/feedback" && unreadFeedbackCount > 0 && (
+                <span className="absolute right-4 top-4 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
+                  {unreadFeedbackCount}
+                </span>
+              )}
               <s.icon
                 className="mt-0.5 h-6 w-6 shrink-0 text-steel-light transition-colors group-hover:text-gold"
                 strokeWidth={1.5}
