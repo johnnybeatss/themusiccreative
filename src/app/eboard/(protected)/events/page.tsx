@@ -10,6 +10,7 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  image_url: string | null;
 };
 
 async function getEvents(): Promise<Event[]> {

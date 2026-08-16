@@ -19,6 +19,7 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  image_url: string | null;
 };
 
 async function getEvents(): Promise<Event[]> {
@@ -50,6 +51,7 @@ function buildEventSchema(events: Event[]) {
     location: e.location
       ? { "@type": "Place", name: e.location }
       : undefined,
+    image: e.image_url ?? undefined,
     organizer: {
       "@type": "Organization",
       name: "The Music Creative @ FIU",
@@ -83,15 +85,25 @@ export default async function EventsPage() {
         <div className="mt-6 space-y-4">
           {events.map((e, i) => (
             <Reveal key={e.id} delay={i * 0.05}>
-              <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="font-semibold text-ivory">{e.name}</p>
-                  <StatusPill status={e.status} />
+              <div className="overflow-hidden rounded-xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold">
+                {e.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={e.image_url}
+                    alt=""
+                    className="h-40 w-full object-cover"
+                  />
+                )}
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-semibold text-ivory">{e.name}</p>
+                    <StatusPill status={e.status} />
+                  </div>
+                  <p className="mt-1 text-sm text-steel-light">
+                    {new Date(e.date).toLocaleString()}
+                    {e.location ? ` · ${e.location}` : ""} · {e.type}
+                  </p>
                 </div>
-                <p className="mt-1 text-sm text-steel-light">
-                  {new Date(e.date).toLocaleString()}
-                  {e.location ? ` · ${e.location}` : ""} · {e.type}
-                </p>
               </div>
             </Reveal>
           ))}

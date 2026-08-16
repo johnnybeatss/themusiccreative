@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Video,
   Music,
+  Briefcase,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
@@ -16,6 +17,7 @@ import { canManage, type MyProfile } from "@/lib/supabase/role";
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/eboard/events", label: "Events", icon: PartyPopper },
+  { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
   { href: "/eboard/videos", label: "Feed Videos", icon: Video },
   { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },

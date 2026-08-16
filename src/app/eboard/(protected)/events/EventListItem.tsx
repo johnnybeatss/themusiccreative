@@ -12,6 +12,7 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  image_url: string | null;
 };
 
 export default function EventListItem({
@@ -29,9 +30,21 @@ export default function EventListItem({
 
   return (
     <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
-      <div className="flex items-start justify-between gap-3">
-        <p className="font-semibold text-ivory">{event.name}</p>
-        <StatusPill status={event.status} />
+      <div className="flex items-start gap-3">
+        {event.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={event.image_url}
+            alt=""
+            className="h-14 w-14 shrink-0 rounded-lg object-cover"
+          />
+        )}
+        <div className="flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <p className="font-semibold text-ivory">{event.name}</p>
+            <StatusPill status={event.status} />
+          </div>
+        </div>
       </div>
       <p className="mt-1 text-sm text-steel-light">
         {new Date(event.date).toLocaleString()}

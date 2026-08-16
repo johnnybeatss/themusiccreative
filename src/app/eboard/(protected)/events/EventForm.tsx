@@ -13,6 +13,7 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  image_url: string | null;
 };
 
 const initialState: EventFormState = { error: null };
@@ -128,6 +129,26 @@ export default function EventForm({
           </select>
         </label>
       </div>
+      <label className="block text-sm">
+        <span className="text-steel-light">
+          Cover image {event ? "(optional — replaces current)" : "(optional)"}
+        </span>
+        {event?.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={event.image_url}
+            alt=""
+            className="mt-2 h-24 w-full rounded-lg object-cover"
+          />
+        )}
+        <input
+          type="file"
+          name="image"
+          accept="image/*"
+          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+        />
+      </label>
+      <p className="text-xs text-steel-light">Under 4MB.</p>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       <div className="flex items-center gap-4 pt-1">
         <button

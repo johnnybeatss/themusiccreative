@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
+import { uploadContentImage } from "@/lib/supabase/uploadContentImage";
 
 export type EventFormState = { error: string | null };
 
@@ -56,7 +57,16 @@ export async function createEvent(
   const { error, values } = parseEventForm(formData);
   if (error || !values) return { error };
 
-  const { error: insertError } = await supabase.from("events").insert(values);
+  const image = formData.get("image") as File | null;
+  const { url: imageUrl, error: imageError } = await uploadContentImage(
+    supabase,
+    image
+  );
+  if (imageError) return { error: imageError };
+
+  const { error: insertError } = await supabase
+    .from("events")
+    .insert({ ...values, image_url: imageUrl });
   if (insertError) return { error: insertError.message };
 
   revalidatePath("/eboard/events");
@@ -85,9 +95,18 @@ export async function updateEvent(
   const { error, values } = parseEventForm(formData);
   if (error || !values) return { error };
 
+  // Only touch image_url if a new file was actually chosen — leave the
+  // existing cover alone otherwise instead of clearing it.
+  const image = formData.get("image") as File | null;
+  const { url: imageUrl, error: imageError } = await uploadContentImage(
+    supabase,
+    image
+  );
+  if (imageError) return { error: imageError };
+
   const { error: updateError } = await supabase
     .from("events")
-    .update(values)
+    .update(imageUrl ? { ...values, image_url: imageUrl } : values)
     .eq("id", id);
   if (updateError) return { error: updateError.message };
 

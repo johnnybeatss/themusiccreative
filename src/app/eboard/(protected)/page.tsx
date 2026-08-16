@@ -6,6 +6,7 @@ import {
   StickyNote,
   PartyPopper,
   MessageSquare,
+  Briefcase,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getMyRole, canManage } from "@/lib/supabase/role";
@@ -17,6 +18,12 @@ const sections = [
     label: "Events",
     description: "Add, edit, and remove what shows on the public Events page.",
     icon: PartyPopper,
+  },
+  {
+    href: "/eboard/opportunities",
+    label: "Opportunities",
+    description: "Add, edit, and remove what shows on the public Opportunities page.",
+    icon: Briefcase,
   },
   {
     href: "/eboard/feedback",
