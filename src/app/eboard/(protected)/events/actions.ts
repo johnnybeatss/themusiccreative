@@ -16,14 +16,63 @@ const EVENT_STATUSES = ["Not started", "In progress", "Done"] as const;
 // The auth.getUser() checks below are a friendlier first line of defense
 // (clear error message) — RLS is still what actually enforces it.
 
+// All club events happen at FIU (Miami) — the <input type="datetime-local">
+// value has no timezone info at all ("2026-09-21T08:00"), so it has to be
+// explicitly anchored to a timezone before it's stored in the `date
+// timestamptz` column. Without this, Postgres treats the naive string as
+// already being in UTC (its session timezone), silently shifting every
+// saved time by 4-5 hours — and because the edit form pre-fills from the
+// (already shifted) stored value, re-saving an event without touching the
+// time shifts it again. Anchoring to America/New_York here is what fixes
+// both the initial shift and the compounding on re-save.
+const EVENT_TIMEZONE = "America/New_York";
+
+// Converts a "YYYY-MM-DDTHH:mm" datetime-local value — read as wall-clock
+// time in `timeZone` — into a correct UTC ISO timestamp. DST-aware: derives
+// the real offset for that specific date from the IANA tz database via
+// Intl, rather than hardcoding UTC-4/UTC-5.
+function zonedDateTimeToUtcIso(dateTimeLocal: string, timeZone: string): string {
+  const [datePart, timePart] = dateTimeLocal.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = (timePart ?? "00:00").split(":").map(Number);
+
+  // First guess: treat the wall-clock value as if it were already UTC.
+  const guessUtc = Date.UTC(year, month - 1, day, hour, minute);
+
+  // Read that instant back in the target timezone, and correct by however
+  // far off the guess was — this is what makes it DST-correct automatically.
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(new Date(guessUtc));
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+  const tzReading = Date.UTC(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour") % 24, // some ICU builds format midnight as "24"
+    get("minute")
+  );
+
+  const offsetMs = tzReading - guessUtc;
+  return new Date(guessUtc - offsetMs).toISOString();
+}
+
 function parseEventForm(formData: FormData) {
   const name = formData.get("name") as string;
-  const date = formData.get("date") as string;
+  const rawDate = formData.get("date") as string;
   const location = ((formData.get("location") as string) || "").trim() || null;
   const type = formData.get("type") as string;
   const status = formData.get("status") as string;
 
-  if (!name || !date) {
+  if (!name || !rawDate) {
     return { error: "Name and date are required.", values: null };
   }
   if (!EVENT_TYPES.includes(type as (typeof EVENT_TYPES)[number])) {
@@ -32,6 +81,8 @@ function parseEventForm(formData: FormData) {
   if (!EVENT_STATUSES.includes(status as (typeof EVENT_STATUSES)[number])) {
     return { error: "Invalid status.", values: null };
   }
+
+  const date = zonedDateTimeToUtcIso(rawDate, EVENT_TIMEZONE);
 
   return {
     error: null,
