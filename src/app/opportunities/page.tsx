@@ -145,6 +145,24 @@ export default async function OpportunitiesPage() {
         OPPORTUNITIES
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gold/50 bg-navy-900 p-5">
+        <div>
+          <p className="font-display text-lg tracking-wide text-ivory">
+            NEED A DJ FOR YOUR EVENT?
+          </p>
+          <p className="mt-1 text-sm text-steel-light">
+            We book DJ sets for campus and off-campus events.
+          </p>
+        </div>
+        <a
+          href="/dj-booking"
+          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+        >
+          Book a DJ &rarr;
+        </a>
+      </div>
+
       {opportunities.length === 0 ? (
         <p className="mt-6 text-steel-light">
           No opportunities posted right now — check back soon.
