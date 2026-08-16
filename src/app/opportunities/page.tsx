@@ -149,17 +149,18 @@ export default async function OpportunitiesPage() {
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gold/50 bg-navy-900 p-5">
         <div>
           <p className="font-display text-lg tracking-wide text-ivory">
-            NEED A DJ FOR YOUR EVENT?
+            WANT TO DJ FOR US?
           </p>
           <p className="mt-1 text-sm text-steel-light">
-            We book DJ sets for campus and off-campus events.
+            We keep a running list of DJs to pull from when we&apos;re
+            booking future events — sign up to get on it.
           </p>
         </div>
         <a
           href="/dj-booking"
           className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
         >
-          Book a DJ &rarr;
+          Sign Up &rarr;
         </a>
       </div>
 

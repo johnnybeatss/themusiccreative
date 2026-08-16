@@ -34,10 +34,11 @@ export default function DjBookingForm() {
     return (
       <div className="mt-6 rounded-xl border border-gold/50 bg-navy-900 p-6">
         <p className="font-display text-lg tracking-wide text-gold">
-          REQUEST SENT
+          YOU&apos;RE ON THE LIST
         </p>
         <p className="mt-2 text-sm text-steel-light">
-          Thanks for reaching out — we&apos;ll follow up by email soon.
+          Thanks for signing up — we&apos;ll reach out when we&apos;re
+          booking a DJ that fits.
         </p>
       </div>
     );
@@ -114,7 +115,7 @@ export default function DjBookingForm() {
         disabled={isPending}
         className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
       >
-        {isPending ? "Sending..." : "Send inquiry"}
+        {isPending ? "Submitting..." : "Sign up"}
       </button>
     </form>
   );

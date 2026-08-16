@@ -39,7 +39,7 @@ export default async function DjInquiriesPage() {
         </h1>
         <div className="mt-2 h-1 w-16 bg-gold" />
         <p className="mt-6 text-steel-light">
-          DJ booking inquiries are restricted to owner/admin accounts.
+          DJ sign-ups are restricted to owner/admin accounts.
         </p>
       </div>
     );
@@ -66,7 +66,8 @@ export default async function DjInquiriesPage() {
         )}
       </div>
       <p className="mt-4 text-sm text-steel-light">
-        Booking requests from the public /dj-booking page.
+        DJs who signed up through the public /dj-booking page to be
+        considered for future club events.
       </p>
 
       {inquiries.length === 0 ? (

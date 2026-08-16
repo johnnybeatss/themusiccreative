@@ -6,6 +6,14 @@ import { Instagram, Pause, Play, X } from "lucide-react";
 
 const INSTAGRAM_DM_URL = "https://instagram.com/themusiccreativefiu";
 
+// Module-level, not component state — deliberately survives even if this
+// bar remounts during client-side navigation between pages. Autoplay
+// should fire at most once per page load, and never again once the
+// visitor has paused it themselves, no matter how many more times they
+// click around the site afterward.
+let hasAutoStarted = false;
+let userPaused = false;
+
 export type FeaturedTrack = {
   track_title: string;
   artist_name: string;
@@ -37,16 +45,30 @@ export default function FeaturedTrackBar({
     const el = audioRef.current;
     if (!el) return;
 
+    // Only ever auto-start once per page load, and never once the visitor
+    // has paused it themselves — otherwise every later click anywhere on
+    // the site would re-trigger the fallback below and unpause it.
+    if (hasAutoStarted || userPaused) return;
+
     // Best case: this just works (repeat visitors, or browsers with a high
     // enough media-engagement score for the site).
-    el.play().catch(() => {});
+    el.play()
+      .then(() => {
+        hasAutoStarted = true;
+      })
+      .catch(() => {});
 
     // Fallback: start on the visitor's very first interaction anywhere on
     // the page, rather than waiting for someone to notice the play button.
     // Harmless to also fire this if autoplay above already succeeded —
     // calling play() on already-playing audio is a no-op.
     const startOnInteraction = () => {
-      el.play().catch(() => {});
+      if (hasAutoStarted || userPaused) return;
+      el.play()
+        .then(() => {
+          hasAutoStarted = true;
+        })
+        .catch(() => {});
     };
     const events: (keyof WindowEventMap)[] = [
       "pointerdown",
@@ -71,8 +93,11 @@ export default function FeaturedTrackBar({
     if (!el) return;
     if (playing) {
       el.pause();
+      userPaused = true;
     } else {
       el.play().catch(() => {});
+      userPaused = false;
+      hasAutoStarted = true;
     }
   }
 
