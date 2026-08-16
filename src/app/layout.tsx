@@ -5,6 +5,29 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+import FeaturedTrackBar from "@/components/FeaturedTrackBar";
+import { createClient } from "@/lib/supabase/server";
+
+const TRACK_BUCKET = "weekly-track";
+
+async function getFeaturedTrack() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("weekly_track")
+    .select("track_title, artist_name, storage_path")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  return {
+    track_title: data.track_title,
+    artist_name: data.artist_name,
+    audio_url: supabase.storage
+      .from(TRACK_BUCKET)
+      .getPublicUrl(data.storage_path).data.publicUrl,
+  };
+}
 
 const anton = Anton({
   subsets: ["latin"],
@@ -43,11 +66,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const track = await getFeaturedTrack();
+
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col bg-navy-950 font-sans text-ivory antialiased">
@@ -56,6 +81,7 @@ export default function RootLayout({
           <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
+        {track && <FeaturedTrackBar track={track} />}
         <Analytics />
       </body>
     </html>

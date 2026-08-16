@@ -129,6 +129,32 @@ export default async function HomePage() {
         </div>
       </div>
 
+      <div className="relative mt-16 overflow-hidden rounded-2xl border border-gold/40 bg-navy-900 p-8 sm:mt-20 sm:p-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-gold/20 blur-3xl"
+        />
+        <p className="relative text-xs font-semibold uppercase tracking-wide text-gold">
+          Weekly Contest
+        </p>
+        <h2 className="relative mt-2 font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
+          GET YOUR TRACK ON THE SITE
+        </h2>
+        <p className="relative mt-4 max-w-lg text-lg font-semibold text-ivory">
+          Every week we feature one member&apos;s track in the player at the
+          bottom of the site — everyone who visits hears it. Submit yours for
+          a shot at the spotlight.
+        </p>
+        <a
+          href="https://instagram.com/themusiccreativefiu"
+          target="_blank"
+          rel="noreferrer"
+          className="relative mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+        >
+          DM Us Your Track
+        </a>
+      </div>
+
       {videos.length > 0 && (
         <div className="mt-16 sm:mt-20">
           <h2 className="font-display text-2xl tracking-wide text-ivory">

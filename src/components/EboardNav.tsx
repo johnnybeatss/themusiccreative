@@ -8,6 +8,7 @@ import {
   PartyPopper,
   MessageSquare,
   Video,
+  Music,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import type { MyProfile } from "@/lib/supabase/role";
@@ -16,6 +17,7 @@ const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/eboard/events", label: "Events", icon: PartyPopper },
   { href: "/eboard/videos", label: "Feed Videos", icon: Video },
+  { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },
   { href: "/eboard/calendar", label: "Meeting Calendar", icon: Calendar },
   { href: "/eboard/resources", label: "Drive Resources", icon: FolderOpen },

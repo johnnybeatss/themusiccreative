@@ -28,6 +28,12 @@ export function canManage(role: MemberRole | null): boolean {
   return role === "owner" || role === "admin";
 }
 
+// Deliberately tighter than canManage() — for the one or two things (like
+// the weekly featured track) that stay owner-only on purpose.
+export function isOwner(role: MemberRole | null): boolean {
+  return role === "owner";
+}
+
 export type MyProfile = { role: MemberRole; displayName: string | null };
 
 // Same fail-closed behavior as getMyRole(), but also returns display_name
