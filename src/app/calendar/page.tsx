@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Calendar",
+  description:
+    "The Music Creative @ FIU's meeting and event calendar — see what's coming up.",
+  alternates: {
+    canonical: "/calendar",
+  },
+};
+
 const CALENDAR_EMBED_URL =
   "https://calendar.google.com/calendar/embed?src=00dbc40f393f0cabac7795e6c71f353439a58158fdb7c122864f7582ce6cdba8%40group.calendar.google.com&ctz=America%2FNew_York";
 

@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { Instagram } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Merch",
+  description:
+    "The Music Creative @ FIU merch line — drops coming soon. Follow @themusiccreativefiu to be first to know.",
+  alternates: {
+    canonical: "/merch",
+  },
+};
 
 const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 

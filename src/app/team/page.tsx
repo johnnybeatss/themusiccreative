@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import TeamGrid, { type TeamMember } from "@/components/TeamGrid";
+
+export const metadata: Metadata = {
+  title: "Meet The E-Board",
+  description:
+    "Meet the E-Board running The Music Creative @ FIU — producers, DJs, marketers, and creatives leading the club.",
+  alternates: {
+    canonical: "/team",
+  },
+};
 
 type Member = TeamMember;
 

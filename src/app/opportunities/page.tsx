@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StatusPill from "@/components/StatusPill";
+
+export const metadata: Metadata = {
+  title: "Opportunities",
+  description:
+    "Gigs, internships, and industry openings shared with members of The Music Creative @ FIU.",
+  alternates: {
+    canonical: "/opportunities",
+  },
+};
 
 type Opportunity = {
   id: string;

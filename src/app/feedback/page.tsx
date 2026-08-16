@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import FeedbackForm from "./FeedbackForm";
+
+export const metadata: Metadata = {
+  title: "Feedback",
+  description:
+    "Share ideas, likes, and dislikes with The Music Creative @ FIU E-Board — help shape what the club does next.",
+  alternates: {
+    canonical: "/feedback",
+  },
+};
 
 export default function FeedbackPage() {
   return (

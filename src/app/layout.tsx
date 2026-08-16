@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -45,6 +46,9 @@ const SITE_URL = "https://themusiccreative.org";
 const SITE_TITLE = "The Music Creative @ FIU";
 const SITE_DESCRIPTION =
   "A student-led community for producers, artists, DJs, songwriters, and music industry pros at FIU.";
+const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
+const PANTHER_CONNECT_URL =
+  "https://fiu.campuslabs.com/engage/organization/themusiccreative";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -53,6 +57,9 @@ export const metadata: Metadata = {
     template: `%s · ${SITE_TITLE}`,
   },
   description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
@@ -67,6 +74,19 @@ export const metadata: Metadata = {
   },
 };
 
+// Helps Google recognize "The Music Creative @ FIU" as a distinct entity
+// (not just a page) and connects it to the accounts that already exist —
+// Instagram and the official FIU Panther Connect listing.
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_TITLE,
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.jpg`,
+  description: SITE_DESCRIPTION,
+  sameAs: [INSTAGRAM_URL, PANTHER_CONNECT_URL],
+};
+
 export default async function RootLayout({
   children,
 }: {
@@ -77,6 +97,10 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col bg-navy-950 font-sans text-ivory antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         <Nav />
         <main className="relative mx-auto w-full max-w-4xl flex-1 px-4 py-10">
           <PageTransition>{children}</PageTransition>
@@ -84,6 +108,7 @@ export default async function RootLayout({
         <Footer />
         {track && <FeaturedTrackBar track={track} />}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

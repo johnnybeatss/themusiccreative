@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Join",
   description:
     "Join The Music Creative @ FIU — a student-led community for producers, artists, DJs, songwriters, and music industry pros.",
+  alternates: {
+    canonical: "/join",
+  },
 };
 
 export default function JoinPage() {

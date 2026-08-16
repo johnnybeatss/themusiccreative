@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StatusPill from "@/components/StatusPill";
+
+export const metadata: Metadata = {
+  title: "Events",
+  description:
+    "Upcoming workshops, showcases, and meetups from The Music Creative @ FIU — a student-led music production community in Miami.",
+  alternates: {
+    canonical: "/events",
+  },
+};
 
 type Event = {
   id: string;
@@ -25,11 +35,41 @@ async function getEvents(): Promise<Event[]> {
   return data ?? [];
 }
 
+// Rich results eligibility for real events — Google can show these in
+// dedicated event search surfaces, not just a plain blue link. Only the
+// fields we actually have reliable data for; no invented addresses.
+function buildEventSchema(events: Event[]) {
+  if (events.length === 0) return null;
+  return events.map((e) => ({
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: e.name,
+    startDate: new Date(e.date).toISOString(),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: e.location
+      ? { "@type": "Place", name: e.location }
+      : undefined,
+    organizer: {
+      "@type": "Organization",
+      name: "The Music Creative @ FIU",
+      url: "https://themusiccreative.org",
+    },
+  }));
+}
+
 export default async function EventsPage() {
   const events = await getEvents();
+  const eventSchema = buildEventSchema(events);
 
   return (
     <div>
+      {eventSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+        />
+      )}
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         UPCOMING EVENTS
       </h1>
