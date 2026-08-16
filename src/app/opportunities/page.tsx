@@ -173,9 +173,10 @@ export default async function OpportunitiesPage() {
                       href={o.contact_link}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-2 inline-block text-sm text-gold underline"
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold px-4 py-1.5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
                     >
-                      {o.contact_link}
+                      Learn More
+                      <span aria-hidden="true">&rarr;</span>
                     </a>
                   )}
                 </div>
