@@ -51,6 +51,16 @@ export default async function WeeklyTrackAdminPage() {
           <p className="mt-1 font-semibold text-ivory">
             {track.track_title} — {track.artist_name}
           </p>
+          {track.artist_instagram_url && (
+            <a
+              href={track.artist_instagram_url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-gold underline"
+            >
+              {track.artist_instagram_url}
+            </a>
+          )}
           <audio
             controls
             src={track.audio_url}

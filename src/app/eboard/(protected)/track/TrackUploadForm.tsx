@@ -7,6 +7,22 @@ import { saveWeeklyTrack } from "./actions";
 const BUCKET = "weekly-track";
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB — plenty for an mp3
 
+// Accepts "@handle", "handle", or a full profile URL and normalizes to a
+// clean https://instagram.com/handle link — same handles-not-URLs pattern
+// used for every other Instagram field on the site so far.
+function normalizeInstagram(input: string): string | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  let handle = trimmed;
+  const igMatch = trimmed.match(/instagram\.com\/([^/?#]+)/i);
+  if (igMatch) {
+    handle = igMatch[1];
+  }
+  handle = handle.replace(/^@/, "").replace(/\/+$/, "");
+  if (!handle) return null;
+  return `https://instagram.com/${handle}`;
+}
+
 export default function TrackUploadForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -20,6 +36,9 @@ export default function TrackUploadForm() {
     const file = formData.get("file") as File | null;
     const trackTitle = ((formData.get("track_title") as string) || "").trim();
     const artistName = ((formData.get("artist_name") as string) || "").trim();
+    const artistInstagramUrl = normalizeInstagram(
+      (formData.get("artist_instagram") as string) || ""
+    );
 
     if (!file || file.size === 0) return setError("Choose an audio file.");
     if (!trackTitle) return setError("Track title is required.");
@@ -49,6 +68,7 @@ export default function TrackUploadForm() {
         storagePath: path,
         trackTitle,
         artistName,
+        artistInstagramUrl,
       });
       if (result.error) {
         await supabase.storage.from(BUCKET).remove([path]);
@@ -101,6 +121,15 @@ export default function TrackUploadForm() {
           name="artist_name"
           required
           placeholder="e.g. JAYMUTT"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
+        />
+      </label>
+      <label className="block text-sm">
+        <span className="text-steel-light">Artist Instagram (optional)</span>
+        <input
+          type="text"
+          name="artist_instagram"
+          placeholder="@handle or full profile link"
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>

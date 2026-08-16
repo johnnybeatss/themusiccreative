@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Pause, Play, X } from "lucide-react";
+import { Instagram, Pause, Play, X } from "lucide-react";
 
 const INSTAGRAM_DM_URL = "https://instagram.com/themusiccreativefiu";
 
@@ -10,6 +10,7 @@ export type FeaturedTrack = {
   track_title: string;
   artist_name: string;
   audio_url: string;
+  artist_instagram_url?: string | null;
 };
 
 // Fixed to the bottom of every page. Deliberately loud/animated — this is
@@ -24,6 +25,44 @@ export default function FeaturedTrackBar({
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+
+  // Browsers block unmuted autoplay until the visitor has interacted with
+  // the page (or the site has built up enough "media engagement" from
+  // repeat visits) — no website can force sound on load, that's a
+  // deliberate platform rule, not something to work around. So: try to
+  // play immediately, and if that's blocked, start on the very first
+  // click/tap/keypress anywhere on the page instead of waiting for someone
+  // to find the play button.
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+
+    // Best case: this just works (repeat visitors, or browsers with a high
+    // enough media-engagement score for the site).
+    el.play().catch(() => {});
+
+    // Fallback: start on the visitor's very first interaction anywhere on
+    // the page, rather than waiting for someone to notice the play button.
+    // Harmless to also fire this if autoplay above already succeeded —
+    // calling play() on already-playing audio is a no-op.
+    const startOnInteraction = () => {
+      el.play().catch(() => {});
+    };
+    const events: (keyof WindowEventMap)[] = [
+      "pointerdown",
+      "keydown",
+      "touchstart",
+    ];
+    events.forEach((evt) =>
+      window.addEventListener(evt, startOnInteraction, { once: true })
+    );
+    return () => {
+      events.forEach((evt) =>
+        window.removeEventListener(evt, startOnInteraction)
+      );
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track.audio_url]);
 
   if (dismissed) return null;
 
@@ -93,6 +132,17 @@ export default function FeaturedTrackBar({
               <span className="font-normal text-steel-light">
                 — {track.artist_name}
               </span>
+              {track.artist_instagram_url && (
+                <a
+                  href={track.artist_instagram_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${track.artist_name} on Instagram`}
+                  className="ml-1.5 inline-block align-middle text-steel-light transition-colors hover:text-gold"
+                >
+                  <Instagram size={13} className="inline" />
+                </a>
+              )}
             </p>
           </div>
 
@@ -117,7 +167,7 @@ export default function FeaturedTrackBar({
           <audio
             ref={audioRef}
             src={track.audio_url}
-            preload="none"
+            preload="auto"
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}
