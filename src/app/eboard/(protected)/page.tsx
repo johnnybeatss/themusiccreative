@@ -7,6 +7,8 @@ import {
   PartyPopper,
   MessageSquare,
   Briefcase,
+  UserPlus,
+  Disc3,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getMyRole, canManage } from "@/lib/supabase/role";
@@ -24,6 +26,18 @@ const sections = [
     label: "Opportunities",
     description: "Add, edit, and remove what shows on the public Opportunities page.",
     icon: Briefcase,
+  },
+  {
+    href: "/eboard/join-submissions",
+    label: "Join Submissions",
+    description: "Responses from the public Join form — export to Excel.",
+    icon: UserPlus,
+  },
+  {
+    href: "/eboard/dj-inquiries",
+    label: "DJ Inquiries",
+    description: "Event DJ booking requests — export to Excel.",
+    icon: Disc3,
   },
   {
     href: "/eboard/feedback",
@@ -62,10 +76,16 @@ export default async function EboardHomePage() {
     getMyRole(),
     getUnreadFeedbackCount(),
   ]);
-  // Feedback responses are owner/admin-only — see
-  // supabase/migrations/0011_feedback_admin_only.sql.
+  // Feedback, Join Submissions, and DJ Inquiries are owner/admin-only —
+  // see supabase/migrations/0011_feedback_admin_only.sql and
+  // 0014_join_and_dj_inquiries.sql.
+  const OWNER_ADMIN_ONLY = [
+    "/eboard/feedback",
+    "/eboard/join-submissions",
+    "/eboard/dj-inquiries",
+  ];
   const visibleSections = sections.filter(
-    (s) => s.href !== "/eboard/feedback" || canManage(role)
+    (s) => !OWNER_ADMIN_ONLY.includes(s.href) || canManage(role)
   );
 
   return (

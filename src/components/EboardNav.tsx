@@ -10,6 +10,8 @@ import {
   Video,
   Music,
   Briefcase,
+  UserPlus,
+  Disc3,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
@@ -18,6 +20,12 @@ const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/eboard/events", label: "Events", icon: PartyPopper },
   { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
+  {
+    href: "/eboard/join-submissions",
+    label: "Join Submissions",
+    icon: UserPlus,
+  },
+  { href: "/eboard/dj-inquiries", label: "DJ Inquiries", icon: Disc3 },
   { href: "/eboard/videos", label: "Feed Videos", icon: Video },
   { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },
@@ -43,11 +51,18 @@ export default function EboardNav({
   profile: MyProfile | null;
   unreadFeedbackCount?: number;
 }) {
-  // Feedback responses are owner/admin-only (see
-  // supabase/migrations/0011_feedback_admin_only.sql) — no point showing
-  // eboard-tier members a link that just RLS-blocks them once clicked.
+  // Feedback, Join Submissions, and DJ Inquiries are all owner/admin-only
+  // (see supabase/migrations/0011_feedback_admin_only.sql and
+  // 0014_join_and_dj_inquiries.sql) — no point showing eboard-tier members
+  // a link that just RLS-blocks them once clicked.
+  const OWNER_ADMIN_ONLY = [
+    "/eboard/feedback",
+    "/eboard/join-submissions",
+    "/eboard/dj-inquiries",
+  ];
   const visibleLinks = links.filter(
-    (l) => l.href !== "/eboard/feedback" || canManage(profile?.role ?? null)
+    (l) =>
+      !OWNER_ADMIN_ONLY.includes(l.href) || canManage(profile?.role ?? null)
   );
 
   return (

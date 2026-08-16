@@ -34,10 +34,13 @@ async function getOpportunities(): Promise<Opportunity[]> {
   const cutoff = new Date(
     Date.now() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000
   ).toISOString();
+  // Pinned listings (e.g. "EVENT DJ INQUIRIES") skip the staleness filter
+  // entirely — see supabase/migrations/0014_join_and_dj_inquiries.sql.
   const { data, error } = await supabase
     .from("opportunities")
     .select("*")
-    .gte("created_at", cutoff)
+    .or(`is_pinned.eq.true,created_at.gte.${cutoff}`)
+    .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false });
   if (error) {
     console.error("Failed to load opportunities:", error.message);
