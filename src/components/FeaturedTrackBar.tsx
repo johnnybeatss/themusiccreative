@@ -242,7 +242,15 @@ export default function FeaturedTrackBar({
           <audio
             ref={audioRef}
             src={track.audio_url}
-            preload="auto"
+            // "none" instead of "auto" — this bar is on every page, so
+            // "auto" meant every single page load downloaded the full
+            // track immediately, even for visitors whose browser blocks
+            // autoplay and never end up playing it. That was eating
+            // Supabase's Cached Egress quota fast. "none" only fetches
+            // once .play() is actually called (autoplay attempt or manual
+            // click) — same experience for anyone who does hear it, just
+            // no more downloading for nothing.
+            preload="none"
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}
