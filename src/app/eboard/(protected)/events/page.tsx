@@ -10,7 +10,10 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  description: string | null;
+  guest_instagram_url: string | null;
   image_url: string | null;
+  photo_urls: string[];
 };
 
 async function getEvents(): Promise<Event[]> {

@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
-import { uploadContentImage } from "@/lib/supabase/uploadContentImage";
+import {
+  uploadContentImage,
+  uploadContentImages,
+} from "@/lib/supabase/uploadContentImage";
 
 export type EventFormState = { error: string | null };
 
@@ -71,6 +74,10 @@ function parseEventForm(formData: FormData) {
   const location = ((formData.get("location") as string) || "").trim() || null;
   const type = formData.get("type") as string;
   const status = formData.get("status") as string;
+  const description =
+    ((formData.get("description") as string) || "").trim() || null;
+  const guestInstagramUrl =
+    ((formData.get("guest_instagram_url") as string) || "").trim() || null;
 
   if (!name || !rawDate) {
     return { error: "Name and date are required.", values: null };
@@ -86,7 +93,15 @@ function parseEventForm(formData: FormData) {
 
   return {
     error: null,
-    values: { name, date, location, type, status },
+    values: {
+      name,
+      date,
+      location,
+      type,
+      status,
+      description,
+      guest_instagram_url: guestInstagramUrl,
+    },
   } as const;
 }
 
@@ -115,9 +130,18 @@ export async function createEvent(
   );
   if (imageError) return { error: imageError };
 
+  const newPhotos = (formData.getAll("photos") as File[]).filter(
+    (f) => f && f.size > 0
+  );
+  const { urls: photoUrls, error: photosError } = await uploadContentImages(
+    supabase,
+    newPhotos
+  );
+  if (photosError) return { error: photosError };
+
   const { error: insertError } = await supabase
     .from("events")
-    .insert({ ...values, image_url: imageUrl });
+    .insert({ ...values, image_url: imageUrl, photo_urls: photoUrls });
   if (insertError) return { error: insertError.message };
 
   revalidatePath("/eboard/events");
@@ -155,9 +179,27 @@ export async function updateEvent(
   );
   if (imageError) return { error: imageError };
 
+  // Gallery photos: the form renders one "keep_photo" checkbox (checked by
+  // default) per existing photo, so whatever's still checked on submit is
+  // the surviving set — merge that with any newly uploaded files.
+  const keptPhotos = formData.getAll("keep_photo") as string[];
+  const newPhotos = (formData.getAll("photos") as File[]).filter(
+    (f) => f && f.size > 0
+  );
+  const { urls: newPhotoUrls, error: photosError } = await uploadContentImages(
+    supabase,
+    newPhotos
+  );
+  if (photosError) return { error: photosError };
+  const photoUrls = [...keptPhotos, ...newPhotoUrls];
+
   const { error: updateError } = await supabase
     .from("events")
-    .update(imageUrl ? { ...values, image_url: imageUrl } : values)
+    .update({
+      ...values,
+      photo_urls: photoUrls,
+      ...(imageUrl ? { image_url: imageUrl } : {}),
+    })
     .eq("id", id);
   if (updateError) return { error: updateError.message };
 

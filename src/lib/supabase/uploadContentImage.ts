@@ -36,3 +36,21 @@ export async function uploadContentImage(
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
   return { url: data.publicUrl, error: null };
 }
+
+// Same rules as uploadContentImage, applied to a batch — used for the
+// Events detail page's extra photo gallery, where more than one file can
+// be added at once. Stops and reports on the first bad file rather than
+// silently skipping it.
+export async function uploadContentImages(
+  supabase: Client,
+  files: File[]
+): Promise<{ urls: string[]; error: string | null }> {
+  const urls: string[] = [];
+  for (const file of files) {
+    if (!file || file.size === 0) continue;
+    const { url, error } = await uploadContentImage(supabase, file);
+    if (error) return { urls: [], error };
+    if (url) urls.push(url);
+  }
+  return { urls, error: null };
+}

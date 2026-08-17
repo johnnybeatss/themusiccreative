@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import StatusPill from "@/components/StatusPill";
 import EventForm from "./EventForm";
 import { deleteEvent } from "./actions";
@@ -12,7 +13,10 @@ type Event = {
   location: string | null;
   type: string;
   status: string;
+  description: string | null;
+  guest_instagram_url: string | null;
   image_url: string | null;
+  photo_urls: string[];
 };
 
 export default function EventListItem({
@@ -52,6 +56,12 @@ export default function EventListItem({
       </p>
       {editable && (
         <div className="mt-3 flex items-center gap-4">
+          <Link
+            href={`/eboard/events/${event.id}/rsvps`}
+            className="text-xs text-steel-light hover:text-gold"
+          >
+            View RSVPs
+          </Link>
           <button
             type="button"
             onClick={() => setEditing(true)}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StatusPill from "@/components/StatusPill";
@@ -48,6 +49,7 @@ function buildEventSchema(events: Event[]) {
     startDate: new Date(e.date).toISOString(),
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    url: `https://themusiccreative.org/events/${e.id}`,
     location: e.location
       ? { "@type": "Place", name: e.location }
       : undefined,
@@ -85,7 +87,10 @@ export default async function EventsPage() {
         <div className="mt-6 space-y-4">
           {events.map((e, i) => (
             <Reveal key={e.id} delay={i * 0.05}>
-              <div className="overflow-hidden rounded-xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold">
+              <Link
+                href={`/events/${e.id}`}
+                className="block overflow-hidden rounded-xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold"
+              >
                 {e.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -104,7 +109,7 @@ export default async function EventsPage() {
                     {e.location ? ` · ${e.location}` : ""} · {e.type}
                   </p>
                 </div>
-              </div>
+              </Link>
             </Reveal>
           ))}
         </div>
