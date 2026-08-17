@@ -37,11 +37,6 @@ export default async function TeamPage() {
         MEET THE E-BOARD
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <p className="mt-4 text-sm text-steel-light">
-        Full roster still being finalized — fills in as members are added
-        (Phase 2/6).
-      </p>
-
       {members.length === 0 ? (
         <p className="mt-6 text-steel-light">
           No E-Board members added yet — fills in as members are added from

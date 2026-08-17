@@ -64,7 +64,7 @@ const sections = [
   {
     href: "/eboard/resources",
     label: "Drive Resources",
-    description: "Team deck, intake form, and shared files.",
+    description: "Team deck and shared files, all in one Drive folder.",
     icon: FolderOpen,
   },
   {
