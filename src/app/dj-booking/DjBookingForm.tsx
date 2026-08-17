@@ -76,28 +76,13 @@ export default function DjBookingForm() {
           <input type="tel" name="phone" className={inputClass} />
         </label>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className={labelClass}>
-          <span className="text-steel-light">Event date (optional)</span>
-          <input type="date" name="event_date" className={inputClass} />
-        </label>
-        <label className={labelClass}>
-          <span className="text-steel-light">Expected guest count</span>
-          <input
-            type="text"
-            name="guest_count"
-            placeholder="e.g. ~150"
-            className={inputClass}
-          />
-        </label>
-      </div>
       <label className={labelClass}>
-        <span className="text-steel-light">Event type / venue</span>
+        <span className="text-steel-light">What kind of events do you DJ?</span>
         <input
           type="text"
           name="event_type"
           required
-          placeholder="e.g. Sorority formal at The Wharf"
+          placeholder="e.g. House parties, formals, club nights"
           className={inputClass}
         />
       </label>
