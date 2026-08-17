@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createEvent, updateEvent, type EventFormState } from "./actions";
+import { isoToZonedDateTimeLocal } from "@/lib/eventTimezone";
 
 const EVENT_TYPES = ["Workshop", "Showcase", "Mixer", "Other"] as const;
 const EVENT_STATUSES = ["Not started", "In progress", "Done"] as const;
@@ -20,16 +21,6 @@ type Event = {
 };
 
 const initialState: EventFormState = { error: null };
-
-// datetime-local inputs need "YYYY-MM-DDTHH:mm" with no timezone suffix —
-// build it from the stored timestamp in local time.
-function toDateTimeLocal(iso: string) {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
-  )}:${pad(d.getMinutes())}`;
-}
 
 // Same form handles both "add a new event" (no `event` prop, posts to
 // createEvent) and "edit an existing one" (posts to updateEvent) — keeps
@@ -82,12 +73,14 @@ export default function EventForm({
       </label>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block text-sm">
-          <span className="text-steel-light">Date &amp; time</span>
+          <span className="text-steel-light">Date &amp; time (Eastern)</span>
           <input
             type="datetime-local"
             name="date"
             required
-            defaultValue={event ? toDateTimeLocal(event.date) : undefined}
+            defaultValue={
+              event ? isoToZonedDateTimeLocal(event.date) : undefined
+            }
             className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
           />
         </label>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StatusPill from "@/components/StatusPill";
+import { formatEventDateTime } from "@/lib/eventTimezone";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -105,7 +106,7 @@ export default async function EventsPage() {
                     <StatusPill status={e.status} />
                   </div>
                   <p className="mt-1 text-sm text-steel-light">
-                    {new Date(e.date).toLocaleString()}
+                    {formatEventDateTime(e.date)}
                     {e.location ? ` · ${e.location}` : ""} · {e.type}
                   </p>
                 </div>

@@ -4,6 +4,7 @@ import { Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import StatusPill from "@/components/StatusPill";
 import RsvpForm from "./RsvpForm";
+import { formatEventDateTime } from "@/lib/eventTimezone";
 
 type Event = {
   id: string;
@@ -101,7 +102,7 @@ export default async function EventDetailPage({
       <div className="mt-2 h-1 w-16 bg-gold" />
 
       <p className="mt-4 text-sm text-steel-light">
-        {new Date(event.date).toLocaleString()}
+        {formatEventDateTime(event.date)}
         {event.location ? ` · ${event.location}` : ""} · {event.type}
       </p>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import StatusPill from "@/components/StatusPill";
 import EventForm from "./EventForm";
 import { deleteEvent } from "./actions";
+import { formatEventDateTime } from "@/lib/eventTimezone";
 
 type Event = {
   id: string;
@@ -51,7 +52,7 @@ export default function EventListItem({
         </div>
       </div>
       <p className="mt-1 text-sm text-steel-light">
-        {new Date(event.date).toLocaleString()}
+        {formatEventDateTime(event.date)}
         {event.location ? ` · ${event.location}` : ""} · {event.type}
       </p>
       {editable && (
