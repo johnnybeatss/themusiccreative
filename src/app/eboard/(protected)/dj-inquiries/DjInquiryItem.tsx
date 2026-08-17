@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { markDjInquiryRead } from "./actions";
+import DeleteInquiryButton from "./DeleteInquiryButton";
 
 export type DjInquiry = {
   id: string;
@@ -80,6 +81,9 @@ export default function DjInquiryItem({ inquiry: inq }: { inquiry: DjInquiry }) 
           {inq.details}
         </p>
       )}
+      <div className="mt-3">
+        <DeleteInquiryButton id={inq.id} name={inq.requester_name} />
+      </div>
     </li>
   );
 }

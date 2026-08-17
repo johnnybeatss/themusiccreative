@@ -95,15 +95,6 @@ export default function DjBookingForm() {
         />
       </label>
       <label className={labelClass}>
-        <span className="text-steel-light">Budget range (optional)</span>
-        <input
-          type="text"
-          name="budget_range"
-          placeholder="e.g. $300-500"
-          className={inputClass}
-        />
-      </label>
-      <label className={labelClass}>
         <span className="text-steel-light">
           Anything else we should know? (optional)
         </span>

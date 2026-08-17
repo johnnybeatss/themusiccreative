@@ -26,3 +26,21 @@ export async function markDjInquiryRead(id: string) {
   // tile), both nested under the (protected) layout.
   revalidatePath("/eboard", "layout");
 }
+
+// RLS on dj_inquiries also restricts this to owner/admin (0018) — this
+// check just gives a clean no-op instead of relying solely on the
+// database to reject it.
+export async function deleteDjInquiry(formData: FormData) {
+  if (!canManage(await getMyRole())) return;
+
+  const id = formData.get("id") as string;
+  if (!id) return;
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("dj_inquiries").delete().eq("id", id);
+  if (error) {
+    console.error("Failed to delete DJ inquiry:", error.message);
+  }
+
+  revalidatePath("/eboard/dj-inquiries");
+}
