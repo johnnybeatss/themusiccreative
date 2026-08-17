@@ -1,9 +1,13 @@
-// All shared docs (Team Deck, Member Intake Form) now live in one shared
+// All shared docs (currently just the Team Deck) live in one shared
 // "Music Creative" Drive folder, embedded below via Google's folder
 // preview widget — undocumented by Google but stable for over a decade;
 // if it ever breaks, the "Open in Google Drive" link is the fallback.
 // The folder needs "Anyone with the link — Viewer" sharing for the embed
 // to load, same as the individual files needed before.
+//
+// The old Member Intake Form (Google Forms) has been trashed — /join is
+// a native on-site form now, so it was no longer needed. Submissions go
+// to Supabase and show up at /eboard/join-submissions instead.
 //
 // Member Intake Responses stays link-only and OUT of that folder on
 // purpose, per the club's standing rule: that spreadsheet contains PII
@@ -38,8 +42,8 @@ export default function ResourcesPage() {
           </a>
         </div>
         <p className="mt-2 text-sm text-steel-light">
-          Team deck, intake form, and anything else shared with the club —
-          all in one place.
+          Team deck and anything else shared with the club — all in one
+          place.
         </p>
         <div className="mt-3 overflow-hidden rounded-xl border border-navy-800">
           <iframe
