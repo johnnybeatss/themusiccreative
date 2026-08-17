@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
+import DeleteSubmissionButton from "./DeleteSubmissionButton";
 
 type JoinSubmission = {
   id: string;
@@ -122,6 +123,9 @@ export default async function JoinSubmissionsPage() {
                 Collab: {s.wants_collab} · Perform: {s.wants_to_perform} ·
                 Signed: {s.signed_to_label}
               </p>
+              <div className="mt-3">
+                <DeleteSubmissionButton id={s.id} name={s.full_name} />
+              </div>
             </li>
           ))}
         </ul>
