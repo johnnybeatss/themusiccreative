@@ -9,15 +9,15 @@
 // a native on-site form now, so it was no longer needed. Submissions go
 // to Supabase and show up at /eboard/join-submissions instead.
 //
-// Member Intake Responses stays link-only and OUT of that folder on
-// purpose, per the club's standing rule: that spreadsheet contains PII
+// The old Member Intake Responses sheet (historical data from before the
+// native /join form) has been moved to a SEPARATE, non-embedded Drive
+// folder — deliberately not this one, and no longer linked from this page
+// at all. Per the club's standing rule, that spreadsheet contains PII
 // (names, phone numbers, FIU student IDs, emails) and must never be
-// fetched or displayed here — not even inside an iframe on this
-// E-Board-only page. Link out to it only.
+// fetched or displayed here, not even inside an iframe. Find it directly
+// in Drive if you need it — it isn't referenced from the site anywhere.
 
 const RESOURCES_FOLDER_ID = "1PhjT86mEep5Vyt87zcP6V3RpaozYwupS";
-const INTAKE_RESPONSES_URL =
-  "https://docs.google.com/spreadsheets/d/1JZhRDzPwjDsvWDeszr2NpG7vIK-bTPaw8Y8prLQggXg/edit";
 
 export default function ResourcesPage() {
   return (
@@ -54,24 +54,6 @@ export default function ResourcesPage() {
             Loading…
           </iframe>
         </div>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="font-display text-lg tracking-wide text-ivory">
-          MEMBER INTAKE RESPONSES
-        </h2>
-        <p className="mt-2 text-sm text-steel-light">
-          Contains member PII (names, phone numbers, FIU student IDs,
-          emails) — link only, never embedded or displayed on the site.
-        </p>
-        <a
-          href={INTAKE_RESPONSES_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 inline-block text-sm text-gold underline"
-        >
-          Open in Google Sheets ↗
-        </a>
       </section>
     </div>
   );
