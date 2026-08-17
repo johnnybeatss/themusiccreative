@@ -1,18 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
-
-type DjInquiry = {
-  id: string;
-  requester_name: string;
-  email: string;
-  phone: string | null;
-  event_date: string | null;
-  event_type: string;
-  guest_count: string | null;
-  budget_range: string | null;
-  details: string | null;
-  created_at: string;
-};
+import DjInquiryItem, { type DjInquiry } from "./DjInquiryItem";
 
 async function getInquiries(): Promise<DjInquiry[]> {
   const supabase = await createClient();
@@ -67,7 +55,8 @@ export default async function DjInquiriesPage() {
       </div>
       <p className="mt-4 text-sm text-steel-light">
         DJs who signed up through the public /dj-booking page to be
-        considered for future club events.
+        considered for future club events. New ones are marked read as you
+        scroll past them.
       </p>
 
       {inquiries.length === 0 ? (
@@ -75,36 +64,7 @@ export default async function DjInquiriesPage() {
       ) : (
         <ul className="mt-6 space-y-4">
           {inquiries.map((inq) => (
-            <li
-              key={inq.id}
-              className="rounded-xl border border-navy-800 bg-navy-900 p-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <p className="font-semibold text-ivory">
-                  {inq.requester_name}
-                </p>
-                <p className="text-xs text-steel-light">
-                  {new Date(inq.created_at).toLocaleString()}
-                </p>
-              </div>
-              <p className="mt-1 text-sm text-steel-light">
-                {inq.email}
-                {inq.phone ? ` · ${inq.phone}` : ""}
-              </p>
-              <p className="mt-2 text-sm text-ivory">{inq.event_type}</p>
-              <p className="mt-1 text-sm text-steel-light">
-                {inq.event_date
-                  ? new Date(inq.event_date).toLocaleDateString()
-                  : "Date TBD"}
-                {inq.guest_count ? ` · ~${inq.guest_count} guests` : ""}
-                {inq.budget_range ? ` · Budget: ${inq.budget_range}` : ""}
-              </p>
-              {inq.details && (
-                <p className="mt-2 whitespace-pre-wrap text-sm text-steel-light">
-                  {inq.details}
-                </p>
-              )}
-            </li>
+            <DjInquiryItem key={inq.id} inquiry={inq} />
           ))}
         </ul>
       )}

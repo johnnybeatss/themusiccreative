@@ -2,6 +2,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getMyProfile } from "@/lib/supabase/role";
 import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
+import {
+  getUnreadJoinSubmissionCount,
+  getUnreadDjInquiryCount,
+} from "@/lib/supabase/unreadCounts";
 import EboardNav from "@/components/EboardNav";
 import SessionGuard from "@/components/SessionGuard";
 
@@ -41,15 +45,23 @@ export default async function EboardProtectedLayout({
     redirect("/eboard/login");
   }
 
-  const [profile, unreadFeedbackCount] = await Promise.all([
-    getMyProfile(),
-    getUnreadFeedbackCount(),
-  ]);
+  const [profile, unreadFeedbackCount, unreadJoinSubmissionCount, unreadDjInquiryCount] =
+    await Promise.all([
+      getMyProfile(),
+      getUnreadFeedbackCount(),
+      getUnreadJoinSubmissionCount(),
+      getUnreadDjInquiryCount(),
+    ]);
 
   return (
     <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
       <SessionGuard />
-      <EboardNav profile={profile} unreadFeedbackCount={unreadFeedbackCount} />
+      <EboardNav
+        profile={profile}
+        unreadFeedbackCount={unreadFeedbackCount}
+        unreadJoinSubmissionCount={unreadJoinSubmissionCount}
+        unreadDjInquiryCount={unreadDjInquiryCount}
+      />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   );

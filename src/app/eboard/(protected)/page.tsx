@@ -13,6 +13,10 @@ import {
 import Reveal from "@/components/Reveal";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
+import {
+  getUnreadJoinSubmissionCount,
+  getUnreadDjInquiryCount,
+} from "@/lib/supabase/unreadCounts";
 
 const sections = [
   {
@@ -72,10 +76,13 @@ const sections = [
 ];
 
 export default async function EboardHomePage() {
-  const [role, unreadFeedbackCount] = await Promise.all([
-    getMyRole(),
-    getUnreadFeedbackCount(),
-  ]);
+  const [role, unreadFeedbackCount, unreadJoinSubmissionCount, unreadDjInquiryCount] =
+    await Promise.all([
+      getMyRole(),
+      getUnreadFeedbackCount(),
+      getUnreadJoinSubmissionCount(),
+      getUnreadDjInquiryCount(),
+    ]);
   // Feedback, Join Submissions, and DJ Inquiries are owner/admin-only —
   // see supabase/migrations/0011_feedback_admin_only.sql and
   // 0014_join_and_dj_inquiries.sql.
@@ -87,6 +94,12 @@ export default async function EboardHomePage() {
   const visibleSections = sections.filter(
     (s) => !OWNER_ADMIN_ONLY.includes(s.href) || canManage(role)
   );
+  // Same shared-team-inbox unread badge as the sidebar (0017).
+  const UNREAD_COUNTS: Record<string, number> = {
+    "/eboard/feedback": unreadFeedbackCount,
+    "/eboard/join-submissions": unreadJoinSubmissionCount,
+    "/eboard/dj-inquiries": unreadDjInquiryCount,
+  };
 
   return (
     <div>
@@ -104,9 +117,9 @@ export default async function EboardHomePage() {
               href={s.href}
               className="group relative flex h-full items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
             >
-              {s.href === "/eboard/feedback" && unreadFeedbackCount > 0 && (
+              {(UNREAD_COUNTS[s.href] ?? 0) > 0 && (
                 <span className="absolute right-4 top-4 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
-                  {unreadFeedbackCount}
+                  {UNREAD_COUNTS[s.href]}
                 </span>
               )}
               <s.icon

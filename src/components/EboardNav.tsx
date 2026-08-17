@@ -47,10 +47,21 @@ const ROLE_LABELS: Record<MyProfile["role"], string> = {
 export default function EboardNav({
   profile,
   unreadFeedbackCount = 0,
+  unreadJoinSubmissionCount = 0,
+  unreadDjInquiryCount = 0,
 }: {
   profile: MyProfile | null;
   unreadFeedbackCount?: number;
+  unreadJoinSubmissionCount?: number;
+  unreadDjInquiryCount?: number;
 }) {
+  // Same shared-team-inbox unread badge as Feedback, now covering all
+  // three owner/admin-only inboxes (see supabase/migrations/0017).
+  const UNREAD_COUNTS: Record<string, number> = {
+    "/eboard/feedback": unreadFeedbackCount,
+    "/eboard/join-submissions": unreadJoinSubmissionCount,
+    "/eboard/dj-inquiries": unreadDjInquiryCount,
+  };
   // Feedback, Join Submissions, and DJ Inquiries are all owner/admin-only
   // (see supabase/migrations/0011_feedback_admin_only.sql and
   // 0014_join_and_dj_inquiries.sql) — no point showing eboard-tier members
@@ -84,9 +95,9 @@ export default function EboardNav({
             >
               <l.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
               <span className="flex-1">{l.label}</span>
-              {l.href === "/eboard/feedback" && unreadFeedbackCount > 0 && (
+              {(UNREAD_COUNTS[l.href] ?? 0) > 0 && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
-                  {unreadFeedbackCount}
+                  {UNREAD_COUNTS[l.href]}
                 </span>
               )}
             </Link>
