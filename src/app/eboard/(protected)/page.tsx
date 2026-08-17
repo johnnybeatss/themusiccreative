@@ -52,7 +52,7 @@ const sections = [
   {
     href: "/eboard/reports",
     label: "Weekly Reports",
-    description: "Submit and review weekly E-Board updates.",
+    description: "This week's events, to-dos, content ideas, and notes.",
     icon: FileText,
   },
   {
