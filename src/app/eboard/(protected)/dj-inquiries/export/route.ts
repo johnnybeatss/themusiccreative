@@ -27,6 +27,8 @@ export async function GET() {
     "Event Type / Venue": inq.event_type,
     "Guest Count": inq.guest_count ?? "",
     "Budget Range": inq.budget_range ?? "",
+    "Portfolio Link": inq.portfolio_link ?? "",
+    "Experience": inq.experience ?? "",
     "Details": inq.details ?? "",
   }));
 

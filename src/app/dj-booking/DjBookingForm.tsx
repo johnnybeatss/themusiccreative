@@ -3,6 +3,13 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitDjBooking, type DjBookingFormState } from "./actions";
 
+const EXPERIENCE_OPTIONS = [
+  "Just starting",
+  "1-2 years",
+  "3-5 years",
+  "5+ years",
+];
+
 const initialState: DjBookingFormState = { error: null };
 const inputClass =
   "mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none";
@@ -93,6 +100,36 @@ export default function DjBookingForm() {
           placeholder="e.g. Sorority formal at The Wharf"
           className={inputClass}
         />
+      </label>
+      <label className={labelClass}>
+        <span className="text-steel-light">
+          Link to your page/work (Instagram, SoundCloud, Mixcloud, etc.)
+        </span>
+        <input
+          type="text"
+          name="portfolio_link"
+          required
+          placeholder="e.g. instagram.com/yourhandle"
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
+        <span className="text-steel-light">How long have you been DJing?</span>
+        <select
+          name="experience"
+          required
+          defaultValue=""
+          className={inputClass}
+        >
+          <option value="" disabled>
+            Select one
+          </option>
+          {EXPERIENCE_OPTIONS.map((e) => (
+            <option key={e} value={e}>
+              {e}
+            </option>
+          ))}
+        </select>
       </label>
       <label className={labelClass}>
         <span className="text-steel-light">

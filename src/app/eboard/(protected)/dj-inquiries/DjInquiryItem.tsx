@@ -13,6 +13,8 @@ export type DjInquiry = {
   event_type: string;
   guest_count: string | null;
   budget_range: string | null;
+  portfolio_link: string | null;
+  experience: string | null;
   details: string | null;
   created_at: string;
   read_at: string | null;
@@ -76,6 +78,25 @@ export default function DjInquiryItem({ inquiry: inq }: { inquiry: DjInquiry }) 
         {inq.guest_count ? ` · ~${inq.guest_count} guests` : ""}
         {inq.budget_range ? ` · Budget: ${inq.budget_range}` : ""}
       </p>
+      {inq.experience && (
+        <p className="mt-1 text-sm text-steel-light">
+          Experience: {inq.experience}
+        </p>
+      )}
+      {inq.portfolio_link && (
+        <a
+          href={
+            inq.portfolio_link.startsWith("http")
+              ? inq.portfolio_link
+              : `https://${inq.portfolio_link}`
+          }
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1 inline-block text-sm text-gold underline"
+        >
+          {inq.portfolio_link}
+        </a>
+      )}
       {inq.details && (
         <p className="mt-2 whitespace-pre-wrap text-sm text-steel-light">
           {inq.details}

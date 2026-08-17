@@ -22,11 +22,20 @@ export async function submitDjBooking(
   const eventType = req(formData, "event_type");
   const guestCount = req(formData, "guest_count") || null;
   const budgetRange = req(formData, "budget_range") || null;
+  const portfolioLink = req(formData, "portfolio_link");
+  const experience = req(formData, "experience");
   const details = req(formData, "details") || null;
 
-  if (!requesterName || !email || !eventType) {
+  if (
+    !requesterName ||
+    !email ||
+    !eventType ||
+    !portfolioLink ||
+    !experience
+  ) {
     return {
-      error: "Name, email, and event type are required.",
+      error:
+        "Name, email, event type, portfolio link, and experience are required.",
     };
   }
 
@@ -39,6 +48,8 @@ export async function submitDjBooking(
     event_type: eventType,
     guest_count: guestCount,
     budget_range: budgetRange,
+    portfolio_link: portfolioLink,
+    experience,
     details,
   });
 
