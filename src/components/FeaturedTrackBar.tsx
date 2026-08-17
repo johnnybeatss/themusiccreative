@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Instagram, Pause, Play, X } from "lucide-react";
+import { Instagram, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+
+const VOLUME_STORAGE_KEY = "tmc-track-volume";
 
 const INSTAGRAM_DM_URL = "https://instagram.com/themusiccreativefiu";
 
@@ -33,6 +35,29 @@ export default function FeaturedTrackBar({
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const prevVolumeRef = useRef(1);
+
+  // Load a saved volume once on mount (client-only — localStorage doesn't
+  // exist during server rendering). Defaults to full volume for anyone
+  // visiting for the first time.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(VOLUME_STORAGE_KEY);
+      if (saved !== null) setVolume(Number(saved));
+    } catch {}
+  }, []);
+
+  // Keep the <audio> element's actual volume in sync, and persist changes
+  // so the setting sticks across page loads.
+  useEffect(() => {
+    const el = audioRef.current;
+    if (el) el.volume = volume;
+    if (volume > 0) prevVolumeRef.current = volume;
+    try {
+      localStorage.setItem(VOLUME_STORAGE_KEY, String(volume));
+    } catch {}
+  }, [volume]);
 
   // Browsers block unmuted autoplay until the visitor has interacted with
   // the page (or the site has built up enough "media engagement" from
@@ -99,6 +124,10 @@ export default function FeaturedTrackBar({
       userPaused = false;
       hasAutoStarted = true;
     }
+  }
+
+  function toggleMute() {
+    setVolume((v) => (v > 0 ? 0 : prevVolumeRef.current || 1));
   }
 
   function onTimeUpdate() {
@@ -169,6 +198,27 @@ export default function FeaturedTrackBar({
                 </a>
               )}
             </p>
+          </div>
+
+          <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={volume > 0 ? "Mute" : "Unmute"}
+              className="text-steel-light transition-colors hover:text-gold"
+            >
+              {volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              aria-label="Volume"
+              className="h-1 w-20 cursor-pointer accent-gold"
+            />
           </div>
 
           <Link
