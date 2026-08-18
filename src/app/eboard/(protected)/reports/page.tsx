@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 import { formatWeekRange } from "@/lib/weekReports";
 import { getItems, getNotes, getUpcomingEvents, getPastReports } from "./data";
@@ -8,7 +8,7 @@ import ItemChecklist from "./ItemChecklist";
 import NotesSection from "./NotesSection";
 
 export default async function ReportsPage() {
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
   const editable = canManage(role);
   const report = await getOrCreateCurrentReport();
 

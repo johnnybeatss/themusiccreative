@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import TeamApplicationItem, {
   type TeamApplication,
 } from "./TeamApplicationItem";
@@ -37,7 +37,7 @@ async function getApplications(): Promise<TeamApplication[]> {
 // already blocks eboard-tier reads at the database level (see
 // supabase/migrations/0021_team_applications.sql).
 export default async function TeamApplicationsPage() {
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
 
   if (!canManage(role)) {
     return (

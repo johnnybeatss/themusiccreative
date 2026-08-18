@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import VideoUploadForm from "./VideoUploadForm";
 import VideoListItem from "./VideoListItem";
 
@@ -35,7 +35,7 @@ async function getFeedVideos(): Promise<
 // Only place videos get added/removed — the homepage wheel just reads this
 // same table and is read-only by RLS (public SELECT, no anonymous write).
 export default async function VideosAdminPage() {
-  const [videos, role] = await Promise.all([getFeedVideos(), getMyRole()]);
+  const [videos, role] = await Promise.all([getFeedVideos(), getEffectiveRole()]);
   const editable = canManage(role);
 
   return (

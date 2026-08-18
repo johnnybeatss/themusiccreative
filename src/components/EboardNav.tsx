@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
+import { enterDemoView, exitDemoView } from "@/app/eboard/(protected)/demoViewActions";
 
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
@@ -55,6 +56,8 @@ const ROLE_LABELS: Record<MyProfile["role"], string> = {
 // (see layout.tsx for the flex-col/flex-row switch).
 export default function EboardNav({
   profile,
+  isDemoActive = false,
+  canToggleDemo = false,
   unreadFeedbackCount = 0,
   unreadJoinSubmissionCount = 0,
   unreadDjInquiryCount = 0,
@@ -62,6 +65,11 @@ export default function EboardNav({
   unreadWeeklyEmailDraftCount = 0,
 }: {
   profile: MyProfile | null;
+  // profile is already role-downgraded when demo mode is active (see
+  // getEffectiveProfile() in layout.tsx) — isDemoActive/canToggleDemo are
+  // only for rendering the toggle control itself.
+  isDemoActive?: boolean;
+  canToggleDemo?: boolean;
   unreadFeedbackCount?: number;
   unreadJoinSubmissionCount?: number;
   unreadDjInquiryCount?: number;
@@ -101,6 +109,34 @@ export default function EboardNav({
 
   return (
     <nav className="flex flex-col gap-1 border-b border-navy-800 pb-6 sm:w-52 sm:shrink-0 sm:border-b-0 sm:border-r sm:border-navy-800 sm:pb-0 sm:pr-6">
+      {canToggleDemo && (
+        <div className="mb-3">
+          {isDemoActive ? (
+            <form action={exitDemoView}>
+              <div className="rounded-lg border border-gold bg-gold/10 px-3 py-2">
+                <p className="text-xs font-semibold text-gold">
+                  Viewing as E-Board (demo)
+                </p>
+                <button
+                  type="submit"
+                  className="mt-1 text-xs text-steel-light underline transition-colors hover:text-gold"
+                >
+                  Exit demo view
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form action={enterDemoView}>
+              <button
+                type="submit"
+                className="w-full rounded-lg border border-navy-800 px-3 py-2 text-left text-xs font-medium text-steel-light transition-colors hover:border-gold hover:text-gold"
+              >
+                View as E-Board
+              </button>
+            </form>
+          )}
+        </div>
+      )}
       {profile && (
         <p className="mb-2 px-3 text-xs uppercase tracking-wide text-steel-light">
           Signed in as{" "}

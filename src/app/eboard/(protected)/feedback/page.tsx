@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import FeedbackItem, { type Feedback } from "./FeedbackItem";
 
 async function getFeedback(): Promise<Feedback[]> {
@@ -16,7 +16,7 @@ async function getFeedback(): Promise<Feedback[]> {
 }
 
 export default async function FeedbackHubPage() {
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
 
   // RLS already blocks eboard-tier reads at the database level (see
   // supabase/migrations/0011_feedback_admin_only.sql) — this just gives

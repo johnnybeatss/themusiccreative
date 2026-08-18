@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getMyProfile } from "@/lib/supabase/role";
+import {
+  getEffectiveProfile,
+  getMyRole,
+  isOwner,
+  isDemoViewActive,
+} from "@/lib/supabase/role";
 import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 import {
   getUnreadJoinSubmissionCount,
@@ -34,25 +39,35 @@ export default async function EboardProtectedLayout({
 
   const [
     profile,
+    realRole,
+    demoActive,
     unreadFeedbackCount,
     unreadJoinSubmissionCount,
     unreadDjInquiryCount,
     unreadTeamApplicationCount,
     unreadWeeklyEmailDraftCount,
   ] = await Promise.all([
-    getMyProfile(),
+    getEffectiveProfile(),
+    getMyRole(),
+    isDemoViewActive(),
     getUnreadFeedbackCount(),
     getUnreadJoinSubmissionCount(),
     getUnreadDjInquiryCount(),
     getUnreadTeamApplicationCount(),
     getUnreadWeeklyEmailDraftCount(),
   ]);
+  // "View as E-Board" toggle is owner-only (see demoViewActions.ts, which
+  // re-checks this server-side too — this is just what decides whether
+  // the button renders at all).
+  const canToggleDemo = isOwner(realRole);
 
   return (
     <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
       <SessionGuard />
       <EboardNav
         profile={profile}
+        isDemoActive={demoActive}
+        canToggleDemo={canToggleDemo}
         unreadFeedbackCount={unreadFeedbackCount}
         unreadJoinSubmissionCount={unreadJoinSubmissionCount}
         unreadDjInquiryCount={unreadDjInquiryCount}

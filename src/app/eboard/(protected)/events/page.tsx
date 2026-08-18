@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import EventForm from "./EventForm";
 import EventListItem from "./EventListItem";
 
@@ -33,7 +33,7 @@ async function getEvents(): Promise<Event[]> {
 // /events page just reads from the same table and is read-only by RLS
 // (public SELECT only, no write policy for anonymous users).
 export default async function EventsAdminPage() {
-  const [events, role] = await Promise.all([getEvents(), getMyRole()]);
+  const [events, role] = await Promise.all([getEvents(), getEffectiveRole()]);
   const editable = canManage(role);
 
   return (

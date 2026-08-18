@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 
 type EventRsvp = {
   id: string;
@@ -44,7 +44,7 @@ export default async function EventRsvpsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
 
   if (!canManage(role)) {
     return (

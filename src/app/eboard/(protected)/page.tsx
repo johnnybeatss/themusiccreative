@@ -13,7 +13,7 @@ import {
   Mail,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 import {
   getUnreadJoinSubmissionCount,
@@ -106,7 +106,7 @@ export default async function EboardHomePage() {
     unreadTeamApplicationCount,
     unreadWeeklyEmailDraftCount,
   ] = await Promise.all([
-    getMyRole(),
+    getEffectiveRole(),
     getUnreadFeedbackCount(),
     getUnreadJoinSubmissionCount(),
     getUnreadDjInquiryCount(),

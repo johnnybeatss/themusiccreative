@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, isOwner } from "@/lib/supabase/role";
+import { getEffectiveRole, isOwner } from "@/lib/supabase/role";
 import TrackUploadForm from "./TrackUploadForm";
 import TrackDeleteForm from "./TrackDeleteForm";
 
@@ -28,7 +28,7 @@ async function getCurrentTrack() {
 // Owner-only, on purpose — see supabase/migrations/0009_weekly_track.sql.
 // Everyone else gets a read-only "here's what's live" view.
 export default async function WeeklyTrackAdminPage() {
-  const [track, role] = await Promise.all([getCurrentTrack(), getMyRole()]);
+  const [track, role] = await Promise.all([getCurrentTrack(), getEffectiveRole()]);
   const editable = isOwner(role);
 
   return (

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import NoteForm from "./NoteForm";
 import DeleteNoteButton from "./DeleteNoteButton";
 
@@ -25,7 +25,7 @@ async function getNotes(): Promise<Note[]> {
 }
 
 export default async function NotesPage() {
-  const [notes, role] = await Promise.all([getNotes(), getMyRole()]);
+  const [notes, role] = await Promise.all([getNotes(), getEffectiveRole()]);
   const editable = canManage(role);
 
   return (

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import DjInquiryItem, { type DjInquiry } from "./DjInquiryItem";
 
 async function getInquiries(): Promise<DjInquiry[]> {
@@ -17,7 +17,7 @@ async function getInquiries(): Promise<DjInquiry[]> {
 
 // Same owner/admin-only pattern as Feedback and Join Submissions.
 export default async function DjInquiriesPage() {
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
 
   if (!canManage(role)) {
     return (

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import OpportunityForm from "./OpportunityForm";
 import OpportunityListItem from "./OpportunityListItem";
 
@@ -32,7 +32,7 @@ async function getOpportunities(): Promise<Opportunity[]> {
 export default async function OpportunitiesAdminPage() {
   const [opportunities, role] = await Promise.all([
     getOpportunities(),
-    getMyRole(),
+    getEffectiveRole(),
   ]);
   const editable = canManage(role);
 

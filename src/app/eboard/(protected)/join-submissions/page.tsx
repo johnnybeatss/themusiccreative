@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getMyRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import JoinSubmissionItem, {
   type JoinSubmission,
 } from "./JoinSubmissionItem";
@@ -21,7 +21,7 @@ async function getSubmissions(): Promise<JoinSubmission[]> {
 // blocks eboard-tier reads at the database level (see
 // supabase/migrations/0014_join_and_dj_inquiries.sql).
 export default async function JoinSubmissionsPage() {
-  const role = await getMyRole();
+  const role = await getEffectiveRole();
 
   if (!canManage(role)) {
     return (
