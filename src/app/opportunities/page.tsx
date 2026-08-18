@@ -109,19 +109,19 @@ export default async function OpportunitiesPage() {
           No opportunities posted right now — check back soon.
         </p>
       ) : (
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {opportunities.map((o, i) => (
-            <Reveal key={o.id} delay={i * 0.05}>
-              <div className="overflow-hidden rounded-xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold">
+            <Reveal key={o.id} delay={i * 0.05} className="h-full">
+              <div className="flex h-full flex-col overflow-hidden rounded-xl border border-navy-800 bg-navy-900 transition-colors hover:border-gold">
                 {o.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={o.image_url}
                     alt=""
-                    className="h-40 w-full object-cover"
+                    className="h-32 w-full object-cover"
                   />
                 )}
-                <div className="p-4">
+                <div className="flex flex-1 flex-col p-4">
                   <p className="font-semibold text-ivory">{o.title}</p>
                   <p className="mt-1 text-sm text-steel-light">{o.type}</p>
                   {o.contact_link && (
@@ -129,7 +129,7 @@ export default async function OpportunitiesPage() {
                       href={o.contact_link}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold px-4 py-1.5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
+                      className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-gold px-4 py-1.5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
                     >
                       Learn More
                       <span aria-hidden="true">&rarr;</span>

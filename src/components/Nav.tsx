@@ -58,13 +58,13 @@ export default function Nav() {
             </span>
           </Link>
 
-          <ul className="ml-10 hidden gap-2 text-sm font-medium sm:flex">
+          <ul className="ml-10 hidden gap-8 text-sm font-medium sm:flex">
             {links.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
                   data-active={pathname === l.href}
-                  className="rounded-full border border-navy-800 px-3.5 py-1.5 text-steel-light transition-colors hover:border-gold hover:text-gold data-[active=true]:border-gold data-[active=true]:bg-gold data-[active=true]:text-navy-950"
+                  className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
                 >
                   {l.label}
                 </Link>
