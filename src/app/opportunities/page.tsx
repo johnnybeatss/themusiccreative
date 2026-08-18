@@ -123,7 +123,9 @@ export default async function OpportunitiesPage() {
                 )}
                 <div className="flex flex-1 flex-col p-4">
                   <p className="font-semibold text-ivory">{o.title}</p>
-                  <p className="mt-1 text-sm text-steel-light">{o.type}</p>
+                  {o.type !== "Other" && (
+                    <p className="mt-1 text-sm text-steel-light">{o.type}</p>
+                  )}
                   {o.contact_link && (
                     <a
                       href={o.contact_link}
