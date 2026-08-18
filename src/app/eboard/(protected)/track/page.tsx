@@ -1,36 +1,41 @@
 import { createClient } from "@/lib/supabase/server";
 import { getEffectiveRole, isOwner } from "@/lib/supabase/role";
 import TrackUploadForm from "./TrackUploadForm";
-import TrackDeleteForm from "./TrackDeleteForm";
-import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
+import TrackHistoryItem, { type WeeklyTrack } from "./TrackHistoryItem";
 
 const BUCKET = "weekly-track";
 
-async function getCurrentTrack() {
+// Every weekly_track row ever inserted, newest first — whichever one is
+// newest IS "currently featured" (see saveWeeklyTrack/refeatureTrack in
+// actions.ts, both of which insert rather than update-in-place so this
+// history stays intact). Everything after the first row is the archive.
+async function getTrackHistory(): Promise<WeeklyTrack[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("weekly_track")
     .select("*")
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order("updated_at", { ascending: false });
   if (error) {
     console.error("Failed to load weekly_track:", error.message);
-    return null;
+    return [];
   }
-  if (!data) return null;
-  return {
-    ...data,
-    audio_url: supabase.storage.from(BUCKET).getPublicUrl(data.storage_path)
+  return (data ?? []).map((row) => ({
+    ...row,
+    audio_url: supabase.storage.from(BUCKET).getPublicUrl(row.storage_path)
       .data.publicUrl,
-  };
+  }));
 }
 
-// Owner-only, on purpose — see supabase/migrations/0009_weekly_track.sql.
-// Everyone else gets a read-only "here's what's live" view.
+// Owner-only editing, on purpose — see supabase/migrations/0009_weekly_track.sql.
+// Everyone else (admin/eboard who can still reach this page) gets a
+// read-only "here's what's live, here's what's run before" view.
 export default async function WeeklyTrackAdminPage() {
-  const [track, role] = await Promise.all([getCurrentTrack(), getEffectiveRole()]);
+  const [history, role] = await Promise.all([
+    getTrackHistory(),
+    getEffectiveRole(),
+  ]);
   const editable = isOwner(role);
+  const [current, ...archive] = history;
 
   return (
     <div>
@@ -44,42 +49,9 @@ export default async function WeeklyTrackAdminPage() {
           : "What's currently featured in the site-wide player. Only the owner account can change it."}
       </p>
 
-      {track ? (
-        <div className="mt-6 rounded-xl border border-navy-800 bg-navy-900 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gold">
-            Currently featured
-          </p>
-          <p className="mt-1 font-semibold text-ivory">
-            {track.track_title} — {track.artist_name}
-          </p>
-          {track.artist_instagram_url && (
-            <a
-              href={track.artist_instagram_url}
-              target="_blank"
-              rel="noreferrer"
-              className="block text-xs text-gold underline"
-            >
-              {track.artist_instagram_url}
-            </a>
-          )}
-          <StreamingEmbedButtons
-            appleMusicUrl={track.apple_music_url}
-            spotifyUrl={track.spotify_url}
-            className="mt-2"
-          />
-          <audio
-            controls
-            src={track.audio_url}
-            className="mt-3 w-full"
-            preload="none"
-          />
-          {editable && (
-            <TrackDeleteForm
-              id={track.id}
-              trackTitle={track.track_title}
-              storagePath={track.storage_path}
-            />
-          )}
+      {current ? (
+        <div className="mt-6">
+          <TrackHistoryItem track={current} isCurrent editable={editable} />
         </div>
       ) : (
         <p className="mt-6 text-steel-light">
@@ -89,6 +61,30 @@ export default async function WeeklyTrackAdminPage() {
       )}
 
       {editable && <TrackUploadForm />}
+
+      {archive.length > 0 && (
+        <div className="mt-10">
+          <h2 className="font-display text-xl tracking-wide text-ivory">
+            PAST SPOTLIGHTS
+          </h2>
+          <div className="mt-2 h-1 w-12 bg-gold" />
+          <p className="mt-3 text-sm text-steel-light">
+            Every track that&apos;s been featured before.
+            {editable &&
+              " Feature one again, or fix a typo without re-uploading."}
+          </p>
+          <div className="mt-4 space-y-4">
+            {archive.map((track) => (
+              <TrackHistoryItem
+                key={track.id}
+                track={track}
+                isCurrent={false}
+                editable={editable}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
