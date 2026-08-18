@@ -17,6 +17,7 @@ import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 import {
   getUnreadJoinSubmissionCount,
   getUnreadDjInquiryCount,
+  getUnreadTeamApplicationCount,
 } from "@/lib/supabase/unreadCounts";
 
 const sections = [
@@ -51,6 +52,12 @@ const sections = [
     icon: Disc3,
   },
   {
+    href: "/eboard/team-applications",
+    label: "Team Applications",
+    description: "Applications to join E-Board, with resumes — export to Excel.",
+    icon: UserPlus,
+  },
+  {
     href: "/eboard/feedback",
     label: "Feedback",
     description: "Responses from the public feedback board — private to E-Board.",
@@ -83,29 +90,37 @@ const sections = [
 ];
 
 export default async function EboardHomePage() {
-  const [role, unreadFeedbackCount, unreadJoinSubmissionCount, unreadDjInquiryCount] =
-    await Promise.all([
-      getMyRole(),
-      getUnreadFeedbackCount(),
-      getUnreadJoinSubmissionCount(),
-      getUnreadDjInquiryCount(),
-    ]);
-  // Feedback, Join Submissions, and DJ Inquiries are owner/admin-only —
-  // see supabase/migrations/0011_feedback_admin_only.sql and
-  // 0014_join_and_dj_inquiries.sql.
+  const [
+    role,
+    unreadFeedbackCount,
+    unreadJoinSubmissionCount,
+    unreadDjInquiryCount,
+    unreadTeamApplicationCount,
+  ] = await Promise.all([
+    getMyRole(),
+    getUnreadFeedbackCount(),
+    getUnreadJoinSubmissionCount(),
+    getUnreadDjInquiryCount(),
+    getUnreadTeamApplicationCount(),
+  ]);
+  // Feedback, Join Submissions, DJ Inquiries, and Team Applications are
+  // owner/admin-only — see supabase/migrations/0011_feedback_admin_only.sql,
+  // 0014_join_and_dj_inquiries.sql, and 0021_team_applications.sql.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
+    "/eboard/team-applications",
   ];
   const visibleSections = sections.filter(
     (s) => !OWNER_ADMIN_ONLY.includes(s.href) || canManage(role)
   );
-  // Same shared-team-inbox unread badge as the sidebar (0017).
+  // Same shared-team-inbox unread badge as the sidebar (0017, 0021).
   const UNREAD_COUNTS: Record<string, number> = {
     "/eboard/feedback": unreadFeedbackCount,
     "/eboard/join-submissions": unreadJoinSubmissionCount,
     "/eboard/dj-inquiries": unreadDjInquiryCount,
+    "/eboard/team-applications": unreadTeamApplicationCount,
   };
 
   return (

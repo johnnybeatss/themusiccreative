@@ -7,7 +7,9 @@ import { getMyRole, canManage } from "./role";
 // has opened a submission, it's read for everyone. Always 0 for
 // eboard-tier members, who can't read these tables at all (enforced by RLS,
 // not just here).
-async function getUnreadCount(table: "join_submissions" | "dj_inquiries") {
+async function getUnreadCount(
+  table: "join_submissions" | "dj_inquiries" | "team_applications"
+) {
   const role = await getMyRole();
   if (!canManage(role)) return 0;
 
@@ -29,4 +31,8 @@ export function getUnreadJoinSubmissionCount(): Promise<number> {
 
 export function getUnreadDjInquiryCount(): Promise<number> {
   return getUnreadCount("dj_inquiries");
+}
+
+export function getUnreadTeamApplicationCount(): Promise<number> {
+  return getUnreadCount("team_applications");
 }

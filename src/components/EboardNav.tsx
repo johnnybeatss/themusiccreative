@@ -28,6 +28,11 @@ const links = [
     icon: UserPlus,
   },
   { href: "/eboard/dj-inquiries", label: "DJ Inquiries", icon: Disc3 },
+  {
+    href: "/eboard/team-applications",
+    label: "Team Applications",
+    icon: UserPlus,
+  },
   { href: "/eboard/videos", label: "Feed Videos", icon: Video },
   { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },
@@ -51,29 +56,34 @@ export default function EboardNav({
   unreadFeedbackCount = 0,
   unreadJoinSubmissionCount = 0,
   unreadDjInquiryCount = 0,
+  unreadTeamApplicationCount = 0,
 }: {
   profile: MyProfile | null;
   unreadFeedbackCount?: number;
   unreadJoinSubmissionCount?: number;
   unreadDjInquiryCount?: number;
+  unreadTeamApplicationCount?: number;
 }) {
   // Same shared-team-inbox unread badge as Feedback, now covering all
-  // three owner/admin-only inboxes (see supabase/migrations/0017).
+  // four owner/admin-only inboxes (see supabase/migrations/0017, 0021).
   const UNREAD_COUNTS: Record<string, number> = {
     "/eboard/feedback": unreadFeedbackCount,
     "/eboard/join-submissions": unreadJoinSubmissionCount,
     "/eboard/dj-inquiries": unreadDjInquiryCount,
+    "/eboard/team-applications": unreadTeamApplicationCount,
   };
-  // Feedback, Join Submissions, and DJ Inquiries are all owner/admin-only
-  // (see supabase/migrations/0011_feedback_admin_only.sql and
-  // 0014_join_and_dj_inquiries.sql) — no point showing eboard-tier members
-  // a link that just lands on a read-only page. Feed Videos and Weekly
-  // Spotlight are edit-restricted too (owner/admin and owner-only
-  // respectively — see their actions.ts), so they're hidden the same way.
+  // Feedback, Join Submissions, DJ Inquiries, and Team Applications are
+  // all owner/admin-only (see supabase/migrations/0011_feedback_admin_only.sql,
+  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql) — no point
+  // showing eboard-tier members a link that just lands on a read-only
+  // page. Feed Videos and Weekly Spotlight are edit-restricted too
+  // (owner/admin and owner-only respectively — see their actions.ts), so
+  // they're hidden the same way.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
+    "/eboard/team-applications",
     "/eboard/videos",
     "/eboard/track",
   ];

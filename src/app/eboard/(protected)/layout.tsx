@@ -5,6 +5,7 @@ import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 import {
   getUnreadJoinSubmissionCount,
   getUnreadDjInquiryCount,
+  getUnreadTeamApplicationCount,
 } from "@/lib/supabase/unreadCounts";
 import EboardNav from "@/components/EboardNav";
 import SessionGuard from "@/components/SessionGuard";
@@ -30,13 +31,19 @@ export default async function EboardProtectedLayout({
     redirect("/eboard/login");
   }
 
-  const [profile, unreadFeedbackCount, unreadJoinSubmissionCount, unreadDjInquiryCount] =
-    await Promise.all([
-      getMyProfile(),
-      getUnreadFeedbackCount(),
-      getUnreadJoinSubmissionCount(),
-      getUnreadDjInquiryCount(),
-    ]);
+  const [
+    profile,
+    unreadFeedbackCount,
+    unreadJoinSubmissionCount,
+    unreadDjInquiryCount,
+    unreadTeamApplicationCount,
+  ] = await Promise.all([
+    getMyProfile(),
+    getUnreadFeedbackCount(),
+    getUnreadJoinSubmissionCount(),
+    getUnreadDjInquiryCount(),
+    getUnreadTeamApplicationCount(),
+  ]);
 
   return (
     <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
@@ -46,6 +53,7 @@ export default async function EboardProtectedLayout({
         unreadFeedbackCount={unreadFeedbackCount}
         unreadJoinSubmissionCount={unreadJoinSubmissionCount}
         unreadDjInquiryCount={unreadDjInquiryCount}
+        unreadTeamApplicationCount={unreadTeamApplicationCount}
       />
       <div className="min-w-0 flex-1">{children}</div>
     </div>

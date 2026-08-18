@@ -47,6 +47,23 @@ export default async function TeamPage() {
           <TeamGrid members={members} />
         </div>
       )}
+
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gold/50 bg-navy-900 p-5">
+        <div>
+          <p className="font-display text-lg tracking-wide text-ivory">
+            WANT TO BE PART OF THIS TEAM?
+          </p>
+          <p className="mt-1 text-sm text-steel-light">
+            We&apos;re always looking for people to join E-Board.
+          </p>
+        </div>
+        <a
+          href="/join-team"
+          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+        >
+          Apply &rarr;
+        </a>
+      </div>
     </div>
   );
 }

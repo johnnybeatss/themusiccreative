@@ -11,6 +11,8 @@ const ROUTES = [
   "/team",
   "/merch",
   "/join",
+  "/join-team",
+  "/dj-booking",
   "/feedback",
 ];
 
