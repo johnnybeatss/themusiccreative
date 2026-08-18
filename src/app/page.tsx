@@ -72,6 +72,8 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/75 to-navy-950/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-transparent to-transparent" />
 
+        {nextEvent && <NextEventCountdown event={nextEvent} />}
+
         <div className="relative mx-auto flex h-full max-w-4xl flex-col justify-center px-6 py-12 sm:px-10">
           <div className="sm:max-w-lg">
             <h1 className="font-display text-4xl leading-tight tracking-wide text-ivory sm:text-5xl">
@@ -101,8 +103,6 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
-
-      {nextEvent && <NextEventCountdown event={nextEvent} />}
 
       <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
         <div>
