@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import JoinTeamForm from "./JoinTeamForm";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Join The Team";
+const DESCRIPTION =
+  "Apply to join The Music Creative @ FIU's E-Board/leadership team.";
 
 export const metadata: Metadata = {
-  title: "Join The Team",
-  description:
-    "Apply to join The Music Creative @ FIU's E-Board/leadership team.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/join-team",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/join-team"),
 };
 
 export default function JoinTeamPage() {

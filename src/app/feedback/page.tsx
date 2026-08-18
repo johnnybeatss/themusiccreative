@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import FeedbackForm from "./FeedbackForm";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Feedback";
+const DESCRIPTION =
+  "Share ideas, likes, and dislikes with The Music Creative @ FIU E-Board — help shape what the club does next.";
 
 export const metadata: Metadata = {
-  title: "Feedback",
-  description:
-    "Share ideas, likes, and dislikes with The Music Creative @ FIU E-Board — help shape what the club does next.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/feedback",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/feedback"),
 };
 
 export default function FeedbackPage() {

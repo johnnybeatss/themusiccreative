@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import { Instagram } from "lucide-react";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Merch";
+const DESCRIPTION =
+  "The Music Creative @ FIU merch line — drops coming soon. Follow @themusiccreativefiu to be first to know.";
 
 export const metadata: Metadata = {
-  title: "Merch",
-  description:
-    "The Music Creative @ FIU merch line — drops coming soon. Follow @themusiccreativefiu to be first to know.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/merch",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/merch"),
 };
 
 const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";

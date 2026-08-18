@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import DjBookingForm from "./DjBookingForm";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "DJ Sign-Up";
+const DESCRIPTION =
+  "Sign up to DJ for The Music Creative @ FIU — join the roster we call on for future club events.";
 
 export const metadata: Metadata = {
-  title: "DJ Sign-Up",
-  description:
-    "Sign up to DJ for The Music Creative @ FIU — join the roster we call on for future club events.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/dj-booking",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/dj-booking"),
 };
 
 export default function DjBookingPage() {

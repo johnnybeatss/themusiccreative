@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import TeamGrid, { type TeamMember } from "@/components/TeamGrid";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Meet The E-Board";
+const DESCRIPTION =
+  "Meet the E-Board running The Music Creative @ FIU — producers, DJs, marketers, and creatives leading the club.";
 
 export const metadata: Metadata = {
-  title: "Meet The E-Board",
-  description:
-    "Meet the E-Board running The Music Creative @ FIU — producers, DJs, marketers, and creatives leading the club.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/team",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/team"),
 };
 
 type Member = TeamMember;

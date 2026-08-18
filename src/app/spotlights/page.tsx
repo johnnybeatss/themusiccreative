@@ -2,14 +2,19 @@ import type { Metadata } from "next";
 import { Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Spotlight Archive";
+const DESCRIPTION =
+  "Every track featured in the weekly spotlight player — past winners of The Music Creative @ FIU's weekly contest.";
 
 export const metadata: Metadata = {
-  title: "Spotlight Archive",
-  description:
-    "Every track featured in the weekly spotlight player — past winners of The Music Creative @ FIU's weekly contest.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/spotlights",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/spotlights"),
 };
 
 const TRACK_BUCKET = "weekly-track";

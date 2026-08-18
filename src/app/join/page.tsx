@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import JoinForm from "./JoinForm";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Join";
+const DESCRIPTION =
+  "Join The Music Creative @ FIU — a student-led community for producers, artists, DJs, songwriters, and music industry pros.";
 
 export const metadata: Metadata = {
-  title: "Join",
-  description:
-    "Join The Music Creative @ FIU — a student-led community for producers, artists, DJs, songwriters, and music industry pros.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/join",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/join"),
 };
 
 export default function JoinPage() {

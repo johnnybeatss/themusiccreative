@@ -2,14 +2,19 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import { getMiamiMusicEvents } from "@/lib/miamiMusicEvents";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Opportunities";
+const DESCRIPTION =
+  "Gigs, internships, and industry openings shared with members of The Music Creative @ FIU.";
 
 export const metadata: Metadata = {
-  title: "Opportunities",
-  description:
-    "Gigs, internships, and industry openings shared with members of The Music Creative @ FIU.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/opportunities",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/opportunities"),
 };
 
 type Opportunity = {

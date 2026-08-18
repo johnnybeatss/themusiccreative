@@ -3,14 +3,19 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import { formatEventDateTime } from "@/lib/eventTimezone";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Events";
+const DESCRIPTION =
+  "Upcoming workshops, showcases, and meetups from The Music Creative @ FIU — a student-led music production community in Miami.";
 
 export const metadata: Metadata = {
-  title: "Events",
-  description:
-    "Upcoming workshops, showcases, and meetups from The Music Creative @ FIU — a student-led music production community in Miami.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/events",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/events"),
 };
 
 type Event = {

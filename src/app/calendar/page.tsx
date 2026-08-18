@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/pageMetadata";
+
+const TITLE = "Calendar";
+const DESCRIPTION =
+  "The Music Creative @ FIU's meeting and event calendar — see what's coming up.";
 
 export const metadata: Metadata = {
-  title: "Calendar",
-  description:
-    "The Music Creative @ FIU's meeting and event calendar — see what's coming up.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/calendar",
   },
+  ...pageOpenGraph(TITLE, DESCRIPTION, "/calendar"),
 };
 
 const CALENDAR_EMBED_URL =
