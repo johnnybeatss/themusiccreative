@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Instagram } from "lucide-react";
 import { markTrackSubmissionRead } from "./actions";
 import DeleteSubmissionButton from "./DeleteSubmissionButton";
 import FeatureButton from "./FeatureButton";
+import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
+import { Instagram } from "lucide-react";
 
 export type TrackSubmission = {
   id: string;
@@ -13,7 +14,7 @@ export type TrackSubmission = {
   artist_instagram_url: string;
   spotify_url: string | null;
   apple_music_url: string | null;
-  storage_path: string | null;
+  storage_path: string;
   audio_url: string | null;
   read_at: string | null;
   featured_at: string | null;
@@ -94,37 +95,18 @@ export default function TrackSubmissionItem({
         {s.artist_instagram_url}
       </a>
 
-      {(s.apple_music_url || s.spotify_url) && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {s.apple_music_url && (
-            <a
-              href={s.apple_music_url}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-            >
-              Apple Music
-            </a>
-          )}
-          {s.spotify_url && (
-            <a
-              href={s.spotify_url}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-            >
-              Spotify
-            </a>
-          )}
-        </div>
-      )}
+      <StreamingEmbedButtons
+        appleMusicUrl={s.apple_music_url}
+        spotifyUrl={s.spotify_url}
+        className="mt-2"
+      />
 
       {s.audio_url ? (
         <audio controls src={s.audio_url} className="mt-3 w-full" preload="none" />
       ) : (
         <p className="mt-2 text-xs text-steel-light">
-          No audio file — streaming link{s.apple_music_url && s.spotify_url ? "s" : ""}{" "}
-          only.
+          Couldn&apos;t generate a preview link for the uploaded file — try
+          refreshing the page.
         </p>
       )}
 

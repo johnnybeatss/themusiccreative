@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
+import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Spotlight Archive";
@@ -113,30 +114,11 @@ export default async function SpotlightsPage() {
                   src={t.audio_url}
                   className="mt-3 w-full"
                 />
-                {(t.apple_music_url || t.spotify_url) && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {t.apple_music_url && (
-                      <a
-                        href={t.apple_music_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-                      >
-                        Apple Music
-                      </a>
-                    )}
-                    {t.spotify_url && (
-                      <a
-                        href={t.spotify_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-                      >
-                        Spotify
-                      </a>
-                    )}
-                  </div>
-                )}
+                <StreamingEmbedButtons
+                  appleMusicUrl={t.apple_music_url}
+                  spotifyUrl={t.spotify_url}
+                  className="mt-3"
+                />
               </div>
             </Reveal>
           ))}

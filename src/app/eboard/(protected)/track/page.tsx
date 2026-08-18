@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getEffectiveRole, isOwner } from "@/lib/supabase/role";
 import TrackUploadForm from "./TrackUploadForm";
 import TrackDeleteForm from "./TrackDeleteForm";
+import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
 
 const BUCKET = "weekly-track";
 
@@ -61,30 +62,11 @@ export default async function WeeklyTrackAdminPage() {
               {track.artist_instagram_url}
             </a>
           )}
-          {(track.apple_music_url || track.spotify_url) && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {track.apple_music_url && (
-                <a
-                  href={track.apple_music_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-                >
-                  Apple Music
-                </a>
-              )}
-              {track.spotify_url && (
-                <a
-                  href={track.spotify_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
-                >
-                  Spotify
-                </a>
-              )}
-            </div>
-          )}
+          <StreamingEmbedButtons
+            appleMusicUrl={track.apple_music_url}
+            spotifyUrl={track.spotify_url}
+            className="mt-2"
+          />
           <audio
             controls
             src={track.audio_url}

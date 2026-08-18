@@ -17,21 +17,8 @@ export default function FeatureButton({
   artistInstagramUrl: string;
   appleMusicUrl: string | null;
   spotifyUrl: string | null;
-  storagePath: string | null;
+  storagePath: string;
 }) {
-  if (!storagePath) {
-    return (
-      <p className="text-xs text-steel-light">
-        No audio file on this submission — the site-wide player needs one to
-        feature it. Ask the artist to send a file, or set it manually on the{" "}
-        <a href="/eboard/track" className="underline hover:text-gold">
-          Weekly Spotlight
-        </a>{" "}
-        page.
-      </p>
-    );
-  }
-
   return (
     <form
       action={featureSubmission}

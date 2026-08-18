@@ -40,35 +40,28 @@ export default function SubmitTrackForm({
     if (!trackTitle) return setError("Track title is required.");
     if (!artistName) return setError("Artist name is required.");
     if (!artistInstagramUrl) return setError("Instagram handle is required.");
-    const hasFile = !!file && file.size > 0;
-    if (!hasFile && !appleMusicUrl && !spotifyUrl) {
-      return setError(
-        "Include an audio file, a Spotify link, or an Apple Music link."
-      );
-    }
-    if (hasFile && !file!.type.startsWith("audio/")) {
+    if (!file || file.size === 0) return setError("Choose an audio file.");
+    if (!file.type.startsWith("audio/")) {
       return setError("That file isn't audio.");
     }
-    if (hasFile && file!.size > MAX_FILE_BYTES) {
+    if (file.size > MAX_FILE_BYTES) {
       return setError("File is too large — keep it under 20MB.");
     }
 
     setPending(true);
     let storagePath: string | null = null;
     try {
-      if (hasFile) {
-        const supabase = createClient();
-        const ext = file!.name.split(".").pop() || "mp3";
-        const path = `${crypto.randomUUID()}.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from(BUCKET)
-          .upload(path, file!, { contentType: file!.type });
-        if (uploadError) {
-          setError(uploadError.message);
-          return;
-        }
-        storagePath = path;
+      const supabase = createClient();
+      const ext = file.name.split(".").pop() || "mp3";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type });
+      if (uploadError) {
+        setError(uploadError.message);
+        return;
       }
+      storagePath = path;
 
       const result = await submitTrackSubmission({
         storagePath,
@@ -130,6 +123,19 @@ export default function SubmitTrackForm({
           className={inputClass}
         />
       </label>
+      <label className={labelClass}>
+        <span className="text-steel-light">Audio file</span>
+        <input
+          type="file"
+          name="file"
+          accept="audio/*"
+          required
+          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+        />
+        <span className="mt-1 block text-xs text-steel-light">
+          Under 20MB — an mp3 exported from the DAW or Instagram works well.
+        </span>
+      </label>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className={labelClass}>
           <span className="text-steel-light">Spotify link (optional)</span>
@@ -150,24 +156,6 @@ export default function SubmitTrackForm({
           />
         </label>
       </div>
-      <label className={labelClass}>
-        <span className="text-steel-light">
-          Audio file (optional if you gave a link above)
-        </span>
-        <input
-          type="file"
-          name="file"
-          accept="audio/*"
-          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
-        />
-        <span className="mt-1 block text-xs text-steel-light">
-          Under 20MB — an mp3 exported from the DAW or Instagram works well.
-        </span>
-      </label>
-      <p className="text-xs text-steel-light">
-        Give us at least one way to hear it: a Spotify link, an Apple Music
-        link, or the file itself.
-      </p>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"

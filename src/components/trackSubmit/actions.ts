@@ -19,20 +19,20 @@ export async function submitTrackSubmission({
   appleMusicUrl,
   spotifyUrl,
 }: {
-  storagePath: string | null;
+  storagePath: string;
   trackTitle: string;
   artistName: string;
   artistInstagramUrl: string;
   appleMusicUrl?: string | null;
   spotifyUrl?: string | null;
 }): Promise<{ error: string | null }> {
-  if (!trackTitle.trim() || !artistName.trim() || !artistInstagramUrl.trim()) {
+  if (
+    !storagePath ||
+    !trackTitle.trim() ||
+    !artistName.trim() ||
+    !artistInstagramUrl.trim()
+  ) {
     return { error: "Missing required fields." };
-  }
-  if (!storagePath && !appleMusicUrl && !spotifyUrl) {
-    return {
-      error: "Include an audio file, a Spotify link, or an Apple Music link.",
-    };
   }
 
   const supabase = await createClient();
