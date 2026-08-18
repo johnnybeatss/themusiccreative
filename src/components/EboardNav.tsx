@@ -67,11 +67,15 @@ export default function EboardNav({
   // Feedback, Join Submissions, and DJ Inquiries are all owner/admin-only
   // (see supabase/migrations/0011_feedback_admin_only.sql and
   // 0014_join_and_dj_inquiries.sql) — no point showing eboard-tier members
-  // a link that just RLS-blocks them once clicked.
+  // a link that just lands on a read-only page. Feed Videos and Weekly
+  // Spotlight are edit-restricted too (owner/admin and owner-only
+  // respectively — see their actions.ts), so they're hidden the same way.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
+    "/eboard/videos",
+    "/eboard/track",
   ];
   const visibleLinks = links.filter(
     (l) =>
