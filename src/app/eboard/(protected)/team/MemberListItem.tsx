@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Instagram } from "lucide-react";
 import MemberForm from "./MemberForm";
 import { deleteMember } from "./actions";
 
@@ -15,10 +16,16 @@ type Member = {
   sort_order: number;
 };
 
-export default function MemberListItem({ member }: { member: Member }) {
+export default function MemberListItem({
+  member,
+  editable,
+}: {
+  member: Member;
+  editable: boolean;
+}) {
   const [editing, setEditing] = useState(false);
 
-  if (editing) {
+  if (editing && editable) {
     return <MemberForm member={member} onDone={() => setEditing(false)} />;
   }
 
@@ -42,31 +49,46 @@ export default function MemberListItem({ member }: { member: Member }) {
         <p className="font-semibold text-ivory">{member.name}</p>
         <p className="text-xs text-steel-light">{member.role}</p>
       </div>
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-xs text-steel-light hover:text-gold"
+      {/* Visible to everyone (view-only eboard members included) — the
+          point is letting the whole team connect with each other. */}
+      {member.instagram_url && (
+        <a
+          href={member.instagram_url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${member.name} on Instagram`}
+          className="text-steel-light transition-colors hover:text-gold"
         >
-          Edit
-        </button>
-        <form
-          action={deleteMember}
-          onSubmit={(e) => {
-            if (!confirm(`Remove ${member.name} from the team page?`)) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <input type="hidden" name="id" value={member.id} />
+          <Instagram size={18} />
+        </a>
+      )}
+      {editable && (
+        <div className="flex items-center gap-4">
           <button
-            type="submit"
-            className="text-xs text-steel-light transition-colors hover:text-red-400"
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-xs text-steel-light hover:text-gold"
           >
-            Delete
+            Edit
           </button>
-        </form>
-      </div>
+          <form
+            action={deleteMember}
+            onSubmit={(e) => {
+              if (!confirm(`Remove ${member.name} from the team page?`)) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <input type="hidden" name="id" value={member.id} />
+            <button
+              type="submit"
+              className="text-xs text-steel-light transition-colors hover:text-red-400"
+            >
+              Delete
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

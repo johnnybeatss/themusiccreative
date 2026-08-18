@@ -3,17 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { uploadContentImage } from "@/lib/supabase/uploadContentImage";
+import { getMyRole, canManage } from "@/lib/supabase/role";
 
 export type MemberFormState = { error: string | null };
 
 const PHOTO_BUCKET = "eboard-photos";
 
-// RLS on e_board_members is "authenticated can write" — open to any
-// signed-in E-Board member, not just owner/admin (see
-// supabase/migrations/0001_init.sql; this table was never tightened to
-// owner/admin the way events/leadership_notes were in 0003_roles.sql).
-// The auth.getUser() check below is just a friendlier error message —
-// RLS is what actually enforces it.
+// Owner/admin only — eboard-tier members can view the Team hub but not
+// add/edit/delete entries (see supabase/migrations/0025_tighten_team_and_reports_write_access.sql).
+// The canManage() checks below give a clean error/no-op instead of a raw
+// RLS error reaching the client — RLS is still what actually enforces it.
 
 function parseMemberForm(formData: FormData) {
   const name = ((formData.get("name") as string) || "").trim();
@@ -55,6 +54,9 @@ export async function createMember(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in to add a team member." };
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can add team members." };
+  }
 
   const { error, values } = parseMemberForm(formData);
   if (error || !values) return { error };
@@ -86,6 +88,9 @@ export async function updateMember(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in to edit a team member." };
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can edit team members." };
+  }
 
   const id = formData.get("id") as string;
   if (!id) return { error: "Missing member id." };
@@ -120,6 +125,7 @@ export async function deleteMember(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+  if (!canManage(await getMyRole())) return;
 
   const id = formData.get("id") as string;
   if (!id) return;

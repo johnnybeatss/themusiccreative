@@ -42,9 +42,9 @@ export async function getOrCreateCurrentReport(): Promise<WeeklyReport | null> {
 
 export type ItemFormState = { error: string | null };
 
-// To-do list + content ideas are team-wide: any signed-in E-board member
-// can add and check items off (see weekly_report_items RLS in
-// 0020_weekly_team_reports.sql) — only deleting is locked to owner/admin.
+// Owner/admin only — eboard-tier members can view the To-Do/Content Ideas
+// lists but not add, check off, edit, or delete them (see
+// supabase/migrations/0025_tighten_team_and_reports_write_access.sql).
 export async function addItem(
   _prevState: ItemFormState,
   formData: FormData
@@ -54,6 +54,9 @@ export async function addItem(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in." };
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can add items." };
+  }
 
   const reportId = formData.get("report_id") as string;
   const kind = formData.get("kind") as string;
@@ -79,11 +82,6 @@ export async function addItem(
   return { error: null };
 }
 
-// Editing text is open to the same audience as adding/checking items (any
-// signed-in E-board member) — only deleting is locked to owner/admin. RLS's
-// existing "authenticated can update weekly_report_items" policy (0020)
-// already covers this since it's row-level, not column-restricted, so no
-// migration is needed on top of what toggleItem already relies on.
 export async function editItem(
   _prevState: ItemFormState,
   formData: FormData
@@ -93,6 +91,9 @@ export async function editItem(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in." };
+  if (!canManage(await getMyRole())) {
+    return { error: "Only owner/admin accounts can edit items." };
+  }
 
   const id = formData.get("id") as string;
   const text = ((formData.get("text") as string) || "").trim();
@@ -118,6 +119,7 @@ export async function toggleItem(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+  if (!canManage(await getMyRole())) return;
 
   const id = formData.get("id") as string;
   const done = formData.get("done") === "true";

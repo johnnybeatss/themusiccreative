@@ -78,7 +78,7 @@ export default async function ReportsPage() {
           reportId={report.id}
           kind="todo"
           items={todos}
-          canDelete={editable}
+          editable={editable}
         />
       </section>
 
@@ -90,7 +90,7 @@ export default async function ReportsPage() {
           reportId={report.id}
           kind="content_idea"
           items={contentIdeas}
-          canDelete={editable}
+          editable={editable}
         />
       </section>
 
