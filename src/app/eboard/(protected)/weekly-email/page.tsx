@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import WeeklyEmailPreview, { type WeeklyEmailDraft } from "./WeeklyEmailPreview";
+import WeeklyEmailExtrasForm, {
+  type WeeklyEmailExtras,
+} from "./WeeklyEmailExtrasForm";
+
+const EXTRAS_ROW_ID = "00000000-0000-0000-0000-000000000001";
 
 async function getDrafts(): Promise<WeeklyEmailDraft[]> {
   const supabase = await createClient();
@@ -13,6 +18,29 @@ async function getDrafts(): Promise<WeeklyEmailDraft[]> {
     return [];
   }
   return data ?? [];
+}
+
+async function getExtras(): Promise<WeeklyEmailExtras> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("weekly_email_extras")
+    .select("*")
+    .eq("id", EXTRAS_ROW_ID)
+    .maybeSingle();
+  if (error || !data) {
+    if (error) console.error("Failed to load weekly email extras:", error.message);
+    return {
+      primary_cta_label: null,
+      primary_cta_url: null,
+      subject_override: null,
+      member_spotlight_name: null,
+      member_spotlight_text: null,
+      member_spotlight_link: null,
+      recap_photo_url: null,
+      recap_caption: null,
+    };
+  }
+  return data;
 }
 
 // Same owner/admin-only pattern as Feedback / Join Submissions /
@@ -35,7 +63,7 @@ export default async function WeeklyEmailPage() {
     );
   }
 
-  const drafts = await getDrafts();
+  const [drafts, extras] = await Promise.all([getDrafts(), getExtras()]);
 
   return (
     <div>
@@ -49,6 +77,8 @@ export default async function WeeklyEmailPage() {
         but only once you review it below and click Send. Nothing here goes
         out on its own.
       </p>
+
+      <WeeklyEmailExtrasForm extras={extras} />
 
       {drafts.length === 0 ? (
         <p className="mt-6 text-steel-light">

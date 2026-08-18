@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StatusPill from "@/components/StatusPill";
+import { getMiamiMusicEvents } from "@/lib/miamiMusicEvents";
 
 export const metadata: Metadata = {
   title: "Opportunities",
@@ -49,39 +50,15 @@ async function getOpportunities(): Promise<Opportunity[]> {
   return data ?? [];
 }
 
-// --- "What's happening this month" — Miami-area music industry events,
-// pulled live from Ticketmaster's Discovery API (a real public API, not a
-// scraper). Requires TICKETMASTER_API_KEY to be set in Vercel; until then
-// this quietly renders nothing rather than breaking the page. Cached for 6
+// "What's happening this month" — Miami-area music industry events, pulled
+// live via src/lib/miamiMusicEvents.ts (Ticketmaster Discovery API).
+// Requires TICKETMASTER_API_KEY to be set in Vercel; until then this
+// quietly renders nothing rather than breaking the page. Cached for 6
 // hours via Next's fetch revalidation, so it stays current without hitting
-// the API on every request.
+// the API on every request. Also reused (with a 7-day window instead of a
+// month) by the weekly email cron route.
 
-type TicketmasterEvent = {
-  id: string;
-  name: string;
-  url: string;
-  dates: { start: { dateTime?: string; localDate: string } };
-  images?: { url: string; width: number }[];
-  _embedded?: { venues?: { name: string }[] };
-};
-
-type TicketmasterResponse = {
-  _embedded?: { events?: TicketmasterEvent[] };
-};
-
-type MiamiMusicEvent = {
-  id: string;
-  name: string;
-  date: string;
-  url: string;
-  imageUrl: string | null;
-  venue: string | null;
-};
-
-async function getMiamiMusicEvents(): Promise<MiamiMusicEvent[]> {
-  const apiKey = process.env.TICKETMASTER_API_KEY;
-  if (!apiKey) return [];
-
+export default async function OpportunitiesPage() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(
@@ -92,51 +69,10 @@ async function getMiamiMusicEvents(): Promise<MiamiMusicEvent[]> {
     59,
     59
   );
-  const toTmDateTime = (d: Date) => d.toISOString().split(".")[0] + "Z";
 
-  const params = new URLSearchParams({
-    apikey: apiKey,
-    city: "Miami",
-    stateCode: "FL",
-    classificationName: "music",
-    startDateTime: toTmDateTime(startOfMonth),
-    endDateTime: toTmDateTime(endOfMonth),
-    sort: "date,asc",
-    size: "6",
-  });
-
-  try {
-    const res = await fetch(
-      `https://app.ticketmaster.com/discovery/v2/events.json?${params}`,
-      { next: { revalidate: 21600 } } // 6 hours
-    );
-    if (!res.ok) {
-      console.error("Ticketmaster API error:", res.status, res.statusText);
-      return [];
-    }
-    const data = (await res.json()) as TicketmasterResponse;
-    const events = data._embedded?.events ?? [];
-    return events.map((e) => ({
-      id: e.id,
-      name: e.name,
-      date: e.dates.start.dateTime ?? e.dates.start.localDate,
-      url: e.url,
-      imageUrl:
-        e.images?.find((img) => img.width >= 640)?.url ??
-        e.images?.[0]?.url ??
-        null,
-      venue: e._embedded?.venues?.[0]?.name ?? null,
-    }));
-  } catch (err) {
-    console.error("Failed to fetch Ticketmaster events:", err);
-    return [];
-  }
-}
-
-export default async function OpportunitiesPage() {
   const [opportunities, miamiEvents] = await Promise.all([
     getOpportunities(),
-    getMiamiMusicEvents(),
+    getMiamiMusicEvents({ startDate: startOfMonth, endDate: endOfMonth, limit: 6 }),
   ]);
 
   return (

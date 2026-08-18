@@ -1,16 +1,23 @@
 // Builds the subject + HTML for the weekly "upcoming events" email. Pure
 // string building, no I/O — called from the cron route
 // (src/app/api/cron/weekly-email-draft/route.ts) after it has already
-// fetched the events for the week.
+// fetched everything (events, weekly_email_extras, the featured track, and
+// Miami Music teaser events).
 //
 // Table-based layout with fully inline styles throughout: this is an HTML
 // email, not a web page, and most email clients (Outlook especially)
 // ignore <style> blocks and modern CSS. Light background on purpose —
 // dark-navy emails are more prone to dark-mode-client contrast bugs and
 // spam-filter friction than a white card with navy/gold as accents.
+//
+// Every optional section (spotlight track, member spotlight, recap,
+// Miami teaser) is opt-in: pass null/[] and it's simply omitted, not
+// rendered empty. See src/app/api/cron/weekly-email-draft/route.ts for how
+// weekly_email_extras controls which of these show up in a given week.
 
 import { formatWeekRange } from "./weekReports";
 import { formatEventDateTime } from "./eventTimezone";
+import type { MiamiMusicEvent } from "./miamiMusicEvents";
 
 export type WeeklyEmailEvent = {
   id: string;
@@ -18,6 +25,25 @@ export type WeeklyEmailEvent = {
   date: string; // ISO timestamp
   location: string | null;
   description: string | null;
+};
+
+export type PrimaryCta = { label: string; url: string };
+
+export type SpotlightTrack = {
+  trackTitle: string;
+  artistName: string;
+  artistInstagramUrl: string | null;
+};
+
+export type MemberSpotlight = {
+  name: string;
+  text: string;
+  link: string | null;
+};
+
+export type WeeklyRecap = {
+  photoUrl: string;
+  caption: string | null;
 };
 
 function escapeHtml(value: string): string {
@@ -52,10 +78,19 @@ function truncateDescription(
   return { preview: `${preview}…`, truncated: true };
 }
 
+// Auto subject when there's no admin override: names the nearest upcoming
+// event instead of the generic "This week at..." line — specific subject
+// lines read less like a mass blast. Falls back to the generic form if for
+// some reason there's no featured event (shouldn't happen in practice: the
+// cron route never builds a draft with zero upcoming events).
 export function buildWeeklyEmailSubject(
   weekStart: string,
-  weekEnd: string
+  weekEnd: string,
+  featuredEventName?: string | null
 ): string {
+  if (featuredEventName) {
+    return `${featuredEventName} — this week at The Music Creative`;
+  }
   return `This week at The Music Creative — ${formatWeekRange(weekStart, weekEnd)}`;
 }
 
@@ -87,16 +122,139 @@ function buildEventCard(event: WeeklyEmailEvent, siteUrl: string): string {
     </tr>`;
 }
 
+function buildPrimaryCta(cta: PrimaryCta): string {
+  const label = escapeHtml(cta.label);
+  return `
+    <tr>
+      <td style="padding:20px 32px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2b134;border-radius:10px;">
+          <tr>
+            <td style="padding:16px 20px;">
+              <a href="${cta.url}" style="display:block;font-size:14px;font-weight:bold;color:#10141f;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${label} &rarr;</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
+function buildSpotlightSection(track: SpotlightTrack, siteUrl: string): string {
+  const trackTitle = escapeHtml(track.trackTitle);
+  const artistName = escapeHtml(track.artistName);
+  return `
+    <tr>
+      <td style="padding:16px 32px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:10px;">
+          <tr>
+            <td style="padding:18px 20px;">
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#b5860a;font-family:Arial,Helvetica,sans-serif;">This Week's Spotlight</p>
+              <p style="margin:6px 0 0;font-size:15px;font-weight:bold;color:#10141f;font-family:Arial,Helvetica,sans-serif;">${trackTitle} <span style="font-weight:normal;color:#555555;">&mdash; ${artistName}</span></p>
+              <p style="margin:10px 0 0;font-size:12px;font-family:Arial,Helvetica,sans-serif;">
+                <a href="${siteUrl}/" style="font-weight:bold;color:#b5860a;text-decoration:none;">Listen on the site &rarr;</a>${
+                  track.artistInstagramUrl
+                    ? ` &nbsp;&middot;&nbsp; <a href="${track.artistInstagramUrl}" style="color:#b5860a;text-decoration:none;">Follow ${artistName} &rarr;</a>`
+                    : ""
+                }
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
+function buildMemberSpotlightSection(spotlight: MemberSpotlight): string {
+  const name = escapeHtml(spotlight.name);
+  const text = escapeHtmlMultiline(spotlight.text);
+  return `
+    <tr>
+      <td style="padding:16px 32px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:10px;">
+          <tr>
+            <td style="padding:18px 20px;">
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#b5860a;font-family:Arial,Helvetica,sans-serif;">Member Spotlight</p>
+              <p style="margin:6px 0 0;font-size:15px;font-weight:bold;color:#10141f;font-family:Arial,Helvetica,sans-serif;">${name}</p>
+              <p style="margin:8px 0 0;font-size:13px;line-height:1.6;color:#444444;font-family:Arial,Helvetica,sans-serif;">${text}</p>
+              ${spotlight.link ? `<p style="margin:10px 0 0;"><a href="${spotlight.link}" style="font-size:12px;font-weight:bold;color:#b5860a;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Check it out &rarr;</a></p>` : ""}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
+function buildRecapSection(recap: WeeklyRecap): string {
+  const caption = recap.caption?.trim()
+    ? escapeHtmlMultiline(recap.caption.trim())
+    : null;
+  return `
+    <tr>
+      <td style="padding:16px 32px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+          <tr>
+            <td>
+              <img src="${recap.photoUrl}" alt="" width="536" style="display:block;width:100%;max-width:536px;height:auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:14px 20px;">
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#b5860a;font-family:Arial,Helvetica,sans-serif;">Last Week at TMC</p>
+              ${caption ? `<p style="margin:6px 0 0;font-size:13px;line-height:1.6;color:#444444;font-family:Arial,Helvetica,sans-serif;">${caption}</p>` : ""}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
+function buildMiamiMusicSection(events: MiamiMusicEvent[]): string {
+  const rows = events
+    .map((e) => {
+      const name = escapeHtml(e.name);
+      const dateLabel = new Date(e.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      const venue = e.venue ? escapeHtml(e.venue) : null;
+      return `<p style="margin:0 0 8px;font-size:13px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;"><a href="${e.url}" style="color:#10141f;font-weight:bold;text-decoration:none;">${name}</a><span style="color:#7a828f;"> &mdash; ${dateLabel}${venue ? ` &middot; ${venue}` : ""}</span></p>`;
+    })
+    .join("");
+
+  return `
+    <tr>
+      <td style="padding:16px 32px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:10px;">
+          <tr>
+            <td style="padding:18px 20px;">
+              <p style="margin:0 0 10px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#b5860a;font-family:Arial,Helvetica,sans-serif;">Around Miami This Week</p>
+              ${rows}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
 export function buildWeeklyEmailHtml({
   weekStart,
   weekEnd,
   events,
   siteUrl,
+  primaryCta,
+  spotlightTrack,
+  memberSpotlight,
+  recap,
+  miamiEvents,
 }: {
   weekStart: string;
   weekEnd: string;
   events: WeeklyEmailEvent[];
   siteUrl: string;
+  primaryCta: PrimaryCta;
+  spotlightTrack?: SpotlightTrack | null;
+  memberSpotlight?: MemberSpotlight | null;
+  recap?: WeeklyRecap | null;
+  miamiEvents?: MiamiMusicEvent[];
 }): string {
   const weekLabel = formatWeekRange(weekStart, weekEnd);
   const eventsHtml = events.map((e) => buildEventCard(e, siteUrl)).join("");
@@ -115,12 +273,17 @@ export function buildWeeklyEmailHtml({
                 <p style="margin:6px 0 0;font-size:13px;color:#8a97b3;font-family:Arial,Helvetica,sans-serif;">${weekLabel}</p>
               </td>
             </tr>
+            ${buildPrimaryCta(primaryCta)}
             <tr>
-              <td style="padding:24px 32px 8px;">
+              <td style="padding:20px 32px 8px;">
                 <p style="margin:0;font-size:14px;line-height:1.6;color:#333333;font-family:Arial,Helvetica,sans-serif;">Here's what's coming up this week. Tap an event for the full details.</p>
               </td>
             </tr>
             ${eventsHtml}
+            ${spotlightTrack ? buildSpotlightSection(spotlightTrack, siteUrl) : ""}
+            ${memberSpotlight ? buildMemberSpotlightSection(memberSpotlight) : ""}
+            ${recap ? buildRecapSection(recap) : ""}
+            ${miamiEvents && miamiEvents.length > 0 ? buildMiamiMusicSection(miamiEvents) : ""}
             <tr>
               <td style="padding:16px 32px 32px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f5f7;border-radius:10px;">
