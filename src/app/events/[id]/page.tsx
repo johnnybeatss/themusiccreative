@@ -66,12 +66,33 @@ export async function generateMetadata({
   const event = await getEvent(id);
   if (!event) return {};
 
+  const description =
+    event.description ?? `Join The Music Creative @ FIU for ${event.name}.`;
+  const url = `https://themusiccreative.org/events/${event.id}`;
+
+  // Next only inherits the root layout's openGraph/twitter blocks
+  // wholesale when a route doesn't define its own — which is exactly why
+  // sharing an event link (iMessage, Slack, etc.) was showing the generic
+  // site-wide card instead of this event's name/photo. Setting them
+  // explicitly here overrides that per event.
   return {
     title: event.name,
-    description:
-      event.description ??
-      `Join The Music Creative @ FIU for ${event.name}.`,
+    description,
     alternates: { canonical: `/events/${event.id}` },
+    openGraph: {
+      title: event.name,
+      description,
+      url,
+      siteName: "The Music Creative @ FIU",
+      type: "website",
+      images: event.image_url ? [event.image_url] : undefined,
+    },
+    twitter: {
+      card: event.image_url ? "summary_large_image" : "summary",
+      title: event.name,
+      description,
+      images: event.image_url ? [event.image_url] : undefined,
+    },
   };
 }
 
