@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import StatusPill from "@/components/StatusPill";
 import RsvpForm from "./RsvpForm";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 
@@ -93,12 +92,9 @@ export default async function EventDetailPage({
         />
       )}
 
-      <div className="mt-6 flex items-start justify-between gap-3">
-        <h1 className="font-display text-3xl tracking-wide text-ivory">
-          {event.name.toUpperCase()}
-        </h1>
-        <StatusPill status={event.status} />
-      </div>
+      <h1 className="mt-6 font-display text-3xl tracking-wide text-ivory">
+        {event.name.toUpperCase()}
+      </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
 
       <p className="mt-4 text-sm text-steel-light">

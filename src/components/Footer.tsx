@@ -14,6 +14,20 @@ export default function Footer() {
           </Link>
           <NewsletterForm />
         </div>
+        <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:justify-start">
+          <Link href="/events" className="transition-colors hover:text-gold">
+            Events
+          </Link>
+          <Link href="/merch" className="transition-colors hover:text-gold">
+            Merch
+          </Link>
+          <Link href="/dj-booking" className="transition-colors hover:text-gold">
+            DJ Booking
+          </Link>
+          <Link href="/join-team" className="transition-colors hover:text-gold">
+            Join the Team
+          </Link>
+        </nav>
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} The Music Creative @ FIU.</p>
           <div className="flex items-center gap-6">

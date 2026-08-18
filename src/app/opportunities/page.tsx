@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
-import StatusPill from "@/components/StatusPill";
 import { getMiamiMusicEvents } from "@/lib/miamiMusicEvents";
 
 export const metadata: Metadata = {
@@ -118,10 +117,7 @@ export default async function OpportunitiesPage() {
                   />
                 )}
                 <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="font-semibold text-ivory">{o.title}</p>
-                    <StatusPill status={o.status} />
-                  </div>
+                  <p className="font-semibold text-ivory">{o.title}</p>
                   <p className="mt-1 text-sm text-steel-light">{o.type}</p>
                   {o.contact_link && (
                     <a

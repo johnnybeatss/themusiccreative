@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
-import StatusPill from "@/components/StatusPill";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 
 export const metadata: Metadata = {
@@ -101,10 +100,7 @@ export default async function EventsPage() {
                   />
                 )}
                 <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="font-semibold text-ivory">{e.name}</p>
-                    <StatusPill status={e.status} />
-                  </div>
+                  <p className="font-semibold text-ivory">{e.name}</p>
                   <p className="mt-1 text-sm text-steel-light">
                     {formatEventDateTime(e.date)}
                     {e.location ? ` · ${e.location}` : ""} · {e.type}

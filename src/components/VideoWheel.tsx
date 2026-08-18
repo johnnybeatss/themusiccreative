@@ -38,6 +38,16 @@ function VideoCard({ video }: { video: FeedVideo }) {
     // guarantees the property is actually true before play() is attempted.
     el.muted = true;
 
+    // preload="metadata" alone doesn't reliably paint a visible first frame
+    // — several browsers just leave the element blank/black until playback
+    // actually starts. Nudging currentTime forward a hair once metadata is
+    // available forces a decode+paint of that frame as a de facto poster,
+    // without downloading the whole file the way preload="auto" would.
+    const showFirstFrame = () => {
+      if (el.currentTime === 0) el.currentTime = 0.1;
+    };
+    el.addEventListener("loadedmetadata", showFirstFrame);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -52,7 +62,10 @@ function VideoCard({ video }: { video: FeedVideo }) {
       { threshold: 0.25 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      el.removeEventListener("loadedmetadata", showFirstFrame);
+      observer.disconnect();
+    };
   }, []);
 
   return (

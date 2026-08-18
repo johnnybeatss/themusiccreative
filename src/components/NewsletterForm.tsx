@@ -56,7 +56,7 @@ export default function NewsletterForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@fiu.edu"
+          placeholder="you@email.com"
           className="w-full rounded-lg border border-navy-800 bg-navy-900 px-3 py-2 text-sm text-ivory placeholder:text-steel-light transition-colors focus:border-gold focus:outline-none"
         />
         <button
