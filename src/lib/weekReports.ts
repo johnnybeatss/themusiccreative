@@ -50,12 +50,21 @@ export function formatWeekRange(weekStart: string, weekEnd: string): string {
     month: "short",
     day: "numeric",
   });
+
+  if (sameMonth) {
+    // Built manually rather than via toLocaleDateString with month:
+    // undefined — some ICU builds render that combination (day + year,
+    // no month) as a literal "2026 (day: 23)" fallback instead of "23,
+    // 2026", which is where the stray "(day: N)" text on the page came
+    // from.
+    return `${startFmt}–${end.getUTCDate()}, ${end.getUTCFullYear()}`;
+  }
+
   const endFmt = end.toLocaleDateString("en-US", {
     timeZone: "UTC",
-    month: sameMonth ? undefined : "short",
+    month: "short",
     day: "numeric",
     year: "numeric",
   });
-
-  return sameMonth ? `${startFmt}–${endFmt}` : `${startFmt} – ${endFmt}`;
+  return `${startFmt} – ${endFmt}`;
 }
