@@ -10,7 +10,6 @@ import { Instagram, Menu, X } from "lucide-react";
 const links = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
-  { href: "/recaps", label: "Recaps" },
   { href: "/opportunities", label: "Opportunities" },
   { href: "/calendar", label: "Calendar" },
   { href: "/team", label: "Team" },
