@@ -21,6 +21,13 @@ export default function JoinPage() {
         Fill out the form below and we&apos;ll be in touch. Takes less than
         five minutes.
       </p>
+      <p className="mt-2 text-sm text-steel-light">
+        Looking to join E-Board specifically?{" "}
+        <a href="/join-team" className="text-gold underline">
+          Apply here
+        </a>{" "}
+        instead.
+      </p>
 
       <JoinForm />
     </div>
