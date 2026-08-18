@@ -12,6 +12,7 @@ import {
   Users,
   Mail,
   BarChart3,
+  Mic2,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
@@ -21,6 +22,7 @@ import {
   getUnreadDjInquiryCount,
   getUnreadTeamApplicationCount,
   getUnreadWeeklyEmailDraftCount,
+  getUnreadTrackSubmissionCount,
 } from "@/lib/supabase/unreadCounts";
 
 const sections = [
@@ -59,6 +61,12 @@ const sections = [
     label: "Team Applications",
     description: "Applications to join E-Board, with resumes — export to Excel.",
     icon: UserPlus,
+  },
+  {
+    href: "/eboard/track-submissions",
+    label: "Track Submissions",
+    description: "Songs submitted for the Weekly Spotlight — export to Excel.",
+    icon: Mic2,
   },
   {
     href: "/eboard/feedback",
@@ -112,6 +120,7 @@ export default async function EboardHomePage() {
     unreadDjInquiryCount,
     unreadTeamApplicationCount,
     unreadWeeklyEmailDraftCount,
+    unreadTrackSubmissionCount,
   ] = await Promise.all([
     getEffectiveRole(),
     getUnreadFeedbackCount(),
@@ -119,18 +128,20 @@ export default async function EboardHomePage() {
     getUnreadDjInquiryCount(),
     getUnreadTeamApplicationCount(),
     getUnreadWeeklyEmailDraftCount(),
+    getUnreadTrackSubmissionCount(),
   ]);
-  // Feedback, Join Submissions, DJ Inquiries, Team Applications, and
-  // Weekly Email are owner/admin-only — see
+  // Feedback, Join Submissions, DJ Inquiries, Team Applications, Weekly
+  // Email, and Track Submissions are owner/admin-only — see
   // supabase/migrations/0011_feedback_admin_only.sql,
-  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql, and
-  // 0022_weekly_email_drafts.sql.
+  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql,
+  // 0022_weekly_email_drafts.sql, and 0029_track_submissions.sql.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
     "/eboard/team-applications",
     "/eboard/weekly-email",
+    "/eboard/track-submissions",
   ];
   // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only.
   const OWNER_ONLY = ["/eboard/analytics"];
@@ -146,6 +157,7 @@ export default async function EboardHomePage() {
     "/eboard/dj-inquiries": unreadDjInquiryCount,
     "/eboard/team-applications": unreadTeamApplicationCount,
     "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
+    "/eboard/track-submissions": unreadTrackSubmissionCount,
   };
 
   return (

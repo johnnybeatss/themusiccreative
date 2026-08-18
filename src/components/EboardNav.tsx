@@ -15,6 +15,7 @@ import {
   Users,
   Mail,
   BarChart3,
+  Mic2,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, isOwner, type MyProfile } from "@/lib/supabase/role";
@@ -53,6 +54,11 @@ const NAV_GROUPS = [
         href: "/eboard/team-applications",
         label: "Team Applications",
         icon: UserPlus,
+      },
+      {
+        href: "/eboard/track-submissions",
+        label: "Track Submissions",
+        icon: Mic2,
       },
       { href: "/eboard/feedback", label: "Feedback", icon: MessageSquare },
     ],
@@ -93,6 +99,7 @@ export default function EboardNav({
   unreadDjInquiryCount = 0,
   unreadTeamApplicationCount = 0,
   unreadWeeklyEmailDraftCount = 0,
+  unreadTrackSubmissionCount = 0,
 }: {
   profile: MyProfile | null;
   // profile is already role-downgraded when demo mode is active (see
@@ -105,6 +112,7 @@ export default function EboardNav({
   unreadDjInquiryCount?: number;
   unreadTeamApplicationCount?: number;
   unreadWeeklyEmailDraftCount?: number;
+  unreadTrackSubmissionCount?: number;
 }) {
   // Same shared-team-inbox unread badge as Feedback, now covering all
   // five owner/admin-only inboxes (see supabase/migrations/0017, 0021, 0022).
@@ -114,15 +122,17 @@ export default function EboardNav({
     "/eboard/dj-inquiries": unreadDjInquiryCount,
     "/eboard/team-applications": unreadTeamApplicationCount,
     "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
+    "/eboard/track-submissions": unreadTrackSubmissionCount,
   };
-  // Feedback, Join Submissions, DJ Inquiries, Team Applications, and
-  // Weekly Email are all owner/admin-only (see
+  // Feedback, Join Submissions, DJ Inquiries, Team Applications, Weekly
+  // Email, and Track Submissions are all owner/admin-only (see
   // supabase/migrations/0011_feedback_admin_only.sql,
   // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql,
-  // 0022_weekly_email_drafts.sql) — no point showing eboard-tier members a
-  // link that just lands on a read-only page. Feed Videos and Weekly
-  // Spotlight are edit-restricted too (owner/admin and owner-only
-  // respectively — see their actions.ts), so they're hidden the same way.
+  // 0022_weekly_email_drafts.sql, 0029_track_submissions.sql) — no point
+  // showing eboard-tier members a link that just lands on a read-only
+  // page. Feed Videos and Weekly Spotlight are edit-restricted too
+  // (owner/admin and owner-only respectively — see their actions.ts), so
+  // they're hidden the same way.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
@@ -131,6 +141,7 @@ export default function EboardNav({
     "/eboard/weekly-email",
     "/eboard/videos",
     "/eboard/track",
+    "/eboard/track-submissions",
   ];
   // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only
   // (see src/app/eboard/(protected)/analytics/page.tsx).

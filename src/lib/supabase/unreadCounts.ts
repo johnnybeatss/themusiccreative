@@ -8,7 +8,11 @@ import { getMyRole, canManage } from "./role";
 // eboard-tier members, who can't read these tables at all (enforced by RLS,
 // not just here).
 async function getUnreadCount(
-  table: "join_submissions" | "dj_inquiries" | "team_applications"
+  table:
+    | "join_submissions"
+    | "dj_inquiries"
+    | "team_applications"
+    | "track_submissions"
 ) {
   const role = await getMyRole();
   if (!canManage(role)) return 0;
@@ -35,6 +39,10 @@ export function getUnreadDjInquiryCount(): Promise<number> {
 
 export function getUnreadTeamApplicationCount(): Promise<number> {
   return getUnreadCount("team_applications");
+}
+
+export function getUnreadTrackSubmissionCount(): Promise<number> {
+  return getUnreadCount("track_submissions");
 }
 
 // weekly_email_drafts uses reviewed_at instead of read_at (see

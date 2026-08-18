@@ -2,26 +2,11 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { normalizeInstagram } from "@/lib/normalizeInstagram";
 import { saveWeeklyTrack } from "./actions";
 
 const BUCKET = "weekly-track";
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB — plenty for an mp3
-
-// Accepts "@handle", "handle", or a full profile URL and normalizes to a
-// clean https://instagram.com/handle link — same handles-not-URLs pattern
-// used for every other Instagram field on the site so far.
-function normalizeInstagram(input: string): string | null {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-  let handle = trimmed;
-  const igMatch = trimmed.match(/instagram\.com\/([^/?#]+)/i);
-  if (igMatch) {
-    handle = igMatch[1];
-  }
-  handle = handle.replace(/^@/, "").replace(/\/+$/, "");
-  if (!handle) return null;
-  return `https://instagram.com/${handle}`;
-}
 
 export default function TrackUploadForm() {
   const [error, setError] = useState<string | null>(null);

@@ -6,8 +6,6 @@ import { Instagram, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 
 const VOLUME_STORAGE_KEY = "tmc-track-volume";
 
-const INSTAGRAM_DM_URL = "https://instagram.com/themusiccreativefiu";
-
 // Module-level, not component state — deliberately survives even if this
 // bar remounts during client-side navigation between pages. Autoplay
 // should fire at most once per page load, and never again once the
@@ -249,9 +247,7 @@ export default function FeaturedTrackBar({
           )}
 
           <Link
-            href={INSTAGRAM_DM_URL}
-            target="_blank"
-            rel="noreferrer"
+            href="/#submit-track"
             className="hidden shrink-0 rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950 sm:block"
           >
             Submit yours →

@@ -12,6 +12,7 @@ import {
   getUnreadDjInquiryCount,
   getUnreadTeamApplicationCount,
   getUnreadWeeklyEmailDraftCount,
+  getUnreadTrackSubmissionCount,
 } from "@/lib/supabase/unreadCounts";
 import EboardNav from "@/components/EboardNav";
 import SessionGuard from "@/components/SessionGuard";
@@ -46,6 +47,7 @@ export default async function EboardProtectedLayout({
     unreadDjInquiryCount,
     unreadTeamApplicationCount,
     unreadWeeklyEmailDraftCount,
+    unreadTrackSubmissionCount,
   ] = await Promise.all([
     getEffectiveProfile(),
     getMyRole(),
@@ -55,6 +57,7 @@ export default async function EboardProtectedLayout({
     getUnreadDjInquiryCount(),
     getUnreadTeamApplicationCount(),
     getUnreadWeeklyEmailDraftCount(),
+    getUnreadTrackSubmissionCount(),
   ]);
   // "View as E-Board" toggle is owner-only (see demoViewActions.ts, which
   // re-checks this server-side too — this is just what decides whether
