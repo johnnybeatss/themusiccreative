@@ -162,7 +162,7 @@ export default async function EventDetailPage({
               key={url}
               src={url}
               alt=""
-              className="h-40 w-full rounded-lg object-cover sm:h-48"
+              className="aspect-square w-full rounded-lg object-cover object-top"
             />
           ))}
         </div>
