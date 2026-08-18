@@ -35,6 +35,23 @@ function escapeHtmlMultiline(value: string): string {
   return escapeHtml(value).replace(/\n/g, "<br />");
 }
 
+// True click-to-expand (<details>/<summary>, JS toggles) isn't reliable in
+// email — Outlook desktop doesn't support <details> at all, so it'd render
+// broken or permanently-expanded for a chunk of recipients. This is the
+// standard, universally-supported pattern instead: a short preview plus a
+// link to the full event page. Cuts at a word boundary so it never chops
+// mid-word.
+function truncateDescription(
+  text: string,
+  maxLength = 220
+): { preview: string; truncated: boolean } {
+  if (text.length <= maxLength) return { preview: text, truncated: false };
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(" ");
+  const preview = (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trim();
+  return { preview: `${preview}…`, truncated: true };
+}
+
 export function buildWeeklyEmailSubject(
   weekStart: string,
   weekEnd: string
@@ -46,9 +63,12 @@ function buildEventCard(event: WeeklyEmailEvent, siteUrl: string): string {
   const name = escapeHtml(event.name);
   const when = escapeHtml(formatEventDateTime(event.date));
   const location = event.location ? escapeHtml(event.location) : null;
-  const description = event.description?.trim()
-    ? escapeHtmlMultiline(event.description.trim())
-    : null;
+  const rawDescription = event.description?.trim() || null;
+  const { preview, truncated } = rawDescription
+    ? truncateDescription(rawDescription)
+    : { preview: null, truncated: false };
+  const description = preview ? escapeHtmlMultiline(preview) : null;
+  const linkLabel = truncated ? "Read full details" : "View details";
 
   return `
     <tr>
@@ -59,7 +79,7 @@ function buildEventCard(event: WeeklyEmailEvent, siteUrl: string): string {
               <p style="margin:0;font-size:15px;font-weight:bold;color:#10141f;font-family:Arial,Helvetica,sans-serif;">${name}</p>
               <p style="margin:4px 0 0;font-size:12px;color:#7a828f;font-family:Arial,Helvetica,sans-serif;">${when}${location ? ` &middot; ${location}` : ""}</p>
               ${description ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#444444;font-family:Arial,Helvetica,sans-serif;">${description}</p>` : ""}
-              <p style="margin:12px 0 0;"><a href="${siteUrl}/events/${event.id}" style="font-size:12px;font-weight:bold;color:#b5860a;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">View details &rarr;</a></p>
+              <p style="margin:12px 0 0;"><a href="${siteUrl}/events/${event.id}" style="font-size:12px;font-weight:bold;color:#b5860a;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${linkLabel} &rarr;</a></p>
             </td>
           </tr>
         </table>
