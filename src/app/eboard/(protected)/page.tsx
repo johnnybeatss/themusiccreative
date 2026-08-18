@@ -9,6 +9,7 @@ import {
   Briefcase,
   UserPlus,
   Disc3,
+  Users,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getMyRole, canManage } from "@/lib/supabase/role";
@@ -30,6 +31,12 @@ const sections = [
     label: "Opportunities",
     description: "Add, edit, and remove what shows on the public Opportunities page.",
     icon: Briefcase,
+  },
+  {
+    href: "/eboard/team",
+    label: "Team",
+    description: "Photos, bios, and display order for the public Team page.",
+    icon: Users,
   },
   {
     href: "/eboard/join-submissions",

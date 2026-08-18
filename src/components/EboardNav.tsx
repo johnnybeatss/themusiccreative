@@ -12,6 +12,7 @@ import {
   Briefcase,
   UserPlus,
   Disc3,
+  Users,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
@@ -19,6 +20,7 @@ import { canManage, type MyProfile } from "@/lib/supabase/role";
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/eboard/events", label: "Events", icon: PartyPopper },
+  { href: "/eboard/team", label: "Team", icon: Users },
   { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
   {
     href: "/eboard/join-submissions",

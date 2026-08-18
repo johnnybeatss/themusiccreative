@@ -1,7 +1,7 @@
 import "server-only";
 import type { createClient } from "./server";
 
-const BUCKET = "content-photos";
+const DEFAULT_BUCKET = "content-photos";
 // 4MB — safely under Vercel's serverless function body cap (~4.5MB), so
 // this can go through the normal Server Action FormData instead of the
 // client-direct-to-storage pattern used for audio/video uploads.
@@ -9,12 +9,16 @@ const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 type Client = Awaited<ReturnType<typeof createClient>>;
 
-// Shared by the Events and Opportunities admin forms. Returns `url: null,
-// error: null` when no file was chosen (cover image is always optional) —
-// callers should treat that as "leave the existing image alone."
+// Shared by the Events, Opportunities, and Team admin forms. Returns
+// `url: null, error: null` when no file was chosen (cover image is always
+// optional) — callers should treat that as "leave the existing image
+// alone." `bucket` defaults to "content-photos" (Events/Opportunities);
+// Team headshots use the separate "eboard-photos" bucket instead
+// (supabase/migrations/0001_init.sql).
 export async function uploadContentImage(
   supabase: Client,
-  file: File | null
+  file: File | null,
+  bucket: string = DEFAULT_BUCKET
 ): Promise<{ url: string | null; error: string | null }> {
   if (!file || file.size === 0) return { url: null, error: null };
 
@@ -29,11 +33,11 @@ export async function uploadContentImage(
   const path = `${crypto.randomUUID()}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
+    .from(bucket)
     .upload(path, file, { contentType: file.type });
   if (uploadError) return { url: null, error: uploadError.message };
 
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return { url: data.publicUrl, error: null };
 }
 
@@ -43,12 +47,13 @@ export async function uploadContentImage(
 // silently skipping it.
 export async function uploadContentImages(
   supabase: Client,
-  files: File[]
+  files: File[],
+  bucket: string = DEFAULT_BUCKET
 ): Promise<{ urls: string[]; error: string | null }> {
   const urls: string[] = [];
   for (const file of files) {
     if (!file || file.size === 0) continue;
-    const { url, error } = await uploadContentImage(supabase, file);
+    const { url, error } = await uploadContentImage(supabase, file, bucket);
     if (error) return { urls: [], error };
     if (url) urls.push(url);
   }
