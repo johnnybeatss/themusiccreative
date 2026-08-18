@@ -14,9 +14,10 @@ import {
   Disc3,
   Users,
   Mail,
+  BarChart3,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
-import { canManage, type MyProfile } from "@/lib/supabase/role";
+import { canManage, isOwner, type MyProfile } from "@/lib/supabase/role";
 import { enterDemoView, exitDemoView } from "@/app/eboard/(protected)/demoViewActions";
 
 // Grouped instead of one flat 15-item list — a flat list got hard to scan
@@ -69,6 +70,7 @@ const NAV_GROUPS = [
     links: [
       { href: "/eboard/calendar", label: "Meeting Calendar", icon: Calendar },
       { href: "/eboard/resources", label: "Drive Resources", icon: FolderOpen },
+      { href: "/eboard/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
 ];
@@ -130,12 +132,17 @@ export default function EboardNav({
     "/eboard/videos",
     "/eboard/track",
   ];
+  // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only
+  // (see src/app/eboard/(protected)/analytics/page.tsx).
+  const OWNER_ONLY = ["/eboard/analytics"];
   const visibleGroups = NAV_GROUPS.map((g) => ({
     ...g,
-    links: g.links.filter(
-      (l) =>
-        !OWNER_ADMIN_ONLY.includes(l.href) || canManage(profile?.role ?? null)
-    ),
+    links: g.links.filter((l) => {
+      if (OWNER_ONLY.includes(l.href)) return isOwner(profile?.role ?? null);
+      if (OWNER_ADMIN_ONLY.includes(l.href))
+        return canManage(profile?.role ?? null);
+      return true;
+    }),
   })).filter((g) => g.links.length > 0);
 
   return (

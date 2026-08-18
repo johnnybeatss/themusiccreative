@@ -11,9 +11,10 @@ import {
   Disc3,
   Users,
   Mail,
+  BarChart3,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import { getEffectiveRole, canManage } from "@/lib/supabase/role";
+import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
 import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
 import {
   getUnreadJoinSubmissionCount,
@@ -95,6 +96,12 @@ const sections = [
     description: "Free-form internal notes for E-Board.",
     icon: StickyNote,
   },
+  {
+    href: "/eboard/analytics",
+    label: "Analytics",
+    description: "Website traffic from Vercel Web Analytics — owner only.",
+    icon: BarChart3,
+  },
 ];
 
 export default async function EboardHomePage() {
@@ -125,9 +132,13 @@ export default async function EboardHomePage() {
     "/eboard/team-applications",
     "/eboard/weekly-email",
   ];
-  const visibleSections = sections.filter(
-    (s) => !OWNER_ADMIN_ONLY.includes(s.href) || canManage(role)
-  );
+  // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only.
+  const OWNER_ONLY = ["/eboard/analytics"];
+  const visibleSections = sections.filter((s) => {
+    if (OWNER_ONLY.includes(s.href)) return isOwner(role);
+    if (OWNER_ADMIN_ONLY.includes(s.href)) return canManage(role);
+    return true;
+  });
   // Same shared-team-inbox unread badge as the sidebar (0017, 0021, 0022).
   const UNREAD_COUNTS: Record<string, number> = {
     "/eboard/feedback": unreadFeedbackCount,
