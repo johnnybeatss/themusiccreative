@@ -39,6 +39,10 @@ export default function TrackUploadForm() {
     const artistInstagramUrl = normalizeInstagram(
       (formData.get("artist_instagram") as string) || ""
     );
+    const appleMusicUrl =
+      ((formData.get("apple_music_url") as string) || "").trim() || null;
+    const spotifyUrl =
+      ((formData.get("spotify_url") as string) || "").trim() || null;
 
     if (!file || file.size === 0) return setError("Choose an audio file.");
     if (!trackTitle) return setError("Track title is required.");
@@ -69,6 +73,8 @@ export default function TrackUploadForm() {
         trackTitle,
         artistName,
         artistInstagramUrl,
+        appleMusicUrl,
+        spotifyUrl,
       });
       if (result.error) {
         await supabase.storage.from(BUCKET).remove([path]);
@@ -133,6 +139,31 @@ export default function TrackUploadForm() {
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-sm">
+          <span className="text-steel-light">Apple Music link (optional)</span>
+          <input
+            type="url"
+            name="apple_music_url"
+            placeholder="https://music.apple.com/..."
+            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="text-steel-light">Spotify link (optional)</span>
+          <input
+            type="url"
+            name="spotify_url"
+            placeholder="https://open.spotify.com/..."
+            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
+          />
+        </label>
+      </div>
+      <p className="text-xs text-steel-light">
+        If the artist already has this track live on either platform, these
+        show as small buttons next to the player so listeners can jump
+        straight there.
+      </p>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"

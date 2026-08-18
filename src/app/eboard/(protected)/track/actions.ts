@@ -14,11 +14,15 @@ export async function saveWeeklyTrack({
   trackTitle,
   artistName,
   artistInstagramUrl,
+  appleMusicUrl,
+  spotifyUrl,
 }: {
   storagePath: string;
   trackTitle: string;
   artistName: string;
   artistInstagramUrl?: string | null;
+  appleMusicUrl?: string | null;
+  spotifyUrl?: string | null;
 }): Promise<{ error: string | null }> {
   const supabase = await createClient();
   const {
@@ -37,6 +41,8 @@ export async function saveWeeklyTrack({
     track_title: trackTitle.trim(),
     artist_name: artistName.trim(),
     artist_instagram_url: artistInstagramUrl || null,
+    apple_music_url: appleMusicUrl || null,
+    spotify_url: spotifyUrl || null,
   });
   if (error) return { error: error.message };
 
