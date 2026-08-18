@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { createEvent, updateEvent, type EventFormState } from "./actions";
 import { isoToZonedDateTimeLocal } from "@/lib/eventTimezone";
 
@@ -35,7 +36,45 @@ export default function EventForm({
   const action = event ? updateEvent : createEvent;
   const [state, formAction, isPending] = useActionState(action, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const photosInputRef = useRef<HTMLInputElement>(null);
   const mounted = useRef(false);
+
+  // A native <input type="file"> REPLACES its FileList every time you open
+  // the picker and choose again — it never accumulates across separate
+  // "Choose Files" clicks. That's what made it look like the form "wouldn't
+  // let you add more than one photo at a time": picking a 2nd batch wiped
+  // out the 1st. This state holds everything staged so far; each new pick
+  // gets merged in, then written back onto the real input via DataTransfer
+  // so the native form submission (and Server Action FormData) still sees
+  // the full set.
+  const [stagedPhotos, setStagedPhotos] = useState<File[]>([]);
+  const stagedPreviewUrls = useMemo(
+    () => stagedPhotos.map((f) => URL.createObjectURL(f)),
+    [stagedPhotos]
+  );
+  useEffect(() => {
+    return () => stagedPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, [stagedPreviewUrls]);
+
+  function syncPhotosInput(files: File[]) {
+    const dt = new DataTransfer();
+    files.forEach((f) => dt.items.add(f));
+    if (photosInputRef.current) photosInputRef.current.files = dt.files;
+  }
+
+  function handlePhotosChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const picked = Array.from(e.target.files ?? []);
+    if (picked.length === 0) return;
+    const merged = [...stagedPhotos, ...picked];
+    setStagedPhotos(merged);
+    syncPhotosInput(merged);
+  }
+
+  function removeStagedPhoto(index: number) {
+    const next = stagedPhotos.filter((_, i) => i !== index);
+    setStagedPhotos(next);
+    syncPhotosInput(next);
+  }
 
   useEffect(() => {
     if (!mounted.current) {
@@ -43,7 +82,10 @@ export default function EventForm({
       return;
     }
     if (state.error === null) {
-      if (!event) formRef.current?.reset();
+      if (!event) {
+        formRef.current?.reset();
+        setStagedPhotos([]);
+      }
       onDone?.();
     }
     // onDone intentionally omitted — including it would re-run this effect
@@ -147,30 +189,40 @@ export default function EventForm({
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>
-      <label className="block text-sm">
-        <span className="text-steel-light">
-          Cover image {event ? "(optional — replaces current)" : "(optional)"}
-        </span>
-        {event?.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={event.image_url}
-            alt=""
-            className="mt-2 h-24 w-full rounded-lg object-cover"
+      <div className="rounded-lg border border-navy-800 p-3">
+        <label className="block text-sm">
+          <span className="font-semibold uppercase tracking-wide text-steel-light">
+            Cover image
+          </span>
+          <span className="ml-1.5 text-steel-light">
+            {event ? "(optional — replaces current)" : "(optional)"}
+          </span>
+          {event?.image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={event.image_url}
+              alt=""
+              className="mt-2 h-24 w-full rounded-lg object-cover"
+            />
+          )}
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            className="mt-2 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
           />
-        )}
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
-        />
-      </label>
-      <p className="text-xs text-steel-light">Under 4MB.</p>
+        </label>
+        <p className="mt-1 text-xs text-steel-light">
+          The single banner image at the top of the event page. Under 4MB.
+        </p>
+      </div>
 
-      {event && event.photo_urls.length > 0 && (
-        <div className="block text-sm">
-          <span className="text-steel-light">Gallery photos</span>
+      <div className="rounded-lg border border-navy-800 p-3">
+        <span className="text-sm font-semibold uppercase tracking-wide text-steel-light">
+          Gallery photos
+        </span>
+
+        {event && event.photo_urls.length > 0 && (
           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {event.photo_urls.map((url) => (
               <label key={url} className="relative block">
@@ -193,21 +245,49 @@ export default function EventForm({
               </label>
             ))}
           </div>
-        </div>
-      )}
-      <label className="block text-sm">
-        <span className="text-steel-light">Add gallery photos (optional)</span>
-        <input
-          type="file"
-          name="photos"
-          accept="image/*"
-          multiple
-          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
-        />
-        <span className="mt-1 block text-xs text-steel-light">
-          Shows in a gallery on the event&apos;s public page. Under 4MB each.
-        </span>
-      </label>
+        )}
+
+        <label className="mt-3 block text-sm">
+          <span className="text-steel-light">Add photos</span>
+          <input
+            ref={photosInputRef}
+            type="file"
+            name="photos"
+            accept="image/*"
+            multiple
+            onChange={handlePhotosChange}
+            className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+          />
+        </label>
+        <p className="mt-1 text-xs text-steel-light">
+          Pick more than one at once (shift/cmd-click in the file picker),
+          or add photos in separate batches — each new pick adds to the
+          list below instead of replacing it. Under 4MB each.
+        </p>
+
+        {stagedPhotos.length > 0 && (
+          <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {stagedPhotos.map((file, i) => (
+              <div key={`${file.name}-${file.lastModified}-${i}`} className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={stagedPreviewUrls[i]}
+                  alt=""
+                  className="h-16 w-full rounded-lg object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeStagedPhoto(i)}
+                  aria-label={`Remove ${file.name}`}
+                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-navy-950 text-steel-light transition-colors hover:text-red-400"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       <div className="flex items-center gap-4 pt-1">
