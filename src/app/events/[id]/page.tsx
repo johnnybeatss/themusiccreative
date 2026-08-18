@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
 import RsvpForm from "./RsvpForm";
 import ShareEventButton from "./ShareEventButton";
+import AddToCalendarButton from "./AddToCalendarButton";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 
 type Event = {
@@ -147,7 +148,16 @@ export default async function EventDetailPage({
         <h1 className="font-display text-3xl tracking-wide text-ivory">
           {event.name.toUpperCase()}
         </h1>
-        <ShareEventButton eventName={event.name} />
+        <div className="flex shrink-0 items-center gap-2">
+          <AddToCalendarButton
+            eventId={event.id}
+            eventName={event.name}
+            description={event.description}
+            location={event.location}
+            startIso={event.date}
+          />
+          <ShareEventButton eventName={event.name} />
+        </div>
       </div>
       <div className="mt-2 h-1 w-16 bg-gold" />
 
