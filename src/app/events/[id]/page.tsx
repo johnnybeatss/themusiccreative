@@ -154,12 +154,6 @@ export default async function EventDetailPage({
         </a>
       )}
 
-      {event.description && (
-        <p className="mt-6 max-w-2xl whitespace-pre-wrap text-sm text-steel-light">
-          {event.description}
-        </p>
-      )}
-
       {event.photo_urls.length > 0 && (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {event.photo_urls.map((url) => (
@@ -168,10 +162,16 @@ export default async function EventDetailPage({
               key={url}
               src={url}
               alt=""
-              className="h-32 w-full rounded-lg object-cover"
+              className="h-40 w-full rounded-lg object-cover sm:h-48"
             />
           ))}
         </div>
+      )}
+
+      {event.description && (
+        <p className="mt-6 max-w-2xl whitespace-pre-wrap text-sm text-steel-light">
+          {event.description}
+        </p>
       )}
 
       <RsvpForm eventId={event.id} />
