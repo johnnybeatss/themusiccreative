@@ -36,3 +36,24 @@ export function getUnreadDjInquiryCount(): Promise<number> {
 export function getUnreadTeamApplicationCount(): Promise<number> {
   return getUnreadCount("team_applications");
 }
+
+// weekly_email_drafts uses reviewed_at instead of read_at (see
+// 0022_weekly_email_drafts.sql) — "unread" here means "there's a draft
+// waiting on someone to review and send it." Only counts still-drafted
+// rows, not ones that have already been sent.
+export async function getUnreadWeeklyEmailDraftCount(): Promise<number> {
+  const role = await getMyRole();
+  if (!canManage(role)) return 0;
+
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("weekly_email_drafts")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "draft")
+    .is("reviewed_at", null);
+  if (error) {
+    console.error("Failed to count unread weekly email drafts:", error.message);
+    return 0;
+  }
+  return count ?? 0;
+}

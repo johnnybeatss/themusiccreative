@@ -13,6 +13,7 @@ import {
   UserPlus,
   Disc3,
   Users,
+  Mail,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
@@ -35,6 +36,7 @@ const links = [
   },
   { href: "/eboard/videos", label: "Feed Videos", icon: Video },
   { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
+  { href: "/eboard/weekly-email", label: "Weekly Email", icon: Mail },
   { href: "/eboard/reports", label: "Weekly Reports", icon: FileText },
   { href: "/eboard/calendar", label: "Meeting Calendar", icon: Calendar },
   { href: "/eboard/resources", label: "Drive Resources", icon: FolderOpen },
@@ -57,33 +59,38 @@ export default function EboardNav({
   unreadJoinSubmissionCount = 0,
   unreadDjInquiryCount = 0,
   unreadTeamApplicationCount = 0,
+  unreadWeeklyEmailDraftCount = 0,
 }: {
   profile: MyProfile | null;
   unreadFeedbackCount?: number;
   unreadJoinSubmissionCount?: number;
   unreadDjInquiryCount?: number;
   unreadTeamApplicationCount?: number;
+  unreadWeeklyEmailDraftCount?: number;
 }) {
   // Same shared-team-inbox unread badge as Feedback, now covering all
-  // four owner/admin-only inboxes (see supabase/migrations/0017, 0021).
+  // five owner/admin-only inboxes (see supabase/migrations/0017, 0021, 0022).
   const UNREAD_COUNTS: Record<string, number> = {
     "/eboard/feedback": unreadFeedbackCount,
     "/eboard/join-submissions": unreadJoinSubmissionCount,
     "/eboard/dj-inquiries": unreadDjInquiryCount,
     "/eboard/team-applications": unreadTeamApplicationCount,
+    "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
   };
-  // Feedback, Join Submissions, DJ Inquiries, and Team Applications are
-  // all owner/admin-only (see supabase/migrations/0011_feedback_admin_only.sql,
-  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql) — no point
-  // showing eboard-tier members a link that just lands on a read-only
-  // page. Feed Videos and Weekly Spotlight are edit-restricted too
-  // (owner/admin and owner-only respectively — see their actions.ts), so
-  // they're hidden the same way.
+  // Feedback, Join Submissions, DJ Inquiries, Team Applications, and
+  // Weekly Email are all owner/admin-only (see
+  // supabase/migrations/0011_feedback_admin_only.sql,
+  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql,
+  // 0022_weekly_email_drafts.sql) — no point showing eboard-tier members a
+  // link that just lands on a read-only page. Feed Videos and Weekly
+  // Spotlight are edit-restricted too (owner/admin and owner-only
+  // respectively — see their actions.ts), so they're hidden the same way.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
     "/eboard/team-applications",
+    "/eboard/weekly-email",
     "/eboard/videos",
     "/eboard/track",
   ];

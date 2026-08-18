@@ -10,6 +10,7 @@ import {
   UserPlus,
   Disc3,
   Users,
+  Mail,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getMyRole, canManage } from "@/lib/supabase/role";
@@ -18,6 +19,7 @@ import {
   getUnreadJoinSubmissionCount,
   getUnreadDjInquiryCount,
   getUnreadTeamApplicationCount,
+  getUnreadWeeklyEmailDraftCount,
 } from "@/lib/supabase/unreadCounts";
 
 const sections = [
@@ -64,6 +66,12 @@ const sections = [
     icon: MessageSquare,
   },
   {
+    href: "/eboard/weekly-email",
+    label: "Weekly Email",
+    description: "Review and send the auto-drafted weekly events email.",
+    icon: Mail,
+  },
+  {
     href: "/eboard/reports",
     label: "Weekly Reports",
     description: "This week's events, to-dos, content ideas, and notes.",
@@ -96,31 +104,37 @@ export default async function EboardHomePage() {
     unreadJoinSubmissionCount,
     unreadDjInquiryCount,
     unreadTeamApplicationCount,
+    unreadWeeklyEmailDraftCount,
   ] = await Promise.all([
     getMyRole(),
     getUnreadFeedbackCount(),
     getUnreadJoinSubmissionCount(),
     getUnreadDjInquiryCount(),
     getUnreadTeamApplicationCount(),
+    getUnreadWeeklyEmailDraftCount(),
   ]);
-  // Feedback, Join Submissions, DJ Inquiries, and Team Applications are
-  // owner/admin-only — see supabase/migrations/0011_feedback_admin_only.sql,
-  // 0014_join_and_dj_inquiries.sql, and 0021_team_applications.sql.
+  // Feedback, Join Submissions, DJ Inquiries, Team Applications, and
+  // Weekly Email are owner/admin-only — see
+  // supabase/migrations/0011_feedback_admin_only.sql,
+  // 0014_join_and_dj_inquiries.sql, 0021_team_applications.sql, and
+  // 0022_weekly_email_drafts.sql.
   const OWNER_ADMIN_ONLY = [
     "/eboard/feedback",
     "/eboard/join-submissions",
     "/eboard/dj-inquiries",
     "/eboard/team-applications",
+    "/eboard/weekly-email",
   ];
   const visibleSections = sections.filter(
     (s) => !OWNER_ADMIN_ONLY.includes(s.href) || canManage(role)
   );
-  // Same shared-team-inbox unread badge as the sidebar (0017, 0021).
+  // Same shared-team-inbox unread badge as the sidebar (0017, 0021, 0022).
   const UNREAD_COUNTS: Record<string, number> = {
     "/eboard/feedback": unreadFeedbackCount,
     "/eboard/join-submissions": unreadJoinSubmissionCount,
     "/eboard/dj-inquiries": unreadDjInquiryCount,
     "/eboard/team-applications": unreadTeamApplicationCount,
+    "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
   };
 
   return (
