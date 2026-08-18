@@ -137,3 +137,36 @@ export async function sendWeeklyEmailDraft(formData: FormData) {
   revalidatePath("/eboard/weekly-email");
   revalidatePath("/eboard", "layout");
 }
+
+// Lets you delete a draft (or a sent record) straight from the admin page
+// instead of needing Supabase's SQL Editor — mainly useful for re-testing
+// the cron route same-week, since it only ever creates one draft per week
+// and skips if one already exists.
+export async function deleteWeeklyEmailDraft(formData: FormData) {
+  if (!canManage(await getMyRole())) return;
+
+  const id = formData.get("id") as string;
+  const broadcastId = formData.get("resend_broadcast_id") as string;
+  if (!id) return;
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey && broadcastId) {
+    const resend = new Resend(apiKey);
+    const { error: removeError } = await resend.broadcasts.remove(broadcastId);
+    if (removeError) {
+      // Not fatal — e.g. Resend may refuse to remove an already-sent
+      // broadcast. Still delete the local row either way.
+      console.error("Failed to remove Resend broadcast:", removeError.message);
+    }
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("weekly_email_drafts").delete().eq("id", id);
+  if (error) {
+    console.error("Failed to delete weekly email draft:", error.message);
+    return;
+  }
+
+  revalidatePath("/eboard/weekly-email");
+  revalidatePath("/eboard", "layout");
+}

@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { markWeeklyEmailDraftReviewed, sendWeeklyEmailDraft } from "./actions";
+import {
+  deleteWeeklyEmailDraft,
+  markWeeklyEmailDraftReviewed,
+  sendWeeklyEmailDraft,
+} from "./actions";
 
 export type WeeklyEmailDraft = {
   id: string;
   week_start: string;
   week_end: string;
+  resend_broadcast_id: string;
   subject: string;
   html: string;
   event_count: number;
@@ -69,32 +74,57 @@ export default function WeeklyEmailPreview({
             drafted {new Date(draft.created_at).toLocaleString()}
           </p>
         </div>
-        {draft.status === "draft" ? (
+        <div className="flex items-center gap-2">
+          {draft.status === "draft" ? (
+            <form
+              action={sendWeeklyEmailDraft}
+              onSubmit={(e) => {
+                if (
+                  !confirm(
+                    "Send this week's email to every newsletter subscriber? This can't be undone."
+                  )
+                ) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <input type="hidden" name="id" value={draft.id} />
+              <button
+                type="submit"
+                className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+              >
+                Send to subscribers
+              </button>
+            </form>
+          ) : (
+            <span className="rounded-lg border border-navy-800 px-3 py-1.5 text-xs font-semibold text-steel-light">
+              Sent {draft.sent_at ? new Date(draft.sent_at).toLocaleString() : ""}
+            </span>
+          )}
           <form
-            action={sendWeeklyEmailDraft}
+            action={deleteWeeklyEmailDraft}
             onSubmit={(e) => {
-              if (
-                !confirm(
-                  "Send this week's email to every newsletter subscriber? This can't be undone."
-                )
-              ) {
-                e.preventDefault();
-              }
+              const msg =
+                draft.status === "sent"
+                  ? "Delete this record? It was already sent — this only removes it from this list, not from anyone's inbox."
+                  : "Delete this draft? You'll need the cron to re-run (or trigger it manually) to get a new one.";
+              if (!confirm(msg)) e.preventDefault();
             }}
           >
             <input type="hidden" name="id" value={draft.id} />
+            <input
+              type="hidden"
+              name="resend_broadcast_id"
+              value={draft.resend_broadcast_id}
+            />
             <button
               type="submit"
-              className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+              className="rounded-lg border border-navy-800 px-3 py-2 text-xs text-steel-light transition-colors hover:border-red-400 hover:text-red-400"
             >
-              Send to subscribers
+              Delete
             </button>
           </form>
-        ) : (
-          <span className="rounded-lg border border-navy-800 px-3 py-1.5 text-xs font-semibold text-steel-light">
-            Sent {draft.sent_at ? new Date(draft.sent_at).toLocaleString() : ""}
-          </span>
-        )}
+        </div>
       </div>
 
       <iframe

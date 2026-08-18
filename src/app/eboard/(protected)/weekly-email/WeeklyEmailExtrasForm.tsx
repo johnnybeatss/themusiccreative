@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { saveWeeklyEmailExtras, type ExtrasFormState } from "./actions";
 
 export type WeeklyEmailExtras = {
@@ -33,6 +33,24 @@ export default function WeeklyEmailExtrasForm({
     saveWeeklyEmailExtras,
     initialState
   );
+
+  // Nothing on screen visibly changes after a successful save (the fields
+  // just keep showing the same values you typed), so without this there's
+  // no feedback that anything actually happened. Skips the very first
+  // render so it doesn't flash "Saved" before you've submitted anything.
+  const [showSaved, setShowSaved] = useState(false);
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    if (state.error === null) {
+      setShowSaved(true);
+      const t = setTimeout(() => setShowSaved(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [state]);
 
   return (
     <form
@@ -175,13 +193,18 @@ export default function WeeklyEmailExtrasForm({
       </div>
 
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
-      >
-        {isPending ? "Saving..." : "Save for next week"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        >
+          {isPending ? "Saving..." : "Save for next week"}
+        </button>
+        {showSaved && (
+          <span className="text-sm font-semibold text-gold">Saved ✓</span>
+        )}
+      </div>
     </form>
   );
 }
