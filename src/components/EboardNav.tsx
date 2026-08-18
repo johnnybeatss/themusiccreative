@@ -14,6 +14,7 @@ import {
   Disc3,
   Users,
   Mail,
+  Newspaper,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, type MyProfile } from "@/lib/supabase/role";
@@ -22,6 +23,7 @@ import { enterDemoView, exitDemoView } from "@/app/eboard/(protected)/demoViewAc
 const links = [
   { href: "/eboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/eboard/events", label: "Events", icon: PartyPopper },
+  { href: "/eboard/recaps", label: "Recaps", icon: Newspaper },
   { href: "/eboard/team", label: "Team", icon: Users },
   { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
   {

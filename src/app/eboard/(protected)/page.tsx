@@ -11,6 +11,7 @@ import {
   Disc3,
   Users,
   Mail,
+  Newspaper,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
@@ -34,6 +35,12 @@ const sections = [
     label: "Opportunities",
     description: "Add, edit, and remove what shows on the public Opportunities page.",
     icon: Briefcase,
+  },
+  {
+    href: "/eboard/recaps",
+    label: "Recaps",
+    description: "Post write-ups from past events — helps with SEO and shows people what TMC actually does.",
+    icon: Newspaper,
   },
   {
     href: "/eboard/team",
