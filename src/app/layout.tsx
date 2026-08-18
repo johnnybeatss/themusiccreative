@@ -16,7 +16,9 @@ async function getFeaturedTrack() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("weekly_track")
-    .select("track_title, artist_name, storage_path, artist_instagram_url")
+    .select(
+      "track_title, artist_name, storage_path, artist_instagram_url, apple_music_url, spotify_url"
+    )
     .order("updated_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -25,6 +27,8 @@ async function getFeaturedTrack() {
     track_title: data.track_title,
     artist_name: data.artist_name,
     artist_instagram_url: data.artist_instagram_url,
+    apple_music_url: data.apple_music_url,
+    spotify_url: data.spotify_url,
     audio_url: supabase.storage
       .from(TRACK_BUCKET)
       .getPublicUrl(data.storage_path).data.publicUrl,

@@ -56,10 +56,34 @@ export default async function WeeklyTrackAdminPage() {
               href={track.artist_instagram_url}
               target="_blank"
               rel="noreferrer"
-              className="text-xs text-gold underline"
+              className="block text-xs text-gold underline"
             >
               {track.artist_instagram_url}
             </a>
+          )}
+          {(track.apple_music_url || track.spotify_url) && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {track.apple_music_url && (
+                <a
+                  href={track.apple_music_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                >
+                  Apple Music
+                </a>
+              )}
+              {track.spotify_url && (
+                <a
+                  href={track.spotify_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                >
+                  Spotify
+                </a>
+              )}
+            </div>
           )}
           <audio
             controls

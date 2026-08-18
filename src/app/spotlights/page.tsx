@@ -24,6 +24,8 @@ type Track = {
   track_title: string;
   artist_name: string;
   artist_instagram_url: string | null;
+  apple_music_url: string | null;
+  spotify_url: string | null;
   audio_url: string;
 };
 
@@ -36,7 +38,9 @@ async function getTracks(): Promise<Track[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("weekly_track")
-    .select("id, track_title, artist_name, storage_path, artist_instagram_url")
+    .select(
+      "id, track_title, artist_name, storage_path, artist_instagram_url, apple_music_url, spotify_url"
+    )
     .order("updated_at", { ascending: false });
   if (error) {
     console.error("Failed to load weekly_track archive:", error.message);
@@ -47,6 +51,8 @@ async function getTracks(): Promise<Track[]> {
     track_title: t.track_title,
     artist_name: t.artist_name,
     artist_instagram_url: t.artist_instagram_url,
+    apple_music_url: t.apple_music_url,
+    spotify_url: t.spotify_url,
     audio_url: supabase.storage.from(TRACK_BUCKET).getPublicUrl(t.storage_path)
       .data.publicUrl,
   }));
@@ -107,6 +113,30 @@ export default async function SpotlightsPage() {
                   src={t.audio_url}
                   className="mt-3 w-full"
                 />
+                {(t.apple_music_url || t.spotify_url) && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {t.apple_music_url && (
+                      <a
+                        href={t.apple_music_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                      >
+                        Apple Music
+                      </a>
+                    )}
+                    {t.spotify_url && (
+                      <a
+                        href={t.spotify_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                      >
+                        Spotify
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </Reveal>
           ))}

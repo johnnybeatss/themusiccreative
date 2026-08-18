@@ -21,6 +21,8 @@ export type FeaturedTrack = {
   artist_name: string;
   audio_url: string;
   artist_instagram_url?: string | null;
+  apple_music_url?: string | null;
+  spotify_url?: string | null;
 };
 
 // Fixed to the bottom of every page. Deliberately loud/animated — this is
@@ -220,6 +222,31 @@ export default function FeaturedTrackBar({
               className="h-1 w-20 cursor-pointer accent-gold"
             />
           </div>
+
+          {(track.apple_music_url || track.spotify_url) && (
+            <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+              {track.apple_music_url && (
+                <a
+                  href={track.apple_music_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                >
+                  Apple Music
+                </a>
+              )}
+              {track.spotify_url && (
+                <a
+                  href={track.spotify_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                >
+                  Spotify
+                </a>
+              )}
+            </div>
+          )}
 
           <Link
             href={INSTAGRAM_DM_URL}
