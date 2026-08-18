@@ -52,23 +52,38 @@ export default function NextEventCountdown({ event }: { event: NextEvent }) {
   return (
     <Link
       href={`/events/${event.id}`}
-      className="absolute right-6 top-6 hidden w-64 overflow-hidden rounded-xl border-2 border-gold bg-navy-900/95 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-sm transition-transform hover:scale-[1.03] sm:block"
+      className="absolute right-6 top-6 hidden w-80 overflow-hidden rounded-xl border-2 border-gold bg-navy-900/95 p-4 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-sm transition-transform hover:scale-[1.02] sm:flex sm:items-center sm:gap-4 md:w-96 lg:w-[420px]"
     >
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gold/25 blur-2xl"
       />
-      <p className="relative text-[11px] font-semibold uppercase tracking-wider text-gold">
-        Next Up
-      </p>
-      <p className="relative mt-1.5 line-clamp-2 font-display text-base tracking-wide text-ivory">
-        {event.name}
-      </p>
-      <p className="relative mt-1 text-xs text-steel-light">{shortDate}</p>
-      {parts && (
-        <p className="relative mt-3 font-display text-2xl tracking-wide text-gold">
-          {parts.days}d {parts.hours}h {parts.minutes}m
+      <div className="relative min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">
+          Next Up
         </p>
+        <p className="mt-1 truncate font-display text-base tracking-wide text-ivory">
+          {event.name}
+        </p>
+        <p className="mt-1 text-xs text-steel-light">{shortDate}</p>
+      </div>
+      {parts && (
+        <div className="relative flex shrink-0 items-center gap-3 border-l border-navy-800 pl-4">
+          {[
+            { value: parts.days, label: "D" },
+            { value: parts.hours, label: "H" },
+            { value: parts.minutes, label: "M" },
+          ].map((p) => (
+            <div key={p.label} className="text-center">
+              <p className="font-display text-xl tracking-wide text-gold">
+                {p.value}
+              </p>
+              <p className="text-[9px] uppercase tracking-wide text-steel-light">
+                {p.label}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
     </Link>
   );
