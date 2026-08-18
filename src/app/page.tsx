@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import VideoWheel, { type FeedVideo } from "@/components/VideoWheel";
+import NextEventCountdown, {
+  type NextEvent,
+} from "@/components/NextEventCountdown";
 import { createClient } from "@/lib/supabase/server";
 
 const BUCKET = "feed-videos";
@@ -26,8 +29,29 @@ async function getFeedVideos(): Promise<FeedVideo[]> {
   }));
 }
 
+// Soonest event that hasn't happened yet — powers the homepage countdown
+// banner. `gte` (not `gt`) so an event starting in the next few seconds
+// doesn't briefly vanish from the homepage right before the events list
+// would also drop it.
+async function getNextEvent(): Promise<NextEvent | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("events")
+    .select("id, name, date, location")
+    .gte("date", new Date().toISOString())
+    .order("date", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data;
+}
+
 export default async function HomePage() {
-  const videos = await getFeedVideos();
+  const [videos, nextEvent] = await Promise.all([
+    getFeedVideos(),
+    getNextEvent(),
+  ]);
 
   return (
     <div>
@@ -77,6 +101,8 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
+
+      {nextEvent && <NextEventCountdown event={nextEvent} />}
 
       <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
         <div>
@@ -145,14 +171,22 @@ export default async function HomePage() {
           bottom of the site — everyone who visits hears it. Submit yours for
           a shot at the spotlight.
         </p>
-        <a
-          href="https://instagram.com/themusiccreativefiu"
-          target="_blank"
-          rel="noreferrer"
-          className="relative mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
-        >
-          DM Us Your Track
-        </a>
+        <div className="relative mt-6 flex flex-wrap items-center gap-5">
+          <a
+            href="https://instagram.com/themusiccreativefiu"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+          >
+            DM Us Your Track
+          </a>
+          <Link
+            href="/spotlights"
+            className="text-sm font-semibold text-gold transition-colors hover:text-gold-light"
+          >
+            See past spotlights &rarr;
+          </Link>
+        </div>
       </div>
 
       {videos.length > 0 && (

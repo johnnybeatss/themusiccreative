@@ -21,6 +21,9 @@ export default function Footer() {
           <Link href="/merch" className="transition-colors hover:text-gold">
             Merch
           </Link>
+          <Link href="/spotlights" className="transition-colors hover:text-gold">
+            Spotlights
+          </Link>
           <Link href="/dj-booking" className="transition-colors hover:text-gold">
             DJ Booking
           </Link>

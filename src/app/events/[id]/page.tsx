@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Instagram } from "lucide-react";
+import { Instagram, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/serviceClient";
 import RsvpForm from "./RsvpForm";
+import ShareEventButton from "./ShareEventButton";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 
 type Event = {
@@ -27,6 +29,32 @@ async function getEvent(id: string): Promise<Event | null> {
     .maybeSingle();
   if (error || !data) return null;
   return data;
+}
+
+// event_rsvps has no public SELECT policy (see
+// supabase/migrations/0015_event_details_and_rsvps.sql — insert is public,
+// read is owner/admin only) so attendee names/emails/notes stay private.
+// This goes through the service-role client instead, purely to return a
+// COUNT — never selects or exposes individual rows to the browser.
+async function getRsvpCount(id: string): Promise<number> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return 0;
+  }
+  try {
+    const supabase = createServiceClient();
+    const { count, error } = await supabase
+      .from("event_rsvps")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", id);
+    if (error) {
+      console.error("Failed to load RSVP count:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (err) {
+    console.error("Failed to load RSVP count:", err);
+    return 0;
+  }
 }
 
 export async function generateMetadata({
@@ -55,6 +83,8 @@ export default async function EventDetailPage({
   const { id } = await params;
   const event = await getEvent(id);
   if (!event) notFound();
+
+  const rsvpCount = await getRsvpCount(id);
 
   const eventSchema = {
     "@context": "https://schema.org",
@@ -92,15 +122,25 @@ export default async function EventDetailPage({
         />
       )}
 
-      <h1 className="mt-6 font-display text-3xl tracking-wide text-ivory">
-        {event.name.toUpperCase()}
-      </h1>
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-3">
+        <h1 className="font-display text-3xl tracking-wide text-ivory">
+          {event.name.toUpperCase()}
+        </h1>
+        <ShareEventButton eventName={event.name} />
+      </div>
       <div className="mt-2 h-1 w-16 bg-gold" />
 
       <p className="mt-4 text-sm text-steel-light">
         {formatEventDateTime(event.date)}
         {event.location ? ` · ${event.location}` : ""} · {event.type}
       </p>
+
+      {rsvpCount > 0 && (
+        <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-gold">
+          <Users size={14} />
+          {rsvpCount} {rsvpCount === 1 ? "person" : "people"} going
+        </p>
+      )}
 
       {event.guest_instagram_url && (
         <a
