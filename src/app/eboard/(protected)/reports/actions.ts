@@ -79,6 +79,36 @@ export async function addItem(
   return { error: null };
 }
 
+// Editing text is open to the same audience as adding/checking items (any
+// signed-in E-board member) — only deleting is locked to owner/admin. RLS's
+// existing "authenticated can update weekly_report_items" policy (0020)
+// already covers this since it's row-level, not column-restricted, so no
+// migration is needed on top of what toggleItem already relies on.
+export async function editItem(
+  _prevState: ItemFormState,
+  formData: FormData
+): Promise<ItemFormState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be signed in." };
+
+  const id = formData.get("id") as string;
+  const text = ((formData.get("text") as string) || "").trim();
+  if (!id) return { error: "Missing item id." };
+  if (!text) return { error: "Item text is required." };
+
+  const { error } = await supabase
+    .from("weekly_report_items")
+    .update({ text })
+    .eq("id", id);
+  if (error) return { error: error.message };
+
+  revalidatePath("/eboard/reports");
+  return { error: null };
+}
+
 // Fire-and-forget toggle, submitted as a plain form (no client JS state) —
 // same pattern as the checkbox-as-button in FeedbackItem-style components
 // elsewhere in the app.
