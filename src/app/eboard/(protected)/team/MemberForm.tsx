@@ -22,9 +22,14 @@ const initialState: MemberFormState = { error: null };
 export default function MemberForm({
   member,
   onDone,
+  nextOrder,
 }: {
   member?: Member;
   onDone?: () => void;
+  // Only used for new members (see TeamAdminPage) — the next open spot at
+  // the end of the list, so adding someone doesn't require picking a
+  // number at all unless you want to insert them somewhere specific.
+  nextOrder?: number;
 }) {
   const action = member ? updateMember : createMember;
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -110,14 +115,19 @@ export default function MemberForm({
       </div>
       <label className="block text-sm">
         <span className="text-steel-light">
-          Display order (lower shows first, optional)
+          Display order (lower shows first)
         </span>
         <input
           type="number"
           name="sort_order"
-          defaultValue={member?.sort_order ?? 0}
+          defaultValue={member?.sort_order ?? nextOrder ?? 0}
           className="mt-1 w-32 rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
         />
+        <span className="mt-1 block text-xs text-steel-light">
+          {member
+            ? "Change it to move them — everyone in between shifts automatically."
+            : "Defaults to the end of the list — set a number to insert them there instead."}
+        </span>
       </label>
       <label className="block text-sm">
         <span className="text-steel-light">

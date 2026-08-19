@@ -48,6 +48,15 @@ export default async function TeamAdminPage() {
     orderCounts.set(m.sort_order, (orderCounts.get(m.sort_order) ?? 0) + 1);
   }
 
+  // Default a new member to the end of the list instead of a hardcoded 0 —
+  // createMember's auto-shift still makes room correctly if this gets
+  // overridden to an occupied number, but landing on "the end" by default
+  // means most adds never need the field touched at all.
+  const nextOrder =
+    members.length > 0
+      ? Math.max(...members.map((m) => m.sort_order)) + 1
+      : 1;
+
   return (
     <div>
       <h1 className="font-display text-3xl tracking-wide text-ivory">
@@ -60,7 +69,7 @@ export default async function TeamAdminPage() {
           : "Everyone on E-Board — tap the Instagram icon to connect."}
       </p>
 
-      {editable && <MemberForm />}
+      {editable && <MemberForm nextOrder={nextOrder} />}
 
       {members.length === 0 ? (
         <p className="mt-6 text-steel-light">No team members yet.</p>
