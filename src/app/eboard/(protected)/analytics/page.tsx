@@ -47,11 +47,17 @@ function DailyTrendChart({
           {rows.map((r, i) => (
             <div
               key={r.timestamp ?? i}
-              className="group relative flex-1"
+              // h-full gives this column a definite height (matching the
+              // h-40 container) for the bar's percentage height below to
+              // resolve against — without it, the column's height is "auto"
+              // (shrink-to-fit an empty box), so a percentage height on the
+              // bar has nothing to measure against and silently computes to
+              // 0. That's why the chart looked empty even with real data.
+              className="group relative h-full flex-1"
               title={`${formatDay(r.timestamp)}: ${formatNumber(r.pageviews)} views, ${formatNumber(r.visitors)} visitors`}
             >
               <div
-                className="w-full rounded-t bg-gold/70 transition-colors group-hover:bg-gold"
+                className="absolute inset-x-0 bottom-0 rounded-t bg-gold/70 transition-colors group-hover:bg-gold"
                 style={{ height: `${Math.max(2, (r.pageviews / max) * 100)}%` }}
               />
             </div>
