@@ -19,9 +19,11 @@ type Member = {
 export default function MemberListItem({
   member,
   editable,
+  orderIsDuplicate = false,
 }: {
   member: Member;
   editable: boolean;
+  orderIsDuplicate?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
 
@@ -49,6 +51,26 @@ export default function MemberListItem({
         <p className="font-semibold text-ivory">{member.name}</p>
         <p className="text-xs text-steel-light">{member.role}</p>
       </div>
+      {/* Lets an admin see every member's display order at a glance instead
+          of opening each edit form one at a time — flags in red when
+          another member shares the same value (see orderCounts in
+          page.tsx), since that's an easy-to-miss accident, not a crash. */}
+      {editable && (
+        <span
+          title={
+            orderIsDuplicate
+              ? "Another member also has this order value"
+              : "Display order"
+          }
+          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+            orderIsDuplicate
+              ? "bg-red-500/15 text-red-400"
+              : "bg-navy-950 text-steel-light"
+          }`}
+        >
+          #{member.sort_order}
+        </span>
+      )}
       {/* Visible to everyone (view-only eboard members included) — the
           point is letting the whole team connect with each other. */}
       {member.instagram_url && (

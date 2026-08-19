@@ -36,6 +36,18 @@ export default async function TeamAdminPage() {
   const [members, role] = await Promise.all([getMembers(), getEffectiveRole()]);
   const editable = canManage(role);
 
+  // Each member's edit form only shows that one person's order value, so
+  // two people can end up with the same number without either admin
+  // noticing (e.g. Jayden and Adrian both saved as "2"). Ties still sort
+  // deterministically (see getMembers' secondary order by created_at), so
+  // nothing breaks — but it's rarely what was intended. Flag every order
+  // value used by more than one member so it's visible at a glance in the
+  // list, without having to open each edit form to check.
+  const orderCounts = new Map<number, number>();
+  for (const m of members) {
+    orderCounts.set(m.sort_order, (orderCounts.get(m.sort_order) ?? 0) + 1);
+  }
+
   return (
     <div>
       <h1 className="font-display text-3xl tracking-wide text-ivory">
@@ -55,7 +67,12 @@ export default async function TeamAdminPage() {
       ) : (
         <div className="mt-6 space-y-3">
           {members.map((m) => (
-            <MemberListItem key={m.id} member={m} editable={editable} />
+            <MemberListItem
+              key={m.id}
+              member={m}
+              editable={editable}
+              orderIsDuplicate={(orderCounts.get(m.sort_order) ?? 0) > 1}
+            />
           ))}
         </div>
       )}
