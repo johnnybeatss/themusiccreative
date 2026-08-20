@@ -21,17 +21,29 @@ const DRIFT_SPEED = 18;
 // of how many unique clips there are.
 const REPEAT = 4;
 
-// Autoplaying video is a lot more expensive than a static thumbnail — with
-// REPEAT copies in the DOM at once, we don't want all of them decoding and
-// fetching simultaneously when only a few are ever actually visible inside
-// the overflow-hidden track. Each card only calls .play() while it's
-// intersecting the container, and .pause()s the instant it scrolls out.
-function VideoCard({ video }: { video: FeedVideo }) {
+// Autoplaying video is a lot more expensive than a static thumbnail. With
+// CARD_W at 220px, a typical container is wide enough for 3-4 cards to
+// clear a 25%-visibility bar at once — this used to mean 3-4 videos
+// genuinely streaming and looping simultaneously for as long as the wheel
+// was on screen, which is real, ongoing Supabase Cached Egress, not just a
+// handful of cheap poster-frame decodes. Now only ever ONE card — the one
+// most centered in view, coordinated by the shared observer in VideoWheel —
+// is allowed to actually play; every other card sits on its poster frame.
+function VideoCard({
+  video,
+  observer,
+}: {
+  video: FeedVideo;
+  // Null only during SSR (IntersectionObserver doesn't exist server-side —
+  // see VideoWheel's lazy init) — always set by the time this effect runs
+  // on the client.
+  observer: IntersectionObserver | null;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const el = videoRef.current;
-    if (!el) return;
+    if (!el || !observer) return;
     // Belt-and-suspenders: React doesn't always reliably sync the `muted`
     // *property* (vs. attribute) on initial render, and unmuted autoplay is
     // silently blocked by every major browser — setting it imperatively
@@ -48,25 +60,15 @@ function VideoCard({ video }: { video: FeedVideo }) {
     };
     el.addEventListener("loadedmetadata", showFirstFrame);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.play().catch(() => {
-            // Autoplay can still be rejected (e.g. low-power mode) — fine,
-            // it just sits on its poster/first frame.
-          });
-        } else {
-          el.pause();
-        }
-      },
-      { threshold: 0.25 }
-    );
+    // Play/pause itself is decided by VideoWheel's shared callback, not
+    // here — this card just registers so the shared observer can see it.
     observer.observe(el);
     return () => {
       el.removeEventListener("loadedmetadata", showFirstFrame);
-      observer.disconnect();
+      observer.unobserve(el);
+      el.pause();
     };
-  }, []);
+  }, [observer]);
 
   return (
     <video
@@ -82,11 +84,60 @@ function VideoCard({ video }: { video: FeedVideo }) {
   );
 }
 
+// Only a video whose card clears this much visibility is eligible to be
+// "the" playing card — comfortably higher than the old 0.25 threshold so
+// it lands on whichever card is actually centered, not just barely peeking
+// into view at the container's edge.
+const PLAY_THRESHOLD = 0.6;
+
 export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const [paused, setPaused] = useState(false);
   const [containerW, setContainerW] = useState(0);
+
+  // Every card's current intersection ratio, plus the single shared
+  // IntersectionObserver every VideoCard registers itself with (see
+  // VideoCard's comment for why this replaced one-observer-per-card). Set
+  // up lazily during render rather than in an effect, so it's already
+  // populated by the time each child's own mount effect runs and tries to
+  // observer.observe() itself — child effects fire before the parent's.
+  const ratiosRef = useRef<Map<HTMLVideoElement, number>>(new Map());
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  if (!observerRef.current && typeof IntersectionObserver !== "undefined") {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            ratiosRef.current.set(el, entry.intersectionRatio);
+          } else {
+            ratiosRef.current.delete(el);
+          }
+        }
+        let best: HTMLVideoElement | null = null;
+        let bestRatio = PLAY_THRESHOLD;
+        for (const [el, ratio] of ratiosRef.current) {
+          if (ratio >= bestRatio) {
+            best = el;
+            bestRatio = ratio;
+          }
+        }
+        for (const el of ratiosRef.current.keys()) {
+          if (el === best) {
+            el.play().catch(() => {
+              // Autoplay can still be rejected (e.g. low-power mode) —
+              // fine, it just sits on its poster/first frame.
+            });
+          } else {
+            el.pause();
+          }
+        }
+      },
+      { threshold: [0, 0.25, 0.5, PLAY_THRESHOLD, 0.75, 1] }
+    );
+  }
+  useEffect(() => () => observerRef.current?.disconnect(), []);
 
   // Repeating is what makes the drag-to-drift illusion work, but with a
   // single video it just shows the same card sitting next to itself —
@@ -159,7 +210,7 @@ export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
               className="group relative shrink-0 overflow-hidden rounded-2xl border border-navy-800 bg-navy-900"
               style={{ width: CARD_W, height: CARD_H }}
             >
-              <VideoCard video={v} />
+              <VideoCard video={v} observer={observerRef.current} />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/85 via-navy-950/10 to-transparent" />
               <p className="absolute bottom-3 left-3 right-3 text-xs font-semibold tracking-wide text-ivory">
                 {v.caption}
