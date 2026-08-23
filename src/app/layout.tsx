@@ -86,7 +86,7 @@ const organizationSchema = {
   "@type": "Organization",
   name: SITE_TITLE,
   url: SITE_URL,
-  logo: `${SITE_URL}/logo-rebrand.jpg`,
+  logo: `${SITE_URL}/logo-rebrand.png`,
   description: SITE_DESCRIPTION,
   sameAs: [INSTAGRAM_URL, PANTHER_CONNECT_URL],
 };

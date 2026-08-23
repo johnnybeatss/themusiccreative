@@ -1,7 +1,7 @@
 // Small chrome "charm" icons (mic, star, speaker, headphones, guitars, CD)
-// lifted straight from the brand board's own "CHROME GRAPHICS" reference
-// sheet — see public/charms/. Purely decorative section break, so it's
-// aria-hidden and never intercepts a click.
+// -- high-res transparent cutouts supplied directly by Johnny, background
+// removed via flood-fill (see public/charms/). Purely decorative section
+// break, so it's aria-hidden and never intercepts a click.
 export type CharmName =
   | "mic-vintage"
   | "star"
@@ -12,17 +12,18 @@ export type CharmName =
   | "cd"
   | "mic-handheld";
 
-// Natural pixel aspect ratio of each source crop, so a fixed target height
-// doesn't stretch/squash any icon.
+// Natural pixel aspect ratio of each source file (after background removal
+// + trim to bounding box), so a fixed target height doesn't stretch/squash
+// any icon. Keep in sync with the actual files in public/charms/.
 const ASPECT: Record<CharmName, number> = {
-  "mic-vintage": 48 / 72,
-  star: 65 / 61,
-  speaker: 72 / 88,
-  headphones: 96 / 95,
-  "guitar-flying-v": 126 / 95,
-  "guitar-les-paul": 56 / 136,
-  cd: 112 / 147,
-  "mic-handheld": 36 / 120,
+  "mic-vintage": 332 / 600,
+  star: 600 / 588,
+  speaker: 491 / 600,
+  headphones: 569 / 600,
+  "guitar-flying-v": 600 / 404,
+  "guitar-les-paul": 219 / 600,
+  cd: 599 / 600,
+  "mic-handheld": 120 / 600,
 };
 
 export default function CharmDivider({

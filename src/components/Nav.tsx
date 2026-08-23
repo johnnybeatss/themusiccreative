@@ -46,12 +46,15 @@ export default function Nav() {
       >
         <nav className="mx-auto flex max-w-6xl items-center px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3">
+            {/* PNG with real transparency (see public/charms and this file's
+                sibling assets) -- the source graphic is already a circle
+                inscribed in its own bounding box, so no rounded-* class is
+                needed to clip it. */}
             <Image
-              src="/logo-rebrand.jpg"
+              src="/logo-rebrand.png"
               alt="The Music Creative @ FIU"
               width={40}
               height={40}
-              className="rounded-lg"
             />
             <span className="hidden whitespace-nowrap font-display text-lg tracking-wide text-ivory sm:inline">
               THE MUSIC CREATIVE
