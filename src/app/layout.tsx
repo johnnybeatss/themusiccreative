@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo_Black, Inter } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -35,14 +35,10 @@ async function getFeaturedTrack() {
   };
 }
 
-// "Horizon" from the brand board isn't a Google Font (checked — it's a
-// third-party/specialty typeface with unclear licensing), so this is a
-// properly-licensed stand-in: another single-weight, all-caps-friendly
-// heavy display face, same role the old Anton played.
-const archivoBlack = Archivo_Black({
+const anton = Anton({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-archivo-black",
+  variable: "--font-anton",
 });
 
 const inter = Inter({
@@ -103,7 +99,7 @@ export default async function RootLayout({
   const track = await getFeaturedTrack();
 
   return (
-    <html lang="en" className={`${archivoBlack.variable} ${inter.variable}`}>
+    <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col bg-navy-950 font-sans text-ivory antialiased">
         <script
           type="application/ld+json"
