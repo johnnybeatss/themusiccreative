@@ -2,24 +2,34 @@
 
 /*
  * The Music Creative @ FIU — design tokens.
- * Colors sampled directly from the club logo (public/logo.jpg), except
- * `gold`, which is the one addition: navy alone reads calm/corporate, and
- * gold gives the "bold, energetic" pop for CTAs/links while echoing the
- * star icons already in the logo.
+ *
+ * Repainted for the Aug 2026 rebrand. Token NAMES are kept as-is (gold,
+ * navy-950, ivory, etc.) even though they no longer literally describe
+ * their color — renaming would mean touching every `bg-gold`/`text-ivory`/
+ * etc. class across the whole codebase for zero functional benefit. Only
+ * the values below changed.
+ *
+ * navy-950/abyss/gold/ivory map directly to the new brand board's 5-color
+ * palette (#343133 dark, #1028FF accent, #F2E7DF light). The rest of the
+ * dark scale (navy-900/800/700, steel, steel-light) and gold-light are
+ * derived, not given directly — computed by applying the ORIGINAL palette's
+ * lightness steps (in HSL) to the new base colors, so the same visual
+ * depth/contrast relationships (page bg -> card bg -> border -> muted text)
+ * carry over instead of being eyeballed from scratch.
  */
 @theme {
-  --color-abyss: #090b14;
-  --color-navy-950: #10141f;
-  --color-navy-900: #1c2136;
-  --color-navy-800: #262d47;
-  --color-navy-700: #333c5c;
-  --color-steel: #3b4c6a;
-  --color-steel-light: #8a97b3;
-  --color-ivory: #eef0f5;
-  --color-gold: #f2b134;
-  --color-gold-light: #f7c65c;
+  --color-abyss: #2b282a;
+  --color-navy-950: #343133;
+  --color-navy-900: #464245;
+  --color-navy-800: #544f52;
+  --color-navy-700: #656063;
+  --color-steel: #716a6f;
+  --color-steel-light: #bcb8ba;
+  --color-ivory: #f2e7df;
+  --color-gold: #1028ff;
+  --color-gold-light: #6271ff;
 
-  --font-display: var(--font-anton), sans-serif;
+  --font-display: var(--font-archivo-black), sans-serif;
   --font-sans: var(--font-inter), sans-serif;
 }
 

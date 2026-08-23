@@ -177,11 +177,13 @@ export default function VideoWheel({ videos }: { videos: FeedVideo[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* "White fuzz" — a soft ivory haze behind the wheel so it blends into
-          the page instead of sitting on it as a hard-edged block. */}
+      {/* Soft haze behind the wheel so it blends into the page instead of
+          sitting on it as a hard-edged block — tinted with the light-blue
+          end of the brand board's pale gradient (#FAFFCD -> #94B9FF)
+          rather than a plain white glow. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-x-6 -inset-y-12 -z-10 rounded-[3rem] bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,rgba(238,240,245,0.09),transparent_70%)] blur-3xl"
+        className="pointer-events-none absolute -inset-x-6 -inset-y-12 -z-10 rounded-[3rem] bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,rgba(148,185,255,0.12),transparent_70%)] blur-3xl"
       />
 
       <div ref={containerRef} className="overflow-hidden">

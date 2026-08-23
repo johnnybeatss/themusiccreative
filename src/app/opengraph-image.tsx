@@ -8,6 +8,9 @@ export const contentType = "image/png";
 // Generated at request/build time via Satori — no static asset to keep in
 // sync with the brand colors, and every existing on-site photo is too low
 // resolution (largest is 610x630) to stand up as a 1200x630 share card.
+// Satori can't read the CSS custom properties in globals.css, so these hex
+// values are hardcoded to match — see that file's @theme block for the
+// source of truth (navy-950/900, gold, ivory, steel-light respectively).
 export default async function Image() {
   return new ImageResponse(
     (
@@ -19,9 +22,9 @@ export default async function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#10141f",
+          backgroundColor: "#343133",
           backgroundImage:
-            "radial-gradient(circle at 50% 30%, #1c2136 0%, #10141f 70%)",
+            "radial-gradient(circle at 50% 30%, #464245 0%, #343133 70%)",
         }}
       >
         <div
@@ -29,7 +32,7 @@ export default async function Image() {
             display: "flex",
             width: 64,
             height: 6,
-            backgroundColor: "#f2b134",
+            backgroundColor: "#1028ff",
             marginBottom: 32,
           }}
         />
@@ -39,7 +42,7 @@ export default async function Image() {
             fontSize: 84,
             fontWeight: 700,
             letterSpacing: -1,
-            color: "#eef0f5",
+            color: "#f2e7df",
           }}
         >
           THE MUSIC CREATIVE
@@ -49,7 +52,7 @@ export default async function Image() {
             display: "flex",
             fontSize: 40,
             fontWeight: 700,
-            color: "#f2b134",
+            color: "#1028ff",
             marginTop: 12,
           }}
         >
@@ -59,7 +62,7 @@ export default async function Image() {
           style={{
             display: "flex",
             fontSize: 26,
-            color: "#8a97b3",
+            color: "#bcb8ba",
             marginTop: 24,
           }}
         >

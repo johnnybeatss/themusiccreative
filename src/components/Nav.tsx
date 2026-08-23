@@ -47,7 +47,7 @@ export default function Nav() {
         <nav className="mx-auto flex max-w-6xl items-center px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <Image
-              src="/logo.jpg"
+              src="/logo-rebrand.jpg"
               alt="The Music Creative @ FIU"
               width={40}
               height={40}
