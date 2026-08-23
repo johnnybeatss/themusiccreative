@@ -77,6 +77,29 @@
   }
 }
 
+/* Gentle ambient bob for the scattered chrome charm icons (see
+   CharmScatter). Applied to an INNER element so it never fights the
+   OUTER wrapper's static position/rotation classes -- each element's
+   transform is independent, so the wrapper's rotate() and this
+   translateY() compose cleanly instead of one overwriting the other. */
+@keyframes charm-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-charm-float {
+  animation: charm-float 7s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-charm-float {
+    animation: none;
+  }
+}
+
 /* Old-CRT-TV framing — a fixed, full-viewport layer sitting on top of
    every page (rendered once in layout.tsx). `pointer-events: none` means
    it's purely decorative and can never intercept a click/tap, so nothing
