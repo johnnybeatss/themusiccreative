@@ -72,7 +72,7 @@ export default async function HomePage() {
           // 50%) was splitting the difference and cropping into the stage,
           // showing more crowd than performer. Biasing toward the top
           // keeps the singer/band in frame in this wide, short hero strip.
-          className="object-cover object-[50%_45%]"
+          className="object-cover object-[50%_41%]"
         />
         {/* Dark scrim behind the text (left side), fading out toward the
             right so the photo itself still reads clearly. */}
