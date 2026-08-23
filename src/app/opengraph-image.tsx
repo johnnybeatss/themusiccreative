@@ -32,7 +32,7 @@ export default async function Image() {
             display: "flex",
             width: 64,
             height: 6,
-            backgroundColor: "#1028ff",
+            backgroundColor: "#2436db",
             marginBottom: 32,
           }}
         />
@@ -52,7 +52,7 @@ export default async function Image() {
             display: "flex",
             fontSize: 40,
             fontWeight: 700,
-            color: "#1028ff",
+            color: "#2436db",
             marginTop: 12,
           }}
         >

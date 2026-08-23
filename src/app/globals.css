@@ -9,16 +9,17 @@
  * etc. class across the whole codebase for zero functional benefit. Only
  * the values below changed.
  *
- * gold/ivory map directly to the new brand board's palette (#1028FF accent,
- * #F2E7DF light). The dark scale (abyss/navy-950/900/800/700, steel,
- * steel-light) is derived, not given directly — tinted with the accent
- * blue's own hue (234°) at a moderate saturation, same lightness levels the
- * original theme used. Earlier passes tried #343133's own near-neutral
- * hue/saturation (S~3%) both at its own lightness and at the original's —
- * both read as flat gray rather than a dark theme with color in it, since
- * there was almost no saturation to carry through. Tinting with the accent
- * blue instead gives it the "navy" character the original had, using the
- * one clearly saturated color the board actually provided.
+ * ivory maps directly to the brand board's #F2E7DF. gold started as the
+ * board's literal #1028FF accent (100% saturation) but that read as too
+ * vibrant/neon across the whole site once it's on every button, link, and
+ * hover state — dialed back to the same hue at ~72% saturation instead.
+ * The dark scale (abyss/navy-950/900/800/700, steel, steel-light) is
+ * derived, not given directly — tinted with that same blue hue at a
+ * moderate saturation, same lightness levels the original theme used.
+ * Earlier passes tried #343133's own near-neutral hue/saturation (S~3%)
+ * both at its own lightness and at the original's — both read as flat gray,
+ * since there was almost no saturation to carry through. Tinting with the
+ * accent blue instead gives it the "navy" character the original had.
  */
 @theme {
   --color-abyss: #0a0b13;
@@ -29,8 +30,8 @@
   --color-steel: #424563;
   --color-steel-light: #8f92ae;
   --color-ivory: #f2e7df;
-  --color-gold: #1028ff;
-  --color-gold-light: #6271ff;
+  --color-gold: #2436db;
+  --color-gold-light: #616ee5;
 
   --font-display: var(--font-anton), sans-serif;
   --font-sans: var(--font-inter), sans-serif;
