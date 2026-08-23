@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import CharmDivider from "@/components/CharmDivider";
+import CharmScatter from "@/components/CharmScatter";
 import VideoWheel, { type FeedVideo } from "@/components/VideoWheel";
 import NextEventCountdown, {
   type NextEvent,
@@ -111,7 +113,21 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
+      <CharmDivider
+        charms={["star", "headphones", "cd"]}
+        className="mt-16 sm:mt-20"
+      />
+
+      <div className="relative mt-10 grid gap-8 sm:grid-cols-2 sm:items-center sm:gap-10">
+        <CharmScatter
+          items={[
+            { name: "star", className: "-left-6 -top-10 w-24 -rotate-12" },
+            {
+              name: "guitar-les-paul",
+              className: "-bottom-12 right-0 w-20 rotate-6",
+            },
+          ]}
+        />
         <div>
           <p className="font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
             WHAT WE DO
@@ -138,7 +154,19 @@ export default async function HomePage() {
         </Reveal>
       </div>
 
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:items-center sm:gap-10">
+      <div className="relative mt-10 grid gap-8 sm:grid-cols-2 sm:items-center sm:gap-10">
+        <CharmScatter
+          items={[
+            {
+              name: "speaker",
+              className: "-right-6 -top-10 w-20 rotate-6",
+            },
+            {
+              name: "mic-handheld",
+              className: "-bottom-10 left-0 w-16 -rotate-12",
+            },
+          ]}
+        />
         <Reveal delay={0.05}>
           <div className="order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-navy-800 sm:order-1">
             <Image
@@ -161,6 +189,11 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
+
+      <CharmDivider
+        charms={["guitar-les-paul", "mic-vintage", "guitar-flying-v"]}
+        className="mt-16 sm:mt-20"
+      />
 
       <TrackSubmitSection />
 

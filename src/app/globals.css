@@ -20,12 +20,17 @@
  * both at its own lightness and at the original's — both read as flat gray,
  * since there was almost no saturation to carry through. Tinting with the
  * accent blue instead gives it the "navy" character the original had.
+ *
+ * abyss/navy-950/navy-900/navy-800 lightened +3-4 HSL points (same hue/
+ * saturation) for a brighter overall page per Johnny's "brighten it up"
+ * pass — navy-700/steel/steel-light left alone since they're already the
+ * lighter end of the scale and didn't need it.
  */
 @theme {
-  --color-abyss: #0a0b13;
-  --color-navy-950: #11121e;
-  --color-navy-900: #1e2134;
-  --color-navy-800: #292c44;
+  --color-abyss: #111320;
+  --color-navy-950: #181a2b;
+  --color-navy-900: #252941;
+  --color-navy-800: #2f324e;
   --color-navy-700: #383b57;
   --color-steel: #424563;
   --color-steel-light: #8f92ae;
