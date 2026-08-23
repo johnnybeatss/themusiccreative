@@ -27,7 +27,7 @@ export default function CharmScatter({
           <img
             src={`/charms/${item.name}.png`}
             alt=""
-            className="w-full animate-charm-float opacity-[0.07]"
+            className="w-full animate-charm-float opacity-[0.12]"
             style={{
               // Stagger so icons don't bob in unison -- offset delay per
               // index, and cycle a couple of durations so it reads as
