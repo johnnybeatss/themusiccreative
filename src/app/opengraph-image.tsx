@@ -22,9 +22,9 @@ export default async function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#181718",
+          backgroundColor: "#11121e",
           backgroundImage:
-            "radial-gradient(circle at 50% 30%, #2a2829 0%, #181718 70%)",
+            "radial-gradient(circle at 50% 30%, #1e2134 0%, #11121e 70%)",
         }}
       >
         <div
@@ -62,7 +62,7 @@ export default async function Image() {
           style={{
             display: "flex",
             fontSize: 26,
-            color: "#bcb8ba",
+            color: "#8f92ae",
             marginTop: 24,
           }}
         >

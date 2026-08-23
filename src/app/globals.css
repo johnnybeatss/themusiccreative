@@ -10,21 +10,24 @@
  * the values below changed.
  *
  * gold/ivory map directly to the new brand board's palette (#1028FF accent,
- * #F2E7DF light). The full dark scale (abyss/navy-950/900/800/700, steel,
- * steel-light) is derived, not given directly: #343133's own hue/saturation
- * (a near-neutral charcoal) carried through, but at the ORIGINAL theme's
- * exact lightness levels rather than #343133's own lightness. The board's
- * value on its own (L~20) rendered as a flat mid-gray, not a dark theme —
- * this keeps the same charcoal tone while staying genuinely dark.
+ * #F2E7DF light). The dark scale (abyss/navy-950/900/800/700, steel,
+ * steel-light) is derived, not given directly — tinted with the accent
+ * blue's own hue (234°) at a moderate saturation, same lightness levels the
+ * original theme used. Earlier passes tried #343133's own near-neutral
+ * hue/saturation (S~3%) both at its own lightness and at the original's —
+ * both read as flat gray rather than a dark theme with color in it, since
+ * there was almost no saturation to carry through. Tinting with the accent
+ * blue instead gives it the "navy" character the original had, using the
+ * one clearly saturated color the board actually provided.
  */
 @theme {
-  --color-abyss: #0f0e0f;
-  --color-navy-950: #181718;
-  --color-navy-900: #2a2829;
-  --color-navy-800: #383537;
-  --color-navy-700: #4a4548;
-  --color-steel: #555053;
-  --color-steel-light: #a19ca0;
+  --color-abyss: #0a0b13;
+  --color-navy-950: #11121e;
+  --color-navy-900: #1e2134;
+  --color-navy-800: #292c44;
+  --color-navy-700: #383b57;
+  --color-steel: #424563;
+  --color-steel-light: #8f92ae;
   --color-ivory: #f2e7df;
   --color-gold: #1028ff;
   --color-gold-light: #6271ff;
