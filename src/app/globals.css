@@ -72,33 +72,41 @@
    every page (rendered once in layout.tsx). `pointer-events: none` means
    it's purely decorative and can never intercept a click/tap, so nothing
    underneath is affected functionally.
+   This doesn't actually distort the page's real content (a true pixel
+   warp needs an SVG displacement filter, which has real cross-browser/
+   performance/legibility risk — punted on that, see conversation).
+   Everything here is an illusion of curvature layered on top instead.
    Layers, back to front:
-   1. Rounded corners on the whole overlay — sharp 90° corners read as a
-      photo vignette; curved ones (mimicking tube-glass curvature) are
-      what actually reads as "screen" rather than "dark border."
-   2. Radial-gradient vignette (default farthest-corner sizing darkens the
+   1. A large elliptical border-radius on the whole overlay — sharp 90°
+      corners read as a photo vignette; curved ones (mimicking tube-glass
+      curvature) are what actually reads as "screen" rather than "dark
+      border." Sized generously so the curve is obviously a curve.
+   2. A faint radial highlight in the dead center, like light catching the
+      bulge of curved glass, plus a soft diagonal streak for the same
+      reason at an angle.
+   3. Radial-gradient vignette (default farthest-corner sizing darkens the
       full perimeter evenly, not just corners — see the box-shadow-only
-      attempt this replaced) + a soft diagonal highlight streak, like
-      light glancing off curved glass.
-   3. A thin bezel line, plus a faint red/cyan fringe offset on opposite
+      attempt this replaced).
+   4. A thin bezel line, plus a faint red/cyan fringe offset on opposite
       edges — approximates the RGB channel misconvergence classic CRTs
       show right at the edge of the tube.
-   4. Scanlines for texture on top of all of it. */
+   5. Scanlines for texture on top of all of it. */
 .crt-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  border-radius: 3vw / 6vh;
+  border-radius: 6vw / 12vh;
   box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.55),
     inset 3px 0 0 0 rgba(255, 30, 60, 0.12),
     inset -3px 0 0 0 rgba(0, 200, 255, 0.12);
-  background-image: linear-gradient(
-      120deg,
-      rgba(255, 255, 255, 0.05) 0%,
-      transparent 22%
+  background-image: radial-gradient(
+      ellipse at center,
+      rgba(255, 255, 255, 0.035) 0%,
+      transparent 40%
     ),
-    radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.68) 100%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05) 0%, transparent 22%),
+    radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.72) 100%),
     repeating-linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0.12) 0px,
