@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instagram } from "lucide-react";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Merch";
@@ -19,7 +20,16 @@ const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function MerchPage() {
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          { name: "cd", className: "right-[4%] top-0 w-16 rotate-12" },
+          {
+            name: "guitar-les-paul",
+            className: "left-[2%] bottom-0 w-14 -rotate-6",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         MERCH
       </h1>

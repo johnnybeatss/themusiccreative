@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { Instagram } from "lucide-react";
 import NewsletterForm from "./NewsletterForm";
+import CharmScatter from "./CharmScatter";
 
 const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-navy-800">
+    <footer className="relative border-t border-navy-800">
+      <CharmScatter
+        items={[
+          { name: "star", className: "left-[4%] top-[15%] w-10 rotate-6" },
+          {
+            name: "cd",
+            className: "right-[4%] top-[20%] w-12 -rotate-12",
+          },
+        ]}
+      />
       <div className="mx-auto max-w-4xl px-4 py-8 text-sm text-steel-light">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between">
           <Link href="/" className="font-display tracking-wide text-ivory">

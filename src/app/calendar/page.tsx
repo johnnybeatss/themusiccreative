@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Calendar";
@@ -24,7 +25,23 @@ const CALENDAR_EMBED_URL =
 
 export default function CalendarPage() {
   return (
-    <div>
+    <div className="relative">
+      {/* Both charms anchored near the top -- the calendar embed below is
+          wrapped in its own opaque bg-navy-900 card, which would hide
+          anything scattered lower on the page (same reason
+          TrackSubmitSection on the homepage doesn't get a scatter layer). */}
+      <CharmScatter
+        items={[
+          {
+            name: "headphones",
+            className: "right-[2%] top-0 w-14 rotate-6",
+          },
+          {
+            name: "guitar-flying-v",
+            className: "left-[3%] top-[6%] w-16 -rotate-12",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         CLUB CALENDAR
       </h1>

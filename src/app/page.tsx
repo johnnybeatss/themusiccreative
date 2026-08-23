@@ -105,6 +105,10 @@ export default async function HomePage() {
         <CharmScatter
           items={[
             { name: "star", className: "left-[8%] top-[14%] w-10 -rotate-12" },
+            {
+              name: "mic-vintage",
+              className: "right-[10%] top-[55%] w-10 rotate-6",
+            },
           ]}
         />
 
@@ -129,6 +133,10 @@ export default async function HomePage() {
             {
               name: "cd",
               className: "left-[45%] top-1/2 w-24 rotate-[18deg]",
+            },
+            {
+              name: "guitar-flying-v",
+              className: "right-[6%] bottom-[4%] w-16 rotate-[-10deg]",
             },
           ]}
         />
@@ -173,6 +181,10 @@ export default async function HomePage() {
               name: "headphones",
               className: "left-[42%] top-[10%] w-16 rotate-[-8deg]",
             },
+            {
+              name: "mic-vintage",
+              className: "right-[8%] bottom-[6%] w-12 rotate-12",
+            },
           ]}
         />
         <Reveal delay={0.05}>
@@ -208,6 +220,10 @@ export default async function HomePage() {
               {
                 name: "star",
                 className: "left-[2%] bottom-[10%] w-12 -rotate-12",
+              },
+              {
+                name: "guitar-les-paul",
+                className: "left-[45%] top-[2%] w-12 rotate-[14deg]",
               },
             ]}
           />

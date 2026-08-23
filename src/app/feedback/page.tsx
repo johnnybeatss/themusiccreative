@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import FeedbackForm from "./FeedbackForm";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Feedback";
@@ -17,7 +18,19 @@ export const metadata: Metadata = {
 
 export default function FeedbackPage() {
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          {
+            name: "mic-vintage",
+            className: "right-[4%] top-0 w-12 rotate-6",
+          },
+          {
+            name: "guitar-flying-v",
+            className: "left-[2%] bottom-0 w-20 -rotate-6",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         FEEDBACK
       </h1>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
+import CharmScatter from "@/components/CharmScatter";
 import { formatEventDateTime } from "@/lib/eventTimezone";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
@@ -72,13 +73,25 @@ export default async function EventsPage() {
   const eventSchema = buildEventSchema(events);
 
   return (
-    <div>
+    <div className="relative">
       {eventSchema && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
         />
       )}
+      {/* Top-anchored only -- event cards below are full-width opaque
+          bg-navy-900 blocks, so a charm anchored to the bottom of a
+          variable-length list would just end up hidden behind one. */}
+      <CharmScatter
+        items={[
+          { name: "cd", className: "right-[2%] top-0 w-16 rotate-12" },
+          {
+            name: "guitar-flying-v",
+            className: "left-[3%] top-[8%] w-20 -rotate-6",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         UPCOMING EVENTS
       </h1>

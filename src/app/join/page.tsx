@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import JoinForm from "./JoinForm";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Join";
@@ -17,7 +18,16 @@ export const metadata: Metadata = {
 
 export default function JoinPage() {
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          { name: "star", className: "right-[2%] top-0 w-14 rotate-12" },
+          {
+            name: "mic-handheld",
+            className: "left-[4%] bottom-0 w-12 -rotate-6",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         JOIN THE MUSIC CREATIVE
       </h1>

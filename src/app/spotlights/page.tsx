@@ -3,6 +3,7 @@ import { Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Spotlight Archive";
@@ -63,7 +64,19 @@ export default async function SpotlightsPage() {
   const tracks = await getTracks();
 
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          {
+            name: "guitar-les-paul",
+            className: "right-[2%] top-0 w-14 rotate-6",
+          },
+          {
+            name: "mic-handheld",
+            className: "left-[3%] top-[7%] w-12 -rotate-12",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         SPOTLIGHT ARCHIVE
       </h1>

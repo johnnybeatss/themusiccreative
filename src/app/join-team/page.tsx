@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import JoinTeamForm from "./JoinTeamForm";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Join The Team";
@@ -17,7 +18,16 @@ export const metadata: Metadata = {
 
 export default function JoinTeamPage() {
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          { name: "speaker", className: "right-[3%] top-0 w-14 rotate-6" },
+          {
+            name: "headphones",
+            className: "left-[2%] bottom-0 w-16 -rotate-12",
+          },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         JOIN THE TEAM
       </h1>

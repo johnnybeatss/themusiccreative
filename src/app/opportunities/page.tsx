@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
+import CharmScatter from "@/components/CharmScatter";
 import { getMiamiMusicEvents } from "@/lib/miamiMusicEvents";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
@@ -80,7 +81,16 @@ export default async function OpportunitiesPage() {
   ]);
 
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          {
+            name: "mic-vintage",
+            className: "right-[3%] top-0 w-12 rotate-6",
+          },
+          { name: "star", className: "left-[2%] top-[6%] w-14 -rotate-12" },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         OPPORTUNITIES
       </h1>

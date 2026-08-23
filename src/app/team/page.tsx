@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import TeamGrid, { type TeamMember } from "@/components/TeamGrid";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Meet The E-Board";
@@ -37,7 +38,17 @@ export default async function TeamPage() {
   const members = await getMembers();
 
   return (
-    <div>
+    <div className="relative">
+      {/* Top-anchored only -- the "want to be part of this team" card at
+          the bottom has its own opaque bg-navy-900, which would hide a
+          bottom-anchored charm the same way TrackSubmitSection does on
+          the homepage. */}
+      <CharmScatter
+        items={[
+          { name: "headphones", className: "right-[2%] top-0 w-16 rotate-6" },
+          { name: "speaker", className: "left-[3%] top-[8%] w-14 -rotate-6" },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         MEET THE E-BOARD
       </h1>

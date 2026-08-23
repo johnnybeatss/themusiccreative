@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DjBookingForm from "./DjBookingForm";
+import CharmScatter from "@/components/CharmScatter";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "DJ Sign-Up";
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
 
 export default function DjBookingPage() {
   return (
-    <div>
+    <div className="relative">
+      <CharmScatter
+        items={[
+          { name: "cd", className: "right-[3%] top-0 w-14 rotate-12" },
+          { name: "star", className: "left-[3%] bottom-0 w-12 -rotate-12" },
+        ]}
+      />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
         DJ SIGN-UP
       </h1>
