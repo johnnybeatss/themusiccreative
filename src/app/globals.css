@@ -67,3 +67,26 @@
     height: 22px;
   }
 }
+
+/* Old-CRT-TV framing — a fixed, full-viewport layer sitting on top of
+   every page (rendered once in layout.tsx). `pointer-events: none` means
+   it's purely decorative and can never intercept a click/tap, so nothing
+   underneath is affected functionally. Two parts: an inset shadow that
+   darkens in from the edges like a tube TV's picture not quite filling
+   its frame, and faint horizontal scanlines for texture. `vw` units on
+   the shadow spread so the border scales with viewport width instead of
+   looking too thin on a big screen or too thick on a phone. */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: inset 0 0 6vw 1.5vw rgba(0, 0, 0, 0.65);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.05) 0px,
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}

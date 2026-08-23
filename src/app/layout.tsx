@@ -111,6 +111,10 @@ export default async function RootLayout({
         </main>
         <Footer />
         {track && <FeaturedTrackBar track={track} />}
+        {/* Retro CRT-TV vignette + scanlines, see globals.css — purely
+            decorative (pointer-events: none), doesn't affect any
+            interaction on the page underneath it. */}
+        <div aria-hidden className="crt-overlay" />
         <Analytics />
         <SpeedInsights />
       </body>
