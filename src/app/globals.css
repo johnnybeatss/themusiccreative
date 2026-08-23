@@ -138,7 +138,7 @@
   background-image: radial-gradient(
       ellipse at center,
       transparent 55%,
-      rgba(0, 0, 0, 0.9) 100%
+      rgba(0, 0, 0, 0.55) 100%
     ),
     repeating-linear-gradient(
       to bottom,
