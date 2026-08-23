@@ -66,7 +66,13 @@ export default async function HomePage() {
           alt="A live show hosted by The Music Creative"
           fill
           priority
-          className="object-cover"
+          // Source photo is a tall portrait shot — the performer on stage
+          // sits around a third of the way down, with the crowd's
+          // silhouettes filling the bottom half+. Default center-crop (50%
+          // 50%) was splitting the difference and cropping into the stage,
+          // showing more crowd than performer. Biasing toward the top
+          // keeps the singer/band in frame in this wide, short hero strip.
+          className="object-cover object-[50%_25%]"
         />
         {/* Dark scrim behind the text (left side), fading out toward the
             right so the photo itself still reads clearly. */}
