@@ -25,12 +25,16 @@
  * saturation) for a brighter overall page per Johnny's "brighten it up"
  * pass — navy-700/steel/steel-light left alone since they're already the
  * lighter end of the scale and didn't need it.
+ *
+ * Same four tokens then pushed +12 HSL saturation points (same hue/
+ * lightness) — at S~25-30% they read as blue-GRAY rather than navy;
+ * S~37-43% reads as a richer, more matte navy instead of washed-out.
  */
 @theme {
-  --color-abyss: #111320;
-  --color-navy-950: #181a2b;
-  --color-navy-900: #252941;
-  --color-navy-800: #2f324e;
+  --color-abyss: #0e1123;
+  --color-navy-950: #14172f;
+  --color-navy-900: #1f2547;
+  --color-navy-800: #282c56;
   --color-navy-700: #383b57;
   --color-steel: #424563;
   --color-steel-light: #8f92ae;
@@ -89,16 +93,17 @@
    vignette below already curves on its own via its natural falloff; it
    doesn't need the box itself clipped to look curved.
    Layers, back to front:
-   1. A faint radial highlight in the dead center, like light catching the
-      bulge of curved glass, plus a soft diagonal streak for the same
-      reason at an angle.
-   2. Radial-gradient vignette (default farthest-corner sizing darkens the
+   1. Radial-gradient vignette (default farthest-corner sizing darkens the
       full perimeter evenly, not just corners — see the box-shadow-only
       attempt this replaced).
-   3. A thin bezel line, plus a faint red/cyan fringe offset on opposite
+   2. A thin bezel line, plus a faint red/cyan fringe offset on opposite
       edges — approximates the RGB channel misconvergence classic CRTs
       show right at the edge of the tube.
-   4. Scanlines for texture on top of all of it. */
+   3. Scanlines for texture on top of all of it.
+   Dropped the two "glass glare" highlight layers (center radial glow +
+   diagonal streak) that used to sit on top — they read as a glossy
+   screen reflection, which fought the matte look Johnny wanted; the
+   vignette + scanlines alone still sell the CRT edge without the sheen. */
 .crt-overlay {
   position: fixed;
   inset: 0;
@@ -109,11 +114,9 @@
     inset -3px 0 0 0 rgba(0, 200, 255, 0.12);
   background-image: radial-gradient(
       ellipse at center,
-      rgba(255, 255, 255, 0.035) 0%,
-      transparent 40%
+      transparent 55%,
+      rgba(0, 0, 0, 0.9) 100%
     ),
-    linear-gradient(120deg, rgba(255, 255, 255, 0.05) 0%, transparent 22%),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.9) 100%),
     repeating-linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0.12) 0px,

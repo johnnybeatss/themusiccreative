@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import CharmDivider from "@/components/CharmDivider";
 import CharmScatter from "@/components/CharmScatter";
 import VideoWheel, { type FeedVideo } from "@/components/VideoWheel";
 import NextEventCountdown, {
@@ -103,6 +102,12 @@ export default async function HomePage() {
           </div>
         </div>
 
+        <CharmScatter
+          items={[
+            { name: "star", className: "left-[8%] top-[14%] w-10 -rotate-12" },
+          ]}
+        />
+
         <div className="absolute bottom-6 right-6 hidden rounded-xl border border-navy-800 bg-navy-900/90 p-4 backdrop-blur-sm sm:block">
           <p className="text-xs font-semibold uppercase tracking-wide text-gold">
             Est. 2025
@@ -113,18 +118,17 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <CharmDivider
-        charms={["star", "headphones", "cd"]}
-        className="mt-16 sm:mt-20"
-      />
-
-      <div className="relative mt-10 grid gap-8 sm:grid-cols-2 sm:items-center sm:gap-10">
+      <div className="relative mt-16 grid gap-8 sm:mt-20 sm:grid-cols-2 sm:items-center sm:gap-10">
         <CharmScatter
           items={[
-            { name: "star", className: "-left-6 -top-10 w-24 -rotate-12" },
+            { name: "star", className: "-left-6 -top-10 w-20 -rotate-12" },
             {
               name: "guitar-les-paul",
-              className: "-bottom-12 right-0 w-20 rotate-6",
+              className: "-bottom-12 right-0 w-16 rotate-6",
+            },
+            {
+              name: "cd",
+              className: "left-[45%] top-1/2 w-24 rotate-[18deg]",
             },
           ]}
         />
@@ -165,6 +169,10 @@ export default async function HomePage() {
               name: "mic-handheld",
               className: "-bottom-10 left-0 w-16 -rotate-12",
             },
+            {
+              name: "headphones",
+              className: "left-[42%] top-[10%] w-16 rotate-[-8deg]",
+            },
           ]}
         />
         <Reveal delay={0.05}>
@@ -190,15 +198,19 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <CharmDivider
-        charms={["guitar-les-paul", "mic-vintage", "guitar-flying-v"]}
-        className="mt-16 sm:mt-20"
-      />
-
       <TrackSubmitSection />
 
       {videos.length > 0 && (
-        <div className="mt-16 sm:mt-20">
+        <div className="relative mt-16 sm:mt-20">
+          <CharmScatter
+            items={[
+              { name: "cd", className: "right-[4%] top-0 w-16 rotate-12" },
+              {
+                name: "star",
+                className: "left-[2%] bottom-[10%] w-12 -rotate-12",
+              },
+            ]}
+          />
           <h2 className="font-display text-2xl tracking-wide text-ivory">
             STRAIGHT FROM THE FEED
           </h2>
