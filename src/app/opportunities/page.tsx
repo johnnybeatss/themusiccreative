@@ -55,29 +55,30 @@ async function getOpportunities(): Promise<Opportunity[]> {
   return data ?? [];
 }
 
-// "What's happening this month" — Miami-area music industry events, pulled
-// live via src/lib/miamiMusicEvents.ts (Ticketmaster Discovery API).
-// Requires TICKETMASTER_API_KEY to be set in Vercel; until then this
-// quietly renders nothing rather than breaking the page. Cached for 6
-// hours via Next's fetch revalidation, so it stays current without hitting
-// the API on every request. Also reused (with a 7-day window instead of a
-// month) by the weekly email cron route.
+// "Coming up" — Miami-area music industry events, pulled live via
+// src/lib/miamiMusicEvents.ts (Ticketmaster Discovery API). Requires
+// TICKETMASTER_API_KEY to be set in Vercel; until then this quietly renders
+// nothing rather than breaking the page. Cached for 6 hours via Next's
+// fetch revalidation, so it stays current without hitting the API on every
+// request. Also reused (with a 7-day window instead of 30) by the weekly
+// email cron route.
+//
+// Rolling "next 30 days from today" rather than "this calendar month" --
+// the calendar-month version shrank to almost nothing by month-end (e.g.
+// only ~8 days of window left on the 23rd), even though Ticketmaster has
+// plenty listed further out. A rolling window stays a consistent size all
+// month long instead of visibly thinning out as the month progresses.
+const MIAMI_EVENTS_WINDOW_DAYS = 30;
 
 export default async function OpportunitiesPage() {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-    23,
-    59,
-    59
+  const windowEnd = new Date(
+    now.getTime() + MIAMI_EVENTS_WINDOW_DAYS * 24 * 60 * 60 * 1000
   );
 
   const [opportunities, miamiEvents] = await Promise.all([
     getOpportunities(),
-    getMiamiMusicEvents({ startDate: startOfMonth, endDate: endOfMonth, limit: 6 }),
+    getMiamiMusicEvents({ startDate: now, endDate: windowEnd, limit: 6 }),
   ]);
 
   return (
@@ -157,11 +158,11 @@ export default async function OpportunitiesPage() {
       {miamiEvents.length > 0 && (
         <div className="mt-12">
           <h2 className="font-display text-2xl tracking-wide text-ivory">
-            WHAT&apos;S HAPPENING THIS MONTH
+            COMING UP IN MIAMI
           </h2>
           <div className="mt-2 h-1 w-16 bg-gold" />
           <p className="mt-4 text-sm text-steel-light">
-            Music industry events around Miami this month — updates
+            Music industry events around Miami in the next 30 days — updates
             automatically.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
