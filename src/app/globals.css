@@ -106,7 +106,7 @@
       transparent 40%
     ),
     linear-gradient(120deg, rgba(255, 255, 255, 0.05) 0%, transparent 22%),
-    radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.72) 100%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.9) 100%),
     repeating-linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0.12) 0px,
