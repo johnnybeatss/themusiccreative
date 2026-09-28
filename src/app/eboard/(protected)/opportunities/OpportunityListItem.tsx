@@ -13,6 +13,7 @@ type Opportunity = {
   status: string;
   image_url: string | null;
   created_at: string;
+  deadline: string | null;
 };
 
 const STALE_AFTER_DAYS = 60;
@@ -21,6 +22,14 @@ function daysOld(createdAt: string) {
   return Math.floor(
     (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)
   );
+}
+
+// Compares by calendar date, not exact timestamp — a `date` column parses
+// as midnight UTC, and comparing that directly against `Date.now()` would
+// mark today's own deadline as already past for anyone west of UTC.
+function isPastDeadline(deadline: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  return deadline < today;
 }
 
 export default function OpportunityListItem({
@@ -42,7 +51,10 @@ export default function OpportunityListItem({
   }
 
   const age = daysOld(opportunity.created_at);
-  const isStale = age >= STALE_AFTER_DAYS;
+  const deadlinePassed = opportunity.deadline
+    ? isPastDeadline(opportunity.deadline)
+    : false;
+  const isStale = deadlinePassed || (!opportunity.deadline && age >= STALE_AFTER_DAYS);
 
   return (
     <div className="rounded-xl border border-navy-800 bg-navy-900 p-4 transition-colors hover:border-gold">
@@ -62,7 +74,14 @@ export default function OpportunityListItem({
           </div>
           <p className="mt-1 text-sm text-steel-light">
             {opportunity.type} · posted {age === 0 ? "today" : `${age}d ago`}
-            {isStale && " · hidden from public page (60+ days old)"}
+            {opportunity.deadline &&
+              ` · deadline ${new Date(
+                opportunity.deadline + "T00:00:00"
+              ).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
+            {isStale &&
+              (deadlinePassed
+                ? " · hidden from public page (deadline passed)"
+                : " · hidden from public page (60+ days old)")}
           </p>
           {opportunity.contact_link && (
             <a

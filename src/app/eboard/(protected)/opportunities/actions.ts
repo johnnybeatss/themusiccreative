@@ -27,6 +27,7 @@ function parseOpportunityForm(formData: FormData) {
   const contactLink =
     ((formData.get("contact_link") as string) || "").trim() || null;
   const status = formData.get("status") as string;
+  const deadline = ((formData.get("deadline") as string) || "").trim() || null;
 
   if (!title) {
     return { error: "Title is required.", values: null };
@@ -44,7 +45,7 @@ function parseOpportunityForm(formData: FormData) {
 
   return {
     error: null,
-    values: { title, type, contact_link: contactLink, status },
+    values: { title, type, contact_link: contactLink, status, deadline },
   } as const;
 }
 

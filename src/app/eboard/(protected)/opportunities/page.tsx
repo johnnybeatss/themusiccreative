@@ -11,6 +11,7 @@ type Opportunity = {
   status: string;
   image_url: string | null;
   created_at: string;
+  deadline: string | null;
 };
 
 async function getOpportunities(): Promise<Opportunity[]> {
@@ -44,7 +45,7 @@ export default async function OpportunitiesAdminPage() {
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
         {editable
-          ? "Manage what shows up on the public Opportunities page. Postings auto-hide from the public page 60 days after they're added."
+          ? "Manage what shows up on the public Opportunities page. Postings with a deadline auto-hide once it passes; others auto-hide 60 days after they're added."
           : "What's currently on the public Opportunities page. Adding, editing, and removing is limited to owner/admin accounts."}
       </p>
 

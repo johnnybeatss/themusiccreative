@@ -26,6 +26,7 @@ type Opportunity = {
   status: string;
   image_url: string | null;
   created_at: string;
+  deadline: string | null;
 };
 
 const STALE_AFTER_DAYS = 60;
@@ -34,18 +35,26 @@ const STALE_AFTER_DAYS = 60;
 // and manageable in the E-Board hub) — keeps internship listings from
 // sitting around as dead links for months. See
 // src/app/eboard/(protected)/opportunities/actions.ts for how they're added.
+//
+// A listing with a real `deadline` (see supabase/migrations/0032_opportunity_deadline.sql)
+// hides the day after that date passes, regardless of the 60-day rule —
+// a contest with a Sept 16 deadline shouldn't still be showing on the
+// 28th just because it's under 60 days old. Listings without a deadline
+// fall back to the 60-day-from-posting rule as before.
 async function getOpportunities(): Promise<Opportunity[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
   const supabase = await createClient();
   const cutoff = new Date(
     Date.now() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000
   ).toISOString();
+  const today = new Date().toISOString().slice(0, 10);
   // Pinned listings (e.g. "EVENT DJ INQUIRIES") skip the staleness filter
   // entirely — see supabase/migrations/0014_join_and_dj_inquiries.sql.
   const { data, error } = await supabase
     .from("opportunities")
     .select("*")
     .or(`is_pinned.eq.true,created_at.gte.${cutoff}`)
+    .or(`deadline.is.null,deadline.gte.${today}`)
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false });
   if (error) {

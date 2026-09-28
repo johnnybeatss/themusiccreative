@@ -24,6 +24,7 @@ type Opportunity = {
   status: string;
   image_url: string | null;
   created_at: string;
+  deadline: string | null;
 };
 
 const initialState: OpportunityFormState = { error: null };
@@ -119,6 +120,15 @@ export default function OpportunityForm({
         />
       </label>
       <label className="block text-sm">
+        <span className="text-steel-light">Deadline (optional)</span>
+        <input
+          type="date"
+          name="deadline"
+          defaultValue={opportunity?.deadline ?? ""}
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory transition-colors focus:border-gold focus:outline-none"
+        />
+      </label>
+      <label className="block text-sm">
         <span className="text-steel-light">
           Cover image{" "}
           {opportunity ? "(optional — replaces current)" : "(optional)"}
@@ -139,9 +149,9 @@ export default function OpportunityForm({
         />
       </label>
       <p className="text-xs text-steel-light">
-        Under 4MB. Postings auto-hide from the public page 60 days after
-        they're added, so internships don't sit stale — delete anytime
-        before that if it fills sooner.
+        Under 4MB. If you set a deadline, the posting auto-hides the day
+        after it passes. Without one, it auto-hides 60 days after it's
+        added instead — delete anytime before that if it fills sooner.
       </p>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       <div className="flex items-center gap-4 pt-1">
