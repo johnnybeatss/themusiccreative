@@ -19,6 +19,7 @@ type Event = {
   guest_instagram_url: string | null;
   image_url: string | null;
   photo_urls: string[];
+  posh_embed_html: string | null;
 };
 
 async function getEvent(id: string): Promise<Event | null> {
@@ -205,7 +206,18 @@ export default async function EventDetailPage({
         </p>
       )}
 
-      <RsvpForm eventId={event.id} />
+      {event.posh_embed_html ? (
+        // Admin-authored markup only (owner/admin write access is enforced
+        // by RLS on `events` — see supabase/migrations/0031_posh_embed.sql),
+        // pasted verbatim from Posh's own Settings > Embed panel. Not public
+        // input, so this is safe to render as-is.
+        <div
+          className="mt-8"
+          dangerouslySetInnerHTML={{ __html: event.posh_embed_html }}
+        />
+      ) : (
+        <RsvpForm eventId={event.id} />
+      )}
     </div>
   );
 }

@@ -30,6 +30,12 @@ function parseEventForm(formData: FormData) {
     ((formData.get("description") as string) || "").trim() || null;
   const guestInstagramUrl =
     ((formData.get("guest_instagram_url") as string) || "").trim() || null;
+  // Posh's own instructions are "copy the code, paste it into your site" —
+  // this is stored and rendered verbatim, no parsing. Only owner/admin can
+  // reach this form (canManage() below), so it's trusted markup, not
+  // public input. See supabase/migrations/0031_posh_embed.sql.
+  const poshEmbedHtml =
+    ((formData.get("posh_embed_html") as string) || "").trim() || null;
 
   if (!name || !rawDate) {
     return { error: "Name and date are required.", values: null };
@@ -53,6 +59,7 @@ function parseEventForm(formData: FormData) {
       status,
       description,
       guest_instagram_url: guestInstagramUrl,
+      posh_embed_html: poshEmbedHtml,
     },
   } as const;
 }

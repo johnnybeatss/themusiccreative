@@ -1,0 +1,13 @@
+-- Lets an event carry a Posh (posh.vip) ticket-checkout embed instead of
+-- the native RSVP form. Posh's own "Embed" feature (per-event, copied from
+-- the organizer dashboard's Settings > Embed panel — see
+-- https://support.posh.vip/en/articles/10723744-embed-ticket-checkout-on-your-website)
+-- hands you a ready-to-paste HTML snippet (an <iframe>) rather than a
+-- structured API response, so this column stores that snippet verbatim.
+-- Only owner/admin can write it (same RLS as the rest of `events`), so it's
+-- trusted admin-authored markup, not public input.
+--
+-- Nullable and additive on purpose: events without a Posh embed keep using
+-- the existing event_rsvps-backed RsvpForm exactly as before. Going
+-- forward, new events are expected to set this instead.
+alter table events add column posh_embed_html text;

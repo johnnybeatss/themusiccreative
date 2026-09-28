@@ -19,6 +19,7 @@ type Event = {
   guest_instagram_url: string | null;
   image_url: string | null;
   photo_urls: string[];
+  posh_embed_html: string | null;
 };
 
 const initialState: EventFormState = { error: null };
@@ -189,6 +190,27 @@ export default function EventForm({
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>
+      <div className="rounded-lg border border-navy-800 p-3">
+        <label className="block text-sm">
+          <span className="font-semibold uppercase tracking-wide text-steel-light">
+            Posh embed (optional)
+          </span>
+          <textarea
+            name="posh_embed_html"
+            rows={3}
+            defaultValue={event?.posh_embed_html ?? ""}
+            placeholder="Paste the embed code from your Posh event's Settings ⚙️ → Embed panel"
+            spellCheck={false}
+            className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 font-mono text-xs text-ivory placeholder:font-sans placeholder:text-sm placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
+          />
+        </label>
+        <p className="mt-1 text-xs text-steel-light">
+          When set, this replaces the native RSVP form on the event&apos;s
+          public page with Posh ticket checkout. Leave blank to keep using
+          native RSVPs for this event.
+        </p>
+      </div>
+
       <div className="rounded-lg border border-navy-800 p-3">
         <label className="block text-sm">
           <span className="font-semibold uppercase tracking-wide text-steel-light">

@@ -18,6 +18,7 @@ type Event = {
   guest_instagram_url: string | null;
   image_url: string | null;
   photo_urls: string[];
+  posh_embed_html: string | null;
 };
 
 export default function EventListItem({
@@ -46,7 +47,14 @@ export default function EventListItem({
         )}
         <div className="flex-1">
           <div className="flex items-start justify-between gap-3">
-            <p className="font-semibold text-ivory">{event.name}</p>
+            <p className="font-semibold text-ivory">
+              {event.name}
+              {event.posh_embed_html && (
+                <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold">
+                  Posh
+                </span>
+              )}
+            </p>
             <StatusPill status={event.status} />
           </div>
         </div>

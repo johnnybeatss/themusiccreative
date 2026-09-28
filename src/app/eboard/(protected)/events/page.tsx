@@ -14,6 +14,7 @@ type Event = {
   guest_instagram_url: string | null;
   image_url: string | null;
   photo_urls: string[];
+  posh_embed_html: string | null;
 };
 
 async function getEvents(): Promise<Event[]> {
