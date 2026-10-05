@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam, isValidEmail, checkLengths } from "@/lib/formGuard";
 
 export type DjBookingFormState = { error: string | null };
 
@@ -15,6 +16,9 @@ export async function submitDjBooking(
   _prevState: DjBookingFormState,
   formData: FormData
 ): Promise<DjBookingFormState> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(formData)) return { error: null };
+
   const requesterName = req(formData, "requester_name");
   const email = req(formData, "email");
   const phone = req(formData, "phone") || null;
@@ -38,6 +42,10 @@ export async function submitDjBooking(
         "Name, email, event type, portfolio link, and experience are required.",
     };
   }
+
+  if (!isValidEmail(email)) return { error: "Enter a valid email address." };
+  const tooLong = checkLengths({ Name: [requesterName, 120], Phone: [phone, 40], "Portfolio link": [portfolioLink, 500], Details: [details, 2000] });
+  if (tooLong) return { error: tooLong };
 
   const supabase = await createClient();
   const { error } = await supabase.from("dj_inquiries").insert({

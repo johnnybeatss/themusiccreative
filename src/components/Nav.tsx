@@ -67,7 +67,7 @@ export default function Nav() {
                 <Link
                   href={l.href}
                   data-active={pathname === l.href}
-                  className="nav-link-underline text-steel-light transition-colors hover:text-gold data-[active=true]:text-gold"
+                  className="nav-link-underline text-steel-light transition-colors hover:text-accent data-[active=true]:text-accent"
                 >
                   {l.label}
                 </Link>
@@ -80,7 +80,7 @@ export default function Nav() {
           <div className="ml-auto hidden items-center gap-4 sm:flex">
             <Link
               href="/eboard"
-              className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+              className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white"
             >
               E-Board
             </Link>
@@ -90,7 +90,7 @@ export default function Nav() {
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
-              className="text-steel-light transition-colors hover:text-gold"
+              className="text-steel-light transition-colors hover:text-accent"
             >
               <Instagram size={18} />
             </a>
@@ -147,13 +147,13 @@ export default function Nav() {
               >
                 <Link
                   href="/join"
-                  className="inline-block rounded-full bg-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-navy-950"
+                  className="inline-block rounded-full bg-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white"
                 >
                   Join
                 </Link>
                 <Link
                   href="/eboard"
-                  className="inline-block rounded-full border border-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-gold"
+                  className="inline-block rounded-full border border-gold px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-accent"
                 >
                   E-Board
                 </Link>
@@ -162,7 +162,7 @@ export default function Nav() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Instagram"
-                  className="text-steel-light transition-colors hover:text-gold"
+                  className="text-steel-light transition-colors hover:text-accent"
                 >
                   <Instagram size={22} />
                 </a>

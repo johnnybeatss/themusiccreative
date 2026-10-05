@@ -26,7 +26,7 @@ export default async function PastReportPage({
     <div>
       <Link
         href="/eboard/reports"
-        className="text-sm text-steel-light transition-colors hover:text-gold"
+        className="text-sm text-steel-light transition-colors hover:text-accent"
       >
         ← Back to this week
       </Link>
@@ -34,7 +34,7 @@ export default async function PastReportPage({
         WEEKLY REPORT
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <p className="mt-4 text-sm font-semibold text-gold">
+      <p className="mt-4 text-sm font-semibold text-accent">
         Week of {formatWeekRange(report.week_start, report.week_end)}
       </p>
       <p className="mt-1 text-xs text-steel-light">Read-only archive.</p>
@@ -110,7 +110,7 @@ export default async function PastReportPage({
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {n.is_priority && (
-                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                       Priority
                     </span>
                   )}

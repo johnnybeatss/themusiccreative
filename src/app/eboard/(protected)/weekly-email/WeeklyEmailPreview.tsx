@@ -64,7 +64,7 @@ export default function WeeklyEmailPreview({
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-ivory">{draft.subject}</p>
             {!reviewed && (
-              <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+              <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                 New
               </span>
             )}
@@ -91,7 +91,7 @@ export default function WeeklyEmailPreview({
               <input type="hidden" name="id" value={draft.id} />
               <button
                 type="submit"
-                className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+                className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
               >
                 Send to subscribers
               </button>

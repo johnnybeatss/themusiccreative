@@ -49,7 +49,7 @@ export default function ReportItemRow({
           <button
             type="submit"
             disabled={isPending}
-            className="shrink-0 rounded-lg bg-gold px-3 py-1.5 text-xs font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+            className="shrink-0 rounded-lg bg-gold px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
           >
             {isPending ? "Saving..." : "Save"}
           </button>
@@ -75,7 +75,7 @@ export default function ReportItemRow({
       }`}
     >
       {item.done && (
-        <span className="text-[10px] leading-none text-navy-950">✓</span>
+        <span className="text-[10px] leading-none text-white">✓</span>
       )}
     </span>
   );
@@ -98,7 +98,7 @@ export default function ReportItemRow({
             }`}
           >
             {item.done && (
-              <span className="text-[10px] leading-none text-navy-950">✓</span>
+              <span className="text-[10px] leading-none text-white">✓</span>
             )}
           </button>
           <span
@@ -126,7 +126,7 @@ export default function ReportItemRow({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="shrink-0 text-xs text-steel-light transition-colors hover:text-gold"
+            className="shrink-0 text-xs text-steel-light transition-colors hover:text-accent"
           >
             Edit
           </button>

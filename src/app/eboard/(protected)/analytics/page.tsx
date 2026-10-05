@@ -21,7 +21,7 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
       <p className="text-xs font-semibold uppercase tracking-wide text-steel-light">
         {label}
       </p>
-      <p className="mt-2 font-display text-3xl text-gold">
+      <p className="mt-2 font-display text-3xl text-accent">
         {formatNumber(value)}
       </p>
       <p className="mt-1 text-xs text-steel-light">Last {WINDOW_DAYS} days</p>
@@ -156,7 +156,7 @@ export default async function AnalyticsPage() {
           <p className="font-semibold text-ivory">Not set up yet</p>
           <p className="mt-2 text-sm text-steel-light">
             Missing env var{configStatus.missing.length > 1 ? "s" : ""}:{" "}
-            <span className="font-mono text-gold">
+            <span className="font-mono text-accent">
               {configStatus.missing.join(", ")}
             </span>
             . Add {configStatus.missing.length > 1 ? "these" : "this"} to{" "}

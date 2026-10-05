@@ -95,7 +95,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/join"
-              className="mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+              className="mt-6 inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
             >
               Join The Music Creative
             </Link>
@@ -113,7 +113,7 @@ export default async function HomePage() {
         />
 
         <div className="absolute bottom-6 right-6 hidden rounded-xl border border-navy-800 bg-navy-900/90 p-4 backdrop-blur-sm sm:block">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gold">
+          <p className="text-xs font-semibold uppercase tracking-wide text-accent">
             Est. 2025
           </p>
           <p className="mt-1 text-sm text-ivory">

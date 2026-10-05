@@ -59,7 +59,7 @@ export default function TeamApplicationItem({
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-semibold text-ivory">{a.full_name}</p>
           {!read && (
-            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               New
             </span>
           )}
@@ -85,7 +85,7 @@ export default function TeamApplicationItem({
           href={a.resume_url}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 inline-block text-sm text-gold underline"
+          className="mt-2 inline-block text-sm text-accent underline"
         >
           View resume ↗
         </a>

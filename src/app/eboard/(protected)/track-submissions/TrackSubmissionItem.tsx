@@ -70,12 +70,12 @@ export default function TrackSubmissionItem({
             </span>
           </p>
           {!read && (
-            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               New
             </span>
           )}
           {s.featured_at && (
-            <span className="inline-block rounded-full border border-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gold">
+            <span className="inline-block rounded-full border border-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">
               Featured
             </span>
           )}
@@ -89,7 +89,7 @@ export default function TrackSubmissionItem({
         href={s.artist_instagram_url}
         target="_blank"
         rel="noreferrer"
-        className="mt-1 inline-flex items-center gap-1 text-xs text-steel-light transition-colors hover:text-gold"
+        className="mt-1 inline-flex items-center gap-1 text-xs text-steel-light transition-colors hover:text-accent"
       >
         <Instagram size={12} />
         {s.artist_instagram_url}

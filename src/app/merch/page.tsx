@@ -43,7 +43,7 @@ export default function MerchPage() {
         href={INSTAGRAM_URL}
         target="_blank"
         rel="noreferrer"
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+        className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white"
       >
         <Instagram size={18} />
         Follow @themusiccreativefiu

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam, isValidEmail, checkLengths } from "@/lib/formGuard";
 
 export type RsvpFormState = { error: string | null };
 
@@ -10,6 +11,9 @@ export async function submitRsvp(
   _prevState: RsvpFormState,
   formData: FormData
 ): Promise<RsvpFormState> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(formData)) return { error: null };
+
   const eventId = formData.get("event_id") as string;
   const name = ((formData.get("name") as string) || "").trim();
   const email = ((formData.get("email") as string) || "").trim();
@@ -21,6 +25,10 @@ export async function submitRsvp(
   if (!name || !email) {
     return { error: "Name and email are required." };
   }
+
+  if (!isValidEmail(email)) return { error: "Enter a valid email address." };
+  const tooLong = checkLengths({ Name: [name, 120], "Guest count": [guestCount, 60], Notes: [notes, 1000] });
+  if (tooLong) return { error: tooLong };
 
   const supabase = await createClient();
   const { error } = await supabase.from("event_rsvps").insert({

@@ -98,7 +98,7 @@ export default async function SpotlightsPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     {i === 0 && (
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-gold">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-accent">
                         This Week
                       </p>
                     )}
@@ -114,7 +114,7 @@ export default async function SpotlightsPage() {
                       href={t.artist_instagram_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1.5 text-sm text-gold hover:underline"
+                      className="flex items-center gap-1.5 text-sm text-accent hover:underline"
                     >
                       <Instagram size={14} />
                       Instagram

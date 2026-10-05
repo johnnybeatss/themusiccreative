@@ -45,7 +45,7 @@ export default function FeatureButton({
       <input type="hidden" name="spotify_url" value={spotifyUrl ?? ""} />
       <button
         type="submit"
-        className="rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+        className="rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white"
       >
         Feature this
       </button>

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitRsvp, type RsvpFormState } from "./actions";
+import HoneypotFields from "@/components/HoneypotFields";
 
 const initialState: RsvpFormState = { error: null };
 const inputClass =
@@ -33,7 +34,7 @@ export default function RsvpForm({ eventId }: { eventId: string }) {
   if (justSubmitted) {
     return (
       <div className="mt-6 rounded-xl border border-gold/50 bg-navy-900 p-6">
-        <p className="font-display text-lg tracking-wide text-gold">
+        <p className="font-display text-lg tracking-wide text-accent">
           YOU&apos;RE RSVP&apos;D
         </p>
         <p className="mt-2 text-sm text-steel-light">
@@ -49,6 +50,7 @@ export default function RsvpForm({ eventId }: { eventId: string }) {
       action={formAction}
       className="mt-6 max-w-lg space-y-4 rounded-xl border border-navy-800 bg-navy-900 p-5"
     >
+      <HoneypotFields />
       <input type="hidden" name="event_id" value={eventId} />
       <h2 className="font-display text-lg tracking-wide text-ivory">RSVP</h2>
       <label className={labelClass}>
@@ -78,7 +80,7 @@ export default function RsvpForm({ eventId }: { eventId: string }) {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Submitting..." : "RSVP"}
       </button>

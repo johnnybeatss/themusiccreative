@@ -65,7 +65,7 @@ export default function ItemChecklist({
           <button
             type="submit"
             disabled={isPending}
-            className="shrink-0 rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+            className="shrink-0 rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
           >
             Add
           </button>

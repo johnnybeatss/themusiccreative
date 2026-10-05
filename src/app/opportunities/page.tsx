@@ -118,7 +118,7 @@ export default async function OpportunitiesPage() {
         </div>
         <a
           href="/dj-booking"
-          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
         >
           Sign Up &rarr;
         </a>
@@ -151,7 +151,7 @@ export default async function OpportunitiesPage() {
                       href={o.contact_link}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-gold px-4 py-1.5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
+                      className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-gold px-4 py-1.5 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
                     >
                       Learn More
                       <span aria-hidden="true">&rarr;</span>
@@ -192,7 +192,7 @@ export default async function OpportunitiesPage() {
                     />
                   )}
                   <div className="p-4">
-                    <p className="font-semibold text-ivory group-hover:text-gold">
+                    <p className="font-semibold text-ivory group-hover:text-accent">
                       {e.name}
                     </p>
                     <p className="mt-1 text-sm text-steel-light">

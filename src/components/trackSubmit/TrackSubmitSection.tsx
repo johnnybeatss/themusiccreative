@@ -22,7 +22,7 @@ export default function TrackSubmitSection() {
         aria-hidden
         className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-gold/20 blur-3xl"
       />
-      <p className="relative text-xs font-semibold uppercase tracking-wide text-gold">
+      <p className="relative text-xs font-semibold uppercase tracking-wide text-accent">
         Weekly Contest
       </p>
       <h2 className="relative mt-2 font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
@@ -36,7 +36,7 @@ export default function TrackSubmitSection() {
 
       {done ? (
         <div className="relative mt-6 max-w-lg rounded-xl border border-gold/50 bg-navy-950 p-5">
-          <p className="font-display text-lg tracking-wide text-gold">
+          <p className="font-display text-lg tracking-wide text-accent">
             TRACK RECEIVED
           </p>
           <p className="mt-2 text-sm text-steel-light">
@@ -54,13 +54,13 @@ export default function TrackSubmitSection() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-navy-950 transition-colors hover:bg-gold-light"
+            className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
           >
             Submit Your Track
           </button>
           <Link
             href="/spotlights"
-            className="text-sm font-semibold text-gold transition-colors hover:text-gold-light"
+            className="text-sm font-semibold text-accent transition-colors hover:text-accent"
           >
             See past spotlights &rarr;
           </Link>

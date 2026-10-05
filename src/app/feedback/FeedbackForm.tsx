@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitFeedback, type FeedbackFormState } from "./actions";
+import HoneypotFields from "@/components/HoneypotFields";
 
 const initialState: FeedbackFormState = { error: null };
 const CATEGORIES = ["Event idea", "Like", "Dislike", "General"] as const;
@@ -34,6 +35,7 @@ export default function FeedbackForm() {
       action={formAction}
       className="mt-6 max-w-lg space-y-4 rounded-xl border border-navy-800 bg-navy-900 p-5"
     >
+      <HoneypotFields />
       <label className="block text-sm">
         <span className="text-steel-light">Name (optional)</span>
         <input
@@ -71,12 +73,12 @@ export default function FeedbackForm() {
       </label>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       {justSubmitted && !state.error && (
-        <p className="text-sm text-gold">Thanks — sent to the E-Board.</p>
+        <p className="text-sm text-accent">Thanks — sent to the E-Board.</p>
       )}
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Sending..." : "Send feedback"}
       </button>

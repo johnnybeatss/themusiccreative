@@ -33,7 +33,7 @@ export default function StreamingEmbedButtons({
           <button
             type="button"
             onClick={() => setOpen(open === "apple" ? null : "apple")}
-            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
           >
             {open === "apple" ? "Hide player" : "Apple Music"}
           </button>
@@ -42,7 +42,7 @@ export default function StreamingEmbedButtons({
           <button
             type="button"
             onClick={() => setOpen(open === "spotify" ? null : "spotify")}
-            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
           >
             {open === "spotify" ? "Hide player" : "Spotify"}
           </button>
@@ -55,7 +55,7 @@ export default function StreamingEmbedButtons({
             href={appleMusicUrl}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
           >
             Apple Music
           </a>
@@ -65,7 +65,7 @@ export default function StreamingEmbedButtons({
             href={spotifyUrl}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+            className="rounded-full border border-navy-800 px-3 py-1 text-xs font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
           >
             Spotify
           </a>

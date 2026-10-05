@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitJoinForm, type JoinFormState } from "./actions";
+import HoneypotFields from "@/components/HoneypotFields";
 
 const YEARS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"];
 const EXPERIENCE_LENGTHS = [
@@ -60,7 +61,7 @@ export default function JoinForm() {
   if (justSubmitted) {
     return (
       <div className="mt-6 rounded-xl border border-gold/50 bg-navy-900 p-6">
-        <p className="font-display text-lg tracking-wide text-gold">
+        <p className="font-display text-lg tracking-wide text-accent">
           YOU&apos;RE IN THE QUEUE
         </p>
         <p className="mt-2 text-sm text-steel-light">
@@ -76,6 +77,7 @@ export default function JoinForm() {
       action={formAction}
       className="mt-6 max-w-xl space-y-6"
     >
+      <HoneypotFields />
       <div className={sectionClass}>
         <h2 className="font-display text-lg tracking-wide text-ivory">
           BASIC INFO
@@ -290,7 +292,7 @@ export default function JoinForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Submitting..." : "Submit"}
       </button>

@@ -50,7 +50,7 @@ export default function EventListItem({
             <p className="font-semibold text-ivory">
               {event.name}
               {event.posh_embed_html && (
-                <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold">
+                <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
                   Posh
                 </span>
               )}
@@ -67,14 +67,14 @@ export default function EventListItem({
         <div className="mt-3 flex items-center gap-4">
           <Link
             href={`/eboard/events/${event.id}/rsvps`}
-            className="text-xs text-steel-light hover:text-gold"
+            className="text-xs text-steel-light hover:text-accent"
           >
             View RSVPs
           </Link>
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-steel-light hover:text-gold"
+            className="text-xs text-steel-light hover:text-accent"
           >
             Edit
           </button>

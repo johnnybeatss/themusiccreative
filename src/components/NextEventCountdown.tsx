@@ -58,7 +58,7 @@ export default function NextEventCountdown({ event }: { event: NextEvent }) {
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gold/25 blur-2xl"
       />
-      <p className="relative text-[11px] font-semibold uppercase tracking-wider text-gold">
+      <p className="relative text-[11px] font-semibold uppercase tracking-wider text-accent">
         Next Up
       </p>
       <p className="relative mt-1.5 truncate font-display text-base tracking-wide text-ivory">
@@ -66,7 +66,7 @@ export default function NextEventCountdown({ event }: { event: NextEvent }) {
       </p>
       <p className="relative mt-1 text-xs text-steel-light">{shortDate}</p>
       {parts && (
-        <p className="relative mt-3 font-display text-2xl tracking-wide text-gold">
+        <p className="relative mt-3 font-display text-2xl tracking-wide text-accent">
           {parts.days}d {parts.hours}h {parts.minutes}m
         </p>
       )}

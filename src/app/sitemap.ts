@@ -16,6 +16,8 @@ const ROUTES = [
   "/dj-booking",
   "/feedback",
   "/spotlights",
+  "/privacy",
+  "/terms",
 ];
 
 // Individual event pages aren't in ROUTES above because they're dynamic —

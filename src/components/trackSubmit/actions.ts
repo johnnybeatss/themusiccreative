@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam, checkLengths } from "@/lib/formGuard";
 
 // Public, unauthenticated action — same trust model as /join, /join-team,
 // and /dj-booking. RLS (0029_track_submissions.sql) allows the insert but
@@ -18,6 +19,7 @@ export async function submitTrackSubmission({
   artistInstagramUrl,
   appleMusicUrl,
   spotifyUrl,
+  guard,
 }: {
   storagePath: string;
   trackTitle: string;
@@ -25,7 +27,11 @@ export async function submitTrackSubmission({
   artistInstagramUrl: string;
   appleMusicUrl?: string | null;
   spotifyUrl?: string | null;
+  guard?: Record<string, string>;
 }): Promise<{ error: string | null }> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(guard)) return { error: null };
+
   if (
     !storagePath ||
     !trackTitle.trim() ||
@@ -34,6 +40,14 @@ export async function submitTrackSubmission({
   ) {
     return { error: "Missing required fields." };
   }
+  const tooLong = checkLengths({
+    "Track title": [trackTitle, 150],
+    "Artist name": [artistName, 120],
+    "Instagram link": [artistInstagramUrl, 300],
+    "Apple Music link": [appleMusicUrl, 500],
+    "Spotify link": [spotifyUrl, 500],
+  });
+  if (tooLong) return { error: tooLong };
 
   const supabase = await createClient();
   const { error } = await supabase.from("track_submissions").insert({

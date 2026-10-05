@@ -152,7 +152,7 @@ export default function AddToCalendarButton({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex shrink-0 items-center gap-1.5 rounded-full border border-navy-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-steel-light transition-colors hover:border-gold hover:text-gold"
+        className="flex shrink-0 items-center gap-1.5 rounded-full border border-navy-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-steel-light transition-colors hover:border-gold hover:text-accent"
       >
         <CalendarPlus size={14} />
         Add to Calendar

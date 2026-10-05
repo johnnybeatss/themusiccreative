@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam, isValidEmail } from "@/lib/formGuard";
 
 export type JoinFormState = { error: string | null };
 
@@ -37,6 +38,9 @@ export async function submitJoinForm(
   _prevState: JoinFormState,
   formData: FormData
 ): Promise<JoinFormState> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(formData)) return { error: null };
+
   const fullName = req(formData, "full_name");
   const fiuEmail = req(formData, "fiu_email");
   const studentId = req(formData, "student_id");
@@ -92,6 +96,8 @@ export async function submitJoinForm(
   if (!YES_NO.includes(signedToLabel as (typeof YES_NO)[number])) {
     return { error: "Answer the label/distribution question." };
   }
+
+  if (!isValidEmail(fiuEmail)) return { error: "Enter a valid FIU email." };
 
   const supabase = await createClient();
   const { error } = await supabase.from("join_submissions").insert({

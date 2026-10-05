@@ -1,6 +1,6 @@
 const STYLES: Record<string, string> = {
   "Not started": "border-steel text-steel-light",
-  "In progress": "border-gold text-gold",
+  "In progress": "border-gold text-accent",
   Done: "border-ivory/40 text-ivory",
 };
 

@@ -46,7 +46,7 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
               <p className="font-display text-xl tracking-wide text-ivory">
                 {m.name}
               </p>
-              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-gold">
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">
                 {m.role}
               </p>
               {(m.instagram_url || m.linkedin_url) && (
@@ -57,7 +57,7 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={`${m.name} on Instagram`}
-                      className="text-steel-light transition-colors hover:text-gold"
+                      className="text-steel-light transition-colors hover:text-accent"
                     >
                       <Instagram size={16} />
                     </a>
@@ -68,7 +68,7 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={`${m.name} on LinkedIn`}
-                      className="text-steel-light transition-colors hover:text-gold"
+                      className="text-steel-light transition-colors hover:text-accent"
                     >
                       <Linkedin size={16} />
                     </a>

@@ -41,7 +41,7 @@ export default async function ReportsPage() {
         WEEKLY REPORT
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
-      <p className="mt-4 text-sm font-semibold text-gold">
+      <p className="mt-4 text-sm font-semibold text-accent">
         Week of {formatWeekRange(report.week_start, report.week_end)}
       </p>
 
@@ -117,7 +117,7 @@ export default async function ReportsPage() {
               <li key={r.id}>
                 <Link
                   href={`/eboard/reports/${r.id}`}
-                  className="text-sm text-steel-light transition-colors hover:text-gold"
+                  className="text-sm text-steel-light transition-colors hover:text-accent"
                 >
                   Week of {formatWeekRange(r.week_start, r.week_end)}
                 </Link>

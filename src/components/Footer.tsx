@@ -25,28 +25,38 @@ export default function Footer() {
           <NewsletterForm />
         </div>
         <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:justify-start">
-          <Link href="/events" className="transition-colors hover:text-gold">
+          <Link href="/events" className="transition-colors hover:text-accent">
             Events
           </Link>
-          <Link href="/merch" className="transition-colors hover:text-gold">
+          <Link href="/merch" className="transition-colors hover:text-accent">
             Merch
           </Link>
-          <Link href="/spotlights" className="transition-colors hover:text-gold">
+          <Link href="/spotlights" className="transition-colors hover:text-accent">
             Spotlights
           </Link>
-          <Link href="/dj-booking" className="transition-colors hover:text-gold">
+          <Link href="/dj-booking" className="transition-colors hover:text-accent">
             DJ Booking
           </Link>
-          <Link href="/join-team" className="transition-colors hover:text-gold">
+          <Link href="/join-team" className="transition-colors hover:text-accent">
             Join the Team
           </Link>
         </nav>
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} The Music Creative @ FIU.</p>
+          <div className="flex flex-col items-center gap-1 sm:items-start">
+            <p>&copy; {new Date().getFullYear()} The Music Creative @ FIU.</p>
+            <p className="flex gap-4 text-xs">
+              <Link href="/privacy" className="transition-colors hover:text-accent">
+                Privacy
+              </Link>
+              <Link href="/terms" className="transition-colors hover:text-accent">
+                Terms
+              </Link>
+            </p>
+          </div>
           <div className="flex items-center gap-6">
             <Link
               href="/join"
-              className="font-semibold text-gold transition-colors hover:text-gold-light"
+              className="font-semibold text-accent transition-colors hover:text-accent"
             >
               Join the club →
             </Link>
@@ -55,7 +65,7 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
-              className="flex items-center gap-2 text-steel-light transition-colors hover:text-gold"
+              className="flex items-center gap-2 text-steel-light transition-colors hover:text-accent"
             >
               <Instagram size={18} />
               <span>@themusiccreativefiu</span>

@@ -177,12 +177,12 @@ export default async function EboardHomePage() {
               className="group relative flex h-full items-start gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5 transition-colors hover:border-gold"
             >
               {(UNREAD_COUNTS[s.href] ?? 0) > 0 && (
-                <span className="absolute right-4 top-4 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
+                <span className="absolute right-4 top-4 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-white">
                   {UNREAD_COUNTS[s.href]}
                 </span>
               )}
               <s.icon
-                className="mt-0.5 h-6 w-6 shrink-0 text-steel-light transition-colors group-hover:text-gold"
+                className="mt-0.5 h-6 w-6 shrink-0 text-steel-light transition-colors group-hover:text-accent"
                 strokeWidth={1.5}
               />
               <div>

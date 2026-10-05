@@ -53,7 +53,7 @@ export default function NoteForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Saving..." : "Add note"}
       </button>

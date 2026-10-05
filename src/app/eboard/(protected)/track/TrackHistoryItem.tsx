@@ -110,7 +110,7 @@ export default function TrackHistoryItem({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+              className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
             >
               {isPending ? "Saving..." : "Save"}
             </button>
@@ -130,7 +130,7 @@ export default function TrackHistoryItem({
   return (
     <div className="rounded-xl border border-navy-800 bg-navy-900 p-4">
       {isCurrent && (
-        <p className="text-xs font-semibold uppercase tracking-wide text-gold">
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent">
           Currently featured
         </p>
       )}
@@ -142,7 +142,7 @@ export default function TrackHistoryItem({
           href={track.artist_instagram_url}
           target="_blank"
           rel="noreferrer"
-          className="block text-xs text-gold underline"
+          className="block text-xs text-accent underline"
         >
           {track.artist_instagram_url}
         </a>
@@ -168,7 +168,7 @@ export default function TrackHistoryItem({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-steel-light transition-colors hover:text-gold"
+            className="text-xs text-steel-light transition-colors hover:text-accent"
           >
             Edit
           </button>
@@ -205,7 +205,7 @@ export default function TrackHistoryItem({
               />
               <button
                 type="submit"
-                className="rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950"
+                className="rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white"
               >
                 Feature this
               </button>

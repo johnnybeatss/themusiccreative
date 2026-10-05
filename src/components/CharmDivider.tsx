@@ -43,7 +43,7 @@ export default function CharmDivider({
         // eslint-disable-next-line @next/next/no-img-element -- tiny decorative asset, no need for next/image optimization
         <img
           key={`${name}-${i}`}
-          src={`/charms/${name}.png`}
+          src={`/charms/${name}.webp`}
           alt=""
           style={{ height: 26, width: 26 * ASPECT[name] }}
           className="opacity-60"

@@ -56,7 +56,7 @@ export default function CalendarPage() {
           foreign block. */}
       <div className="mt-6 overflow-hidden rounded-xl border border-gold/40 bg-navy-900 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <div className="border-b border-navy-800 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gold">
+          <p className="text-xs font-semibold uppercase tracking-wide text-accent">
             Meetings &amp; Events
           </p>
         </div>

@@ -231,7 +231,7 @@ export default function EventForm({
             type="file"
             name="image"
             accept="image/*"
-            className="mt-2 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+            className="mt-2 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-gold-light"
           />
         </label>
         <p className="mt-1 text-xs text-steel-light">
@@ -278,7 +278,7 @@ export default function EventForm({
             accept="image/*"
             multiple
             onChange={handlePhotosChange}
-            className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+            className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-gold-light"
           />
         </label>
         <p className="mt-1 text-xs text-steel-light">
@@ -316,7 +316,7 @@ export default function EventForm({
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {isPending ? "Saving..." : event ? "Save changes" : "Add event"}
         </button>

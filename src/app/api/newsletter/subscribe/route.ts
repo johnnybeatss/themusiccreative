@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { looksLikeSpam } from "@/lib/formGuard";
 
 // Good-enough email shape check to catch typos/garbage before we ever call
 // Resend — not a full RFC-5322 validator, Resend does deeper validation too.
@@ -18,13 +19,17 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // you are sending has no contacts" despite one already being subscribed.
 export async function POST(request: Request) {
   let email: unknown;
+  let body: Record<string, unknown> | null = null;
 
   try {
-    const body = await request.json();
+    body = await request.json();
     email = body?.email;
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
+
+  // Bots get a fake success and nothing is stored (see src/lib/formGuard.ts).
+  if (looksLikeSpam(body)) return NextResponse.json({ ok: true });
 
   if (typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json(

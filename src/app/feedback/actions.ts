@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam } from "@/lib/formGuard";
 
 export type FeedbackFormState = { error: string | null };
 
@@ -14,6 +15,9 @@ export async function submitFeedback(
   _prevState: FeedbackFormState,
   formData: FormData
 ): Promise<FeedbackFormState> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(formData)) return { error: null };
+
   const name = ((formData.get("name") as string) || "").trim() || null;
   const category = formData.get("category") as string;
   const message = ((formData.get("message") as string) || "").trim();

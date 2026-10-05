@@ -79,7 +79,7 @@ export default function MemberListItem({
           target="_blank"
           rel="noreferrer"
           aria-label={`${member.name} on Instagram`}
-          className="text-steel-light transition-colors hover:text-gold"
+          className="text-steel-light transition-colors hover:text-accent"
         >
           <Instagram size={18} />
         </a>
@@ -89,7 +89,7 @@ export default function MemberListItem({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-steel-light hover:text-gold"
+            className="text-xs text-steel-light hover:text-accent"
           >
             Edit
           </button>

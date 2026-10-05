@@ -75,7 +75,7 @@ export default async function TeamPage() {
         </div>
         <a
           href="/join-team"
-          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light"
+          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
         >
           Apply &rarr;
         </a>

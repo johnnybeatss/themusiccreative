@@ -41,6 +41,10 @@
   --color-ivory: #f2e7df;
   --color-gold: #2436db;
   --color-gold-light: #616ee5;
+  /* Text-safe brand blue: #2436db is only 2.2:1 on navy (fails WCAG AA),
+     so any blue TEXT uses this lighter tint instead (4.8:1+ on every navy
+     surface). Keep --color-gold for fills, borders, and buttons. */
+  --color-accent: #8a94f2;
 
   --font-display: var(--font-anton), sans-serif;
   --font-sans: var(--font-inter), sans-serif;

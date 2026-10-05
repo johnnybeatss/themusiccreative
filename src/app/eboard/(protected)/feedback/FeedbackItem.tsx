@@ -5,7 +5,7 @@ import { markFeedbackRead } from "./actions";
 import DeleteFeedbackButton from "./DeleteFeedbackButton";
 
 const CATEGORY_STYLES: Record<string, string> = {
-  "Event idea": "border-gold text-gold",
+  "Event idea": "border-gold text-accent",
   Like: "border-ivory/40 text-ivory",
   Dislike: "border-steel text-steel-light",
   General: "border-steel text-steel-light",
@@ -64,7 +64,7 @@ export default function FeedbackItem({ feedback }: { feedback: Feedback }) {
             {feedback.category}
           </span>
           {!read && (
-            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+            <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               New
             </span>
           )}

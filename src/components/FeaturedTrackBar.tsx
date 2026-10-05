@@ -152,7 +152,7 @@ export default function FeaturedTrackBar({
             type="button"
             onClick={toggle}
             aria-label={playing ? "Pause" : "Play"}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold text-navy-950 transition-transform hover:scale-105 active:scale-95"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold text-white transition-transform hover:scale-105 active:scale-95"
           >
             {playing ? (
               <Pause size={18} fill="currentColor" />
@@ -178,7 +178,7 @@ export default function FeaturedTrackBar({
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-gold">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-accent">
               This Week&apos;s Spotlight
             </p>
             <p className="truncate text-sm font-semibold text-ivory">
@@ -192,7 +192,7 @@ export default function FeaturedTrackBar({
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`${track.artist_name} on Instagram`}
-                  className="ml-1.5 inline-block align-middle text-steel-light transition-colors hover:text-gold"
+                  className="ml-1.5 inline-block align-middle text-steel-light transition-colors hover:text-accent"
                 >
                   <Instagram size={13} className="inline" />
                 </a>
@@ -205,7 +205,7 @@ export default function FeaturedTrackBar({
               type="button"
               onClick={toggleMute}
               aria-label={volume > 0 ? "Mute" : "Unmute"}
-              className="text-steel-light transition-colors hover:text-gold"
+              className="text-steel-light transition-colors hover:text-accent"
             >
               {volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
             </button>
@@ -228,7 +228,7 @@ export default function FeaturedTrackBar({
                   href={track.apple_music_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
                 >
                   Apple Music
                 </a>
@@ -238,7 +238,7 @@ export default function FeaturedTrackBar({
                   href={track.spotify_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-gold"
+                  className="rounded-full border border-navy-800 px-2.5 py-1 text-[11px] font-semibold text-steel-light transition-colors hover:border-gold hover:text-accent"
                 >
                   Spotify
                 </a>
@@ -248,7 +248,7 @@ export default function FeaturedTrackBar({
 
           <Link
             href="/#submit-track"
-            className="hidden shrink-0 rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-navy-950 sm:block"
+            className="hidden shrink-0 rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white sm:block"
           >
             Submit yours →
           </Link>

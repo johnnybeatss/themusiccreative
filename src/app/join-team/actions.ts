@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { looksLikeSpam, isValidEmail, checkLengths } from "@/lib/formGuard";
 import { uploadResume } from "@/lib/supabase/uploadResume";
 
 export type JoinTeamFormState = { error: string | null };
@@ -17,6 +18,9 @@ export async function submitTeamApplication(
   _prevState: JoinTeamFormState,
   formData: FormData
 ): Promise<JoinTeamFormState> {
+  // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
+  if (looksLikeSpam(formData)) return { error: null };
+
   const fullName = req(formData, "full_name");
   const email = req(formData, "email");
   const phone = req(formData, "phone") || null;
@@ -26,6 +30,10 @@ export async function submitTeamApplication(
   if (!fullName || !email || !roleInterest) {
     return { error: "Name, email, and role are required." };
   }
+
+  if (!isValidEmail(email)) return { error: "Enter a valid email address." };
+  const tooLong = checkLengths({ Name: [fullName, 120], Phone: [phone, 40], "Why you want to join": [whyJoin, 3000] });
+  if (tooLong) return { error: tooLong };
 
   const supabase = await createClient();
 

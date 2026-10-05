@@ -36,7 +36,7 @@ export default function ResourcesPage() {
             href={`https://drive.google.com/drive/folders/${RESOURCES_FOLDER_ID}`}
             target="_blank"
             rel="noreferrer"
-            className="text-xs text-gold underline"
+            className="text-xs text-accent underline"
           >
             Open in Google Drive ↗
           </a>

@@ -100,7 +100,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
-      <body className="flex min-h-screen flex-col bg-navy-950 font-sans text-ivory antialiased">
+      <body className="flex min-h-screen flex-col overflow-x-clip bg-navy-950 font-sans text-ivory antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}

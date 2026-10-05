@@ -163,12 +163,12 @@ export default function EboardNav({
           {isDemoActive ? (
             <form action={exitDemoView}>
               <div className="rounded-lg border border-gold bg-gold/10 px-3 py-2">
-                <p className="text-xs font-semibold text-gold">
+                <p className="text-xs font-semibold text-accent">
                   Viewing as E-Board (demo)
                 </p>
                 <button
                   type="submit"
-                  className="mt-1 text-xs text-steel-light underline transition-colors hover:text-gold"
+                  className="mt-1 text-xs text-steel-light underline transition-colors hover:text-accent"
                 >
                   Exit demo view
                 </button>
@@ -178,7 +178,7 @@ export default function EboardNav({
             <form action={enterDemoView}>
               <button
                 type="submit"
-                className="w-full rounded-lg border border-navy-800 px-3 py-2 text-left text-xs font-medium text-steel-light transition-colors hover:border-gold hover:text-gold"
+                className="w-full rounded-lg border border-navy-800 px-3 py-2 text-left text-xs font-medium text-steel-light transition-colors hover:border-gold hover:text-accent"
               >
                 View as E-Board
               </button>
@@ -189,7 +189,7 @@ export default function EboardNav({
       {profile && (
         <p className="mb-2 px-3 text-xs uppercase tracking-wide text-steel-light">
           Signed in as{" "}
-          <span className="font-semibold text-gold">
+          <span className="font-semibold text-accent">
             {ROLE_LABELS[profile.role]}
           </span>
         </p>
@@ -206,12 +206,12 @@ export default function EboardNav({
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-steel-light transition-colors hover:bg-navy-900 hover:text-gold"
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-steel-light transition-colors hover:bg-navy-900 hover:text-accent"
                 >
                   <l.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
                   <span className="flex-1">{l.label}</span>
                   {(UNREAD_COUNTS[l.href] ?? 0) > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-navy-950">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-white">
                       {UNREAD_COUNTS[l.href]}
                     </span>
                   )}
@@ -229,7 +229,7 @@ export default function EboardNav({
             </p>
             <Link
               href="/eboard/profile"
-              className="text-xs text-steel-light hover:text-gold"
+              className="text-xs text-steel-light hover:text-accent"
             >
               Edit name
             </Link>

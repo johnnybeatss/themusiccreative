@@ -94,7 +94,7 @@ export default function EboardLoginForm() {
         <button
           type="submit"
           disabled={status === "sending"}
-          className="w-full rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="w-full rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {status === "sending" ? "Sending..." : "Send sign-in link"}
         </button>

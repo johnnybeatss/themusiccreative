@@ -24,11 +24,16 @@ export function pageOpenGraph(
       url: `${SITE_URL}${path}`,
       siteName: SITE_TITLE,
       type: "website",
+      // Defining `openGraph` here replaces the root one wholesale, which
+      // also dropped the shared share-card image on every subpage. Point
+      // back at the root /opengraph-image explicitly.
+      images: [{ url: `${SITE_URL}/opengraph-image`, width: 1200, height: 630, alt: SITE_TITLE }],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
+      images: [`${SITE_URL}/opengraph-image`],
     },
   };
 }

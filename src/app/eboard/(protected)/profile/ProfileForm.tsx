@@ -49,12 +49,12 @@ export default function ProfileForm({
       </p>
       {state.error && <p className="text-sm text-red-400">{state.error}</p>}
       {justSaved && !state.error && (
-        <p className="text-sm text-gold">Saved.</p>
+        <p className="text-sm text-accent">Saved.</p>
       )}
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Saving..." : "Save name"}
       </button>

@@ -4,6 +4,8 @@ import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { normalizeInstagram } from "@/lib/normalizeInstagram";
 import { submitTrackSubmission } from "./actions";
+import HoneypotFields from "@/components/HoneypotFields";
+import { HONEYPOT_FIELD, STARTED_AT_FIELD, looksLikeSpam } from "@/lib/formGuard";
 
 const BUCKET = "track-submissions";
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB — same cap as the admin uploader
@@ -26,6 +28,16 @@ export default function SubmitTrackForm({
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    // Bail before uploading anything if it's a bot (src/lib/formGuard.ts).
+    if (looksLikeSpam(formData)) {
+      formRef.current?.reset();
+      onSubmitted();
+      return;
+    }
+    const guard = {
+      [HONEYPOT_FIELD]: (formData.get(HONEYPOT_FIELD) as string) || "",
+      [STARTED_AT_FIELD]: (formData.get(STARTED_AT_FIELD) as string) || "",
+    };
     const file = formData.get("file") as File | null;
     const trackTitle = ((formData.get("track_title") as string) || "").trim();
     const artistName = ((formData.get("artist_name") as string) || "").trim();
@@ -70,6 +82,7 @@ export default function SubmitTrackForm({
         artistInstagramUrl,
         appleMusicUrl,
         spotifyUrl,
+        guard,
       });
       if (result.error) {
         if (storagePath) {
@@ -91,8 +104,9 @@ export default function SubmitTrackForm({
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-navy-800 bg-navy-950 p-4"
+      className="relative space-y-3 rounded-xl border border-navy-800 bg-navy-950 p-4"
     >
+      <HoneypotFields />
       <label className={labelClass}>
         <span className="text-steel-light">Song title</span>
         <input
@@ -130,7 +144,7 @@ export default function SubmitTrackForm({
           name="file"
           accept="audio/*"
           required
-          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-950 hover:file:bg-gold-light"
+          className="mt-1 block w-full text-sm text-steel-light file:mr-3 file:rounded-lg file:border-0 file:bg-gold file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-gold-light"
         />
         <span className="mt-1 block text-xs text-steel-light">
           Under 20MB — an mp3 exported from the DAW or Instagram works well.
@@ -160,7 +174,7 @@ export default function SubmitTrackForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {pending ? "Submitting..." : "Submit track"}
       </button>

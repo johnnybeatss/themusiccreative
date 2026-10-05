@@ -1,3 +1,5 @@
+import "server-only";
+
 // "What's happening" — Miami-area music industry events, pulled live from
 // Ticketmaster's Discovery API (a real public API, not a scraper). Requires
 // TICKETMASTER_API_KEY; returns [] rather than throwing if it's missing or

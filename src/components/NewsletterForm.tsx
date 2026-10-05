@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import HoneypotFields from "./HoneypotFields";
+import { HONEYPOT_FIELD, STARTED_AT_FIELD } from "@/lib/formGuard";
 
 // Compact footer signup form. Posts straight to /api/newsletter/subscribe,
 // which adds the email to the Resend Contacts audience — that's the whole
@@ -12,8 +14,9 @@ export default function NewsletterForm() {
   );
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const fd = new FormData(e.currentTarget);
     setStatus("sending");
     setError("");
 
@@ -21,7 +24,11 @@ export default function NewsletterForm() {
       const res = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          [HONEYPOT_FIELD]: fd.get(HONEYPOT_FIELD) ?? "",
+          [STARTED_AT_FIELD]: fd.get(STARTED_AT_FIELD) ?? "",
+        }),
       });
       const data = await res.json();
 
@@ -41,12 +48,13 @@ export default function NewsletterForm() {
 
   if (status === "sent") {
     return (
-      <p className="text-sm text-gold">You&apos;re on the list — thanks!</p>
+      <p className="text-sm text-accent">You&apos;re on the list — thanks!</p>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-xs">
+    <form onSubmit={handleSubmit} className="relative w-full max-w-xs">
+      <HoneypotFields />
       <p className="mb-2 text-xs uppercase tracking-wide text-steel-light">
         Weekly updates
       </p>
@@ -62,7 +70,7 @@ export default function NewsletterForm() {
         <button
           type="submit"
           disabled={status === "sending"}
-          className="shrink-0 rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="shrink-0 rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {status === "sending" ? "..." : "Join"}
         </button>

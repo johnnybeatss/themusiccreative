@@ -27,7 +27,7 @@ export default function EboardCalendarPage() {
         href="https://calendar.google.com/calendar/r"
         target="_blank"
         rel="noreferrer"
-        className="mt-4 inline-block text-sm text-gold underline"
+        className="mt-4 inline-block text-sm text-accent underline"
       >
         Open Google Calendar ↗
       </a>

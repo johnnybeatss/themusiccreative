@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitDjBooking, type DjBookingFormState } from "./actions";
+import HoneypotFields from "@/components/HoneypotFields";
 
 const EXPERIENCE_OPTIONS = [
   "Just starting",
@@ -40,7 +41,7 @@ export default function DjBookingForm() {
   if (justSubmitted) {
     return (
       <div className="mt-6 rounded-xl border border-gold/50 bg-navy-900 p-6">
-        <p className="font-display text-lg tracking-wide text-gold">
+        <p className="font-display text-lg tracking-wide text-accent">
           YOU&apos;RE ON THE LIST
         </p>
         <p className="mt-2 text-sm text-steel-light">
@@ -57,6 +58,7 @@ export default function DjBookingForm() {
       action={formAction}
       className="mt-6 max-w-lg space-y-4 rounded-xl border border-navy-800 bg-navy-900 p-5"
     >
+      <HoneypotFields />
       <label className={labelClass}>
         <span className="text-steel-light">Your name</span>
         <input
@@ -126,7 +128,7 @@ export default function DjBookingForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {isPending ? "Submitting..." : "Sign up"}
       </button>

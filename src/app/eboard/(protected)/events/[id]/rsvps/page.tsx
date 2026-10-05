@@ -70,7 +70,7 @@ export default async function EventRsvpsPage({
     <div>
       <Link
         href="/eboard/events"
-        className="text-xs text-steel-light hover:text-gold"
+        className="text-xs text-steel-light hover:text-accent"
       >
         &larr; Back to Events
       </Link>
@@ -84,7 +84,7 @@ export default async function EventRsvpsPage({
         {rsvps.length > 0 && (
           <a
             href={`/eboard/events/${id}/rsvps/export`}
-            className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
+            className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
           >
             Export to Excel
           </a>

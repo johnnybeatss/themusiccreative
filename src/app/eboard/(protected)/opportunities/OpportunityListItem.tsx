@@ -88,7 +88,7 @@ export default function OpportunityListItem({
               href={opportunity.contact_link}
               target="_blank"
               rel="noreferrer"
-              className="mt-1 inline-block text-sm text-gold underline"
+              className="mt-1 inline-block text-sm text-accent underline"
             >
               {opportunity.contact_link}
             </a>
@@ -100,7 +100,7 @@ export default function OpportunityListItem({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-steel-light hover:text-gold"
+            className="text-xs text-steel-light hover:text-accent"
           >
             Edit
           </button>

@@ -87,13 +87,13 @@ export async function generateMetadata({
       url,
       siteName: "The Music Creative @ FIU",
       type: "website",
-      images: event.image_url ? [event.image_url] : undefined,
+      images: [event.image_url ?? "https://themusiccreative.org/opengraph-image"],
     },
     twitter: {
-      card: event.image_url ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: event.name,
       description,
-      images: event.image_url ? [event.image_url] : undefined,
+      images: [event.image_url ?? "https://themusiccreative.org/opengraph-image"],
     },
   };
 }
@@ -168,7 +168,7 @@ export default async function EventDetailPage({
       </p>
 
       {rsvpCount > 0 && (
-        <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-gold">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
           <Users size={14} />
           {rsvpCount} {rsvpCount === 1 ? "person" : "people"} going
         </p>
@@ -179,7 +179,7 @@ export default async function EventDetailPage({
           href={event.guest_instagram_url}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm text-gold hover:underline"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
         >
           <Instagram size={14} />
           Guest on Instagram

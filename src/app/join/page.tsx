@@ -38,7 +38,7 @@ export default function JoinPage() {
       </p>
       <p className="mt-2 text-sm text-steel-light">
         Looking to join E-Board specifically?{" "}
-        <a href="/join-team" className="text-gold underline">
+        <a href="/join-team" className="text-accent underline">
           Apply here
         </a>{" "}
         instead.

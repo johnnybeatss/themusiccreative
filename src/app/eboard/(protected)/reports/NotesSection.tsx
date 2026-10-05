@@ -57,7 +57,7 @@ export default function NotesSection({
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   {n.is_priority && (
-                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">
+                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                       Priority
                     </span>
                   )}
@@ -118,7 +118,7 @@ export default function NotesSection({
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-light disabled:opacity-50"
+            className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
           >
             {isPending ? "Adding..." : "Add note"}
           </button>

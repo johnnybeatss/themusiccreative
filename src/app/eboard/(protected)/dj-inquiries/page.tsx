@@ -47,7 +47,7 @@ export default async function DjInquiriesPage() {
         {inquiries.length > 0 && (
           <a
             href="/eboard/dj-inquiries/export"
-            className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-950"
+            className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
           >
             Export to Excel
           </a>

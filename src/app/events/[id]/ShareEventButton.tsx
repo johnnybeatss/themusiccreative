@@ -36,7 +36,7 @@ export default function ShareEventButton({ eventName }: { eventName: string }) {
     <button
       type="button"
       onClick={handleClick}
-      className="flex shrink-0 items-center gap-1.5 rounded-full border border-navy-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-steel-light transition-colors hover:border-gold hover:text-gold"
+      className="flex shrink-0 items-center gap-1.5 rounded-full border border-navy-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-steel-light transition-colors hover:border-gold hover:text-accent"
     >
       {copied ? (
         <>

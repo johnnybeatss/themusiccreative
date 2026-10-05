@@ -29,7 +29,7 @@ export default function VideoListItem({
           href={video.instagram_url}
           target="_blank"
           rel="noreferrer"
-          className="truncate text-xs text-gold underline"
+          className="truncate text-xs text-accent underline"
         >
           {video.instagram_url}
         </a>
