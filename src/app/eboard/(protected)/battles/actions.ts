@@ -124,6 +124,26 @@ export async function markBattleEntryRead(id: string) {
   revalidatePath("/eboard", "layout");
 }
 
+// Voting is open to anyone (no login), so one person can clear cookies and
+// vote again — up to the per-network cap. The admin page flags networks
+// with an unusual number of votes; this voids all of one network's votes
+// in one battle. Hashes only — E-Board never sees anyone's IP.
+export async function voidNetworkVotes(formData: FormData) {
+  if (!canManage(await getMyRole())) return;
+  const battleId = formData.get("battle_id") as string;
+  const ipHash = formData.get("ip_hash") as string;
+  if (!battleId || !/^[0-9a-f]{64}$/.test(ipHash)) return;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("battle_votes")
+    .delete()
+    .eq("battle_id", battleId)
+    .eq("ip_hash", ipHash);
+  if (error) console.error("Failed to void votes:", error.message);
+  revalidateBattle(battleId);
+}
+
 // Owner-only, like every weekly_track write. Sets the winner, closes the
 // battle, and copies the winning beat into the site-wide player — same
 // copy-then-insert flow as featureSubmission in track-submissions/actions.ts.

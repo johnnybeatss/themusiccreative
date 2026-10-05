@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Instagram, Menu, X } from "lucide-react";
+import { ChevronDown, Instagram, Menu, X } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home" },
@@ -17,12 +17,24 @@ const links = [
   { href: "/feedback", label: "Feedback" },
 ];
 
+// Secondary pages behind a "More" dropdown on desktop — the top bar
+// already holds 7 links and more would overflow on laptop widths.
+const moreLinks = [
+  { href: "/battles", label: "Beat Battles" },
+  { href: "/collab", label: "Collab Board" },
+  { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/spotlights", label: "Spotlights" },
+];
+
 const INSTAGRAM_URL = "https://instagram.com/themusiccreativefiu";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLLIElement>(null);
   const pathname = usePathname();
+  const moreActive = moreLinks.some((l) => pathname.startsWith(l.href));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -33,7 +45,25 @@ export default function Nav() {
 
   useEffect(() => {
     setMenuOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
+
+  // Close the "More" dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMoreOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [moreOpen]);
 
   return (
     <>
@@ -56,12 +86,16 @@ export default function Nav() {
               width={40}
               height={40}
             />
-            <span className="hidden whitespace-nowrap font-display text-lg tracking-wide text-ivory sm:inline">
+            <span className="hidden whitespace-nowrap font-display text-lg tracking-wide text-ivory sm:inline lg:hidden xl:inline">
               THE MUSIC CREATIVE
             </span>
           </Link>
 
-          <ul className="ml-10 hidden gap-8 text-sm font-medium sm:flex">
+          {/* Desktop bar starts at lg, not sm: measured at ~975px wide even
+              before "More", so 640–1024px (tablets) used to overflow. Those
+              widths get the hamburger menu instead. The wordmark hides
+              between lg and xl to make room. */}
+          <ul className="ml-10 hidden gap-6 text-sm font-medium lg:flex xl:gap-8">
             {links.map((l) => (
               <li key={l.href}>
                 <Link
@@ -73,11 +107,39 @@ export default function Nav() {
                 </Link>
               </li>
             ))}
+            <li ref={moreRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setMoreOpen((v) => !v)}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
+                data-active={moreActive}
+                className="inline-flex items-center gap-1 text-steel-light transition-colors hover:text-accent data-[active=true]:text-accent"
+              >
+                More
+                <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+              </button>
+              {moreOpen && (
+                <ul className="absolute right-0 top-full z-50 mt-3 w-48 overflow-hidden rounded-xl border border-navy-800 bg-navy-950 py-1 shadow-lg">
+                  {moreLinks.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        data-active={pathname.startsWith(l.href)}
+                        className="block px-4 py-2 text-steel-light transition-colors hover:bg-navy-900 hover:text-accent data-[active=true]:text-accent"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
           </ul>
 
           {/* ml-auto absorbs the leftover header width, pinning E-Board +
               Instagram to the right edge regardless of viewport. */}
-          <div className="ml-auto hidden items-center gap-4 sm:flex">
+          <div className="ml-auto hidden items-center gap-4 lg:flex">
             <Link
               href="/eboard"
               className="rounded-full border border-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white"
@@ -100,7 +162,7 @@ export default function Nav() {
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
-            className="ml-auto text-ivory sm:hidden"
+            className="ml-auto text-ivory lg:hidden"
           >
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -121,7 +183,7 @@ export default function Nav() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed inset-0 top-[57px] z-40 bg-navy-950 sm:hidden"
+            className="fixed inset-0 top-[57px] z-40 overflow-y-auto bg-navy-950 lg:hidden"
           >
             <ul className="flex flex-col gap-2 px-4 py-8">
               {links.map((l, i) => (
@@ -143,6 +205,18 @@ export default function Nav() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: links.length * 0.06 }}
+                className="mt-2 flex flex-wrap gap-x-5 gap-y-2"
+              >
+                {moreLinks.map((l) => (
+                  <Link key={l.href} href={l.href} className="py-1 text-lg font-semibold text-steel-light hover:text-accent">
+                    {l.label}
+                  </Link>
+                ))}
+              </motion.li>
+              <motion.li
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: (links.length + 1) * 0.06 }}
                 className="mt-4 flex flex-wrap items-center gap-3 border-t border-navy-800 pt-4"
               >
                 <Link

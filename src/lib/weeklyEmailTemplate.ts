@@ -24,15 +24,20 @@ import type { MiamiMusicEvent } from "./miamiMusicEvents";
 // Mirrors src/app/globals.css's --color-* custom properties — email
 // clients don't support CSS variables, so these are duplicated as plain
 // hex values for the inline styles below.
+// Synced to the Aug 2026 rebrand.
 const COLOR = {
-  pageBg: "#10141f", // navy-950
-  cardBg: "#1c2136", // navy-900
-  cardBorder: "#262d47", // navy-800
-  highlightBg: "#262d47", // navy-800, used for the Apply-to-E-Board block
-  heading: "#eef0f5", // ivory
-  body: "#eef0f5", // ivory
-  meta: "#8a97b3", // steel-light
-  gold: "#f2b134",
+  pageBg: "#14172f", // navy-950
+  cardBg: "#1f2547", // navy-900
+  cardBorder: "#282c56", // navy-800
+  highlightBg: "#282c56", // navy-800, used for the Apply-to-E-Board block
+  heading: "#f2e7df", // ivory
+  body: "#f2e7df", // ivory
+  meta: "#8f92ae", // steel-light
+  // Brand blue is too dark to read as text on navy (~2.2:1), so it's
+  // only used for filled buttons with white text; text/links use accent.
+  brand: "#2436db", // --color-gold (named "gold" in CSS for history)
+  accent: "#8a94f2", // --color-accent, text-safe blue
+  onBrand: "#ffffff",
 } as const;
 
 export type WeeklyEmailEvent = {
@@ -132,7 +137,7 @@ function buildEventCard(event: WeeklyEmailEvent, siteUrl: string): string {
               <p style="margin:0;font-size:15px;font-weight:bold;color:${COLOR.heading};font-family:Arial,Helvetica,sans-serif;">${name}</p>
               <p style="margin:4px 0 0;font-size:12px;color:${COLOR.meta};font-family:Arial,Helvetica,sans-serif;">${when}${location ? ` &middot; ${location}` : ""}</p>
               ${description ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:${COLOR.body};font-family:Arial,Helvetica,sans-serif;">${description}</p>` : ""}
-              <p style="margin:12px 0 0;"><a href="${siteUrl}/events/${event.id}" style="font-size:12px;font-weight:bold;color:${COLOR.gold};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${linkLabel} &rarr;</a></p>
+              <p style="margin:12px 0 0;"><a href="${siteUrl}/events/${event.id}" style="font-size:12px;font-weight:bold;color:${COLOR.accent};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${linkLabel} &rarr;</a></p>
             </td>
           </tr>
         </table>
@@ -145,10 +150,10 @@ function buildPrimaryCta(cta: PrimaryCta): string {
   return `
     <tr>
       <td style="padding:20px 32px 0;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2b134;border-radius:10px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${COLOR.brand};border-radius:10px;">
           <tr>
             <td style="padding:16px 20px;">
-              <a href="${cta.url}" style="display:block;font-size:14px;font-weight:bold;color:#10141f;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${label} &rarr;</a>
+              <a href="${cta.url}" style="display:block;font-size:14px;font-weight:bold;color:${COLOR.onBrand};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">${label} &rarr;</a>
             </td>
           </tr>
         </table>
@@ -165,12 +170,12 @@ function buildSpotlightSection(track: SpotlightTrack, siteUrl: string): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${COLOR.cardBg};border:1px solid ${COLOR.cardBorder};border-radius:10px;">
           <tr>
             <td style="padding:18px 20px;">
-              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.gold};font-family:Arial,Helvetica,sans-serif;">This Week's Spotlight</p>
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.accent};font-family:Arial,Helvetica,sans-serif;">This Week's Spotlight</p>
               <p style="margin:6px 0 0;font-size:15px;font-weight:bold;color:${COLOR.heading};font-family:Arial,Helvetica,sans-serif;">${trackTitle} <span style="font-weight:normal;color:${COLOR.meta};">&mdash; ${artistName}</span></p>
               <p style="margin:10px 0 0;font-size:12px;font-family:Arial,Helvetica,sans-serif;">
-                <a href="${siteUrl}/" style="font-weight:bold;color:${COLOR.gold};text-decoration:none;">Listen on the site &rarr;</a>${
+                <a href="${siteUrl}/" style="font-weight:bold;color:${COLOR.accent};text-decoration:none;">Listen on the site &rarr;</a>${
                   track.artistInstagramUrl
-                    ? ` &nbsp;&middot;&nbsp; <a href="${track.artistInstagramUrl}" style="color:${COLOR.gold};text-decoration:none;">Follow ${artistName} &rarr;</a>`
+                    ? ` &nbsp;&middot;&nbsp; <a href="${track.artistInstagramUrl}" style="color:${COLOR.accent};text-decoration:none;">Follow ${artistName} &rarr;</a>`
                     : ""
                 }
               </p>
@@ -190,10 +195,10 @@ function buildMemberSpotlightSection(spotlight: MemberSpotlight): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${COLOR.cardBg};border:1px solid ${COLOR.cardBorder};border-radius:10px;">
           <tr>
             <td style="padding:18px 20px;">
-              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.gold};font-family:Arial,Helvetica,sans-serif;">Member Spotlight</p>
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.accent};font-family:Arial,Helvetica,sans-serif;">Member Spotlight</p>
               <p style="margin:6px 0 0;font-size:15px;font-weight:bold;color:${COLOR.heading};font-family:Arial,Helvetica,sans-serif;">${name}</p>
               <p style="margin:8px 0 0;font-size:13px;line-height:1.6;color:${COLOR.body};font-family:Arial,Helvetica,sans-serif;">${text}</p>
-              ${spotlight.link ? `<p style="margin:10px 0 0;"><a href="${spotlight.link}" style="font-size:12px;font-weight:bold;color:${COLOR.gold};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Check it out &rarr;</a></p>` : ""}
+              ${spotlight.link ? `<p style="margin:10px 0 0;"><a href="${spotlight.link}" style="font-size:12px;font-weight:bold;color:${COLOR.accent};text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Check it out &rarr;</a></p>` : ""}
             </td>
           </tr>
         </table>
@@ -216,9 +221,9 @@ function buildRecapSection(recap: WeeklyRecap): string {
           </tr>
           <tr>
             <td style="padding:14px 20px;">
-              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.gold};font-family:Arial,Helvetica,sans-serif;">Last Week at TMC</p>
+              <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.accent};font-family:Arial,Helvetica,sans-serif;">Last Week at TMC</p>
               ${caption ? `<p style="margin:6px 0 0;font-size:13px;line-height:1.6;color:${COLOR.body};font-family:Arial,Helvetica,sans-serif;">${caption}</p>` : ""}
-              ${recap.link ? `<p style="margin:8px 0 0;font-size:13px;font-family:Arial,Helvetica,sans-serif;"><a href="${escapeHtml(recap.link)}" style="color:${COLOR.gold};font-weight:bold;text-decoration:none;">See the full recap &rarr;</a></p>` : ""}
+              ${recap.link ? `<p style="margin:8px 0 0;font-size:13px;font-family:Arial,Helvetica,sans-serif;"><a href="${escapeHtml(recap.link)}" style="color:${COLOR.accent};font-weight:bold;text-decoration:none;">See the full recap &rarr;</a></p>` : ""}
             </td>
           </tr>
         </table>
@@ -245,7 +250,7 @@ function buildMiamiMusicSection(events: MiamiMusicEvent[]): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${COLOR.cardBg};border:1px solid ${COLOR.cardBorder};border-radius:10px;">
           <tr>
             <td style="padding:18px 20px;">
-              <p style="margin:0 0 10px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.gold};font-family:Arial,Helvetica,sans-serif;">Around Miami This Week</p>
+              <p style="margin:0 0 10px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.accent};font-family:Arial,Helvetica,sans-serif;">Around Miami This Week</p>
               ${rows}
             </td>
           </tr>
@@ -287,7 +292,7 @@ export function buildWeeklyEmailHtml({
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:${COLOR.cardBg};border:1px solid ${COLOR.cardBorder};border-radius:12px;overflow:hidden;">
             <tr>
               <td style="background-color:${COLOR.pageBg};padding:32px 32px 24px;">
-                <p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${COLOR.gold};font-weight:bold;font-family:Arial,Helvetica,sans-serif;">The Music Creative @ FIU</p>
+                <p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${COLOR.accent};font-weight:bold;font-family:Arial,Helvetica,sans-serif;">The Music Creative @ FIU</p>
                 <h1 style="margin:8px 0 0;font-size:22px;color:${COLOR.heading};font-family:Arial,Helvetica,sans-serif;">This Week's Events</h1>
                 <p style="margin:6px 0 0;font-size:13px;color:${COLOR.meta};font-family:Arial,Helvetica,sans-serif;">${weekLabel}</p>
               </td>
@@ -310,7 +315,7 @@ export function buildWeeklyEmailHtml({
                     <td style="padding:20px 24px;">
                       <p style="margin:0 0 6px;font-size:15px;font-weight:bold;color:${COLOR.heading};font-family:Arial,Helvetica,sans-serif;">Want to help run the club?</p>
                       <p style="margin:0 0 14px;font-size:13px;line-height:1.6;color:${COLOR.meta};font-family:Arial,Helvetica,sans-serif;">We're looking for people to join E-Board. Apply below — resume required.</p>
-                      <a href="${siteUrl}/join-team" style="display:inline-block;background-color:${COLOR.gold};color:${COLOR.pageBg};font-size:13px;font-weight:bold;text-decoration:none;padding:10px 20px;border-radius:8px;font-family:Arial,Helvetica,sans-serif;">Apply to E-Board</a>
+                      <a href="${siteUrl}/join-team" style="display:inline-block;background-color:${COLOR.brand};color:${COLOR.onBrand};font-size:13px;font-weight:bold;text-decoration:none;padding:10px 20px;border-radius:8px;font-family:Arial,Helvetica,sans-serif;">Apply to E-Board</a>
                     </td>
                   </tr>
                 </table>
