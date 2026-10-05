@@ -71,6 +71,10 @@ export default async function BattlePage({
 
       {battle.status === "submissions" && (
         <div className="mt-8">
+          <p className="mb-4 text-sm text-steel-light">
+            Submissions are open. Voting starts once E-Board closes
+            submissions and approves the entries — check back here to vote.
+          </p>
           <EntryForm battleId={battle.id} />
         </div>
       )}
