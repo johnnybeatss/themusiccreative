@@ -82,12 +82,6 @@ export default function TrackSubmitSection({
           >
             Vote in this week&apos;s battle &rarr;
           </Link>
-          <Link
-            href="/spotlights"
-            className="text-sm font-semibold text-accent transition-colors hover:text-accent"
-          >
-            See past spotlights &rarr;
-          </Link>
         </div>
       )}
     </div>

@@ -31,6 +31,10 @@ export default async function BattlesPage() {
         <a href="/#submit-track" className="text-accent hover:underline">
           Submit your music
         </a>
+        {" · "}
+        <Link href="/spotlights" className="text-accent hover:underline">
+          See past spotlights
+        </Link>
       </p>
 
       {battles.length === 0 && (
