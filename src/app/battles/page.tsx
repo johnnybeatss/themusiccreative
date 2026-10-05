@@ -25,11 +25,11 @@ export default async function BattlesPage() {
       <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 max-w-2xl text-sm text-steel-light">
-        Every week the best submitted tracks go head to head here. Anyone can
-        vote — one vote per person — and the winner takes over the player at
-        the bottom of the site.{" "}
+        Beats, songs, mixes — everything submitted goes head to head here.
+        Anyone can vote (one vote per person), and the winner takes over the
+        player at the bottom of the site for the week.{" "}
         <a href="/#submit-track" className="text-accent hover:underline">
-          Submit your track
+          Submit your music
         </a>
       </p>
 

@@ -4,10 +4,16 @@ import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { normalizeInstagram } from "@/lib/normalizeInstagram";
 import { submitTrackSubmission } from "./actions";
+import { submitBattleEntry } from "@/app/battles/[id]/actions";
+import { MUSIC_KINDS } from "@/lib/musicKinds";
 import HoneypotFields from "@/components/HoneypotFields";
 import { HONEYPOT_FIELD, STARTED_AT_FIELD, looksLikeSpam } from "@/lib/formGuard";
 
-const BUCKET = "track-submissions";
+// One form for all music. With a `battleId` (a Spotlight Battle is taking
+// submissions) the entry goes straight into that battle; otherwise it lands
+// in the Track Submissions inbox for E-Board to add to the next battle.
+const INBOX_BUCKET = "track-submissions";
+const BATTLE_BUCKET = "battle-entries";
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB — same cap as the admin uploader
 
 const inputClass =
@@ -16,8 +22,10 @@ const labelClass = "block text-sm";
 
 export default function SubmitTrackForm({
   onSubmitted,
+  battleId = null,
 }: {
   onSubmitted: () => void;
+  battleId?: string | null;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -49,8 +57,10 @@ export default function SubmitTrackForm({
     const spotifyUrl =
       ((formData.get("spotify_url") as string) || "").trim() || null;
 
-    if (!trackTitle) return setError("Track title is required.");
-    if (!artistName) return setError("Artist name is required.");
+    const kind = (formData.get("kind") as string) || "";
+    if (!kind) return setError("Pick what you're submitting.");
+    if (!trackTitle) return setError("Title is required.");
+    if (!artistName) return setError("Name is required.");
     if (!artistInstagramUrl) return setError("Instagram handle is required.");
     if (!file || file.size === 0) return setError("Choose an audio file.");
     if (!file.type.startsWith("audio/")) {
@@ -65,9 +75,12 @@ export default function SubmitTrackForm({
     try {
       const supabase = createClient();
       const ext = file.name.split(".").pop() || "mp3";
-      const path = `${crypto.randomUUID()}.${ext}`;
+      const bucket = battleId ? BATTLE_BUCKET : INBOX_BUCKET;
+      const path = battleId
+        ? `${battleId}/${crypto.randomUUID()}.${ext}`
+        : `${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
+        .from(bucket)
         .upload(path, file, { contentType: file.type });
       if (uploadError) {
         setError(uploadError.message);
@@ -75,19 +88,32 @@ export default function SubmitTrackForm({
       }
       storagePath = path;
 
-      const result = await submitTrackSubmission({
-        storagePath,
-        trackTitle,
-        artistName,
-        artistInstagramUrl,
-        appleMusicUrl,
-        spotifyUrl,
-        guard,
-      });
+      const result = battleId
+        ? await submitBattleEntry({
+            battleId,
+            storagePath,
+            producerName: artistName,
+            beatTitle: trackTitle,
+            instagram: artistInstagramUrl,
+            kind,
+            spotifyUrl,
+            appleMusicUrl,
+            guard,
+          })
+        : await submitTrackSubmission({
+            storagePath,
+            trackTitle,
+            artistName,
+            artistInstagramUrl,
+            appleMusicUrl,
+            spotifyUrl,
+            kind,
+            guard,
+          });
       if (result.error) {
-        if (storagePath) {
+        if (storagePath && !battleId) {
           const supabase = createClient();
-          await supabase.storage.from(BUCKET).remove([storagePath]);
+          await supabase.storage.from(INBOX_BUCKET).remove([storagePath]);
         }
         setError(result.error);
         return;
@@ -107,23 +133,37 @@ export default function SubmitTrackForm({
       className="relative space-y-3 rounded-xl border border-navy-800 bg-navy-950 p-4"
     >
       <HoneypotFields />
+      <fieldset>
+        <legend className="text-sm text-steel-light">What is it?</legend>
+        <div className="mt-1 flex flex-wrap gap-2">
+          {MUSIC_KINDS.map((k) => (
+            <label
+              key={k}
+              className="cursor-pointer rounded-full border border-navy-800 px-3 py-1.5 text-sm text-steel-light transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold has-[:checked]:text-white"
+            >
+              <input type="radio" name="kind" value={k} className="sr-only" />
+              {k}
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <label className={labelClass}>
-        <span className="text-steel-light">Song title</span>
+        <span className="text-steel-light">Title</span>
         <input
           type="text"
           name="track_title"
           required
-          placeholder="e.g. Slow Wine"
+          placeholder="Song, beat, or mix name"
           className={inputClass}
         />
       </label>
       <label className={labelClass}>
-        <span className="text-steel-light">Artist name</span>
+        <span className="text-steel-light">Artist / producer name</span>
         <input
           type="text"
           name="artist_name"
           required
-          placeholder="e.g. JAYMUTT"
+          placeholder="e.g. johnnybeatss"
           className={inputClass}
         />
       </label>
@@ -176,7 +216,7 @@ export default function SubmitTrackForm({
         disabled={pending}
         className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
       >
-        {pending ? "Submitting..." : "Submit track"}
+        {pending ? "Uploading..." : battleId ? "Enter the battle" : "Submit"}
       </button>
     </form>
   );

@@ -18,6 +18,7 @@ export type TrackSubmission = {
   audio_url: string | null;
   read_at: string | null;
   featured_at: string | null;
+  kind: string | null;
   created_at: string;
 };
 
@@ -77,6 +78,11 @@ export default function TrackSubmissionItem({
               — {s.artist_name}
             </span>
           </p>
+          {s.kind && (
+            <span className="inline-block rounded-full border border-navy-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-steel-light">
+              {s.kind}
+            </span>
+          )}
           {!read && (
             <span className="inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               New

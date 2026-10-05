@@ -9,7 +9,12 @@ import SubmitTrackForm from "./SubmitTrackForm";
 // submission form in place, instead of sending people off-site. The
 // FeaturedTrackBar's "Submit yours" link (site-wide bottom bar) points at
 // /#submit-track to land back here from any page.
-export default function TrackSubmitSection() {
+export default function TrackSubmitSection({
+  openBattleId = null,
+}: {
+  // Set when a Spotlight Battle is taking submissions — entries go straight in.
+  openBattleId?: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -26,12 +31,12 @@ export default function TrackSubmitSection() {
         Weekly Contest
       </p>
       <h2 className="relative mt-2 font-display text-3xl leading-snug tracking-wide text-ivory sm:text-4xl">
-        GET YOUR TRACK ON THE SITE
+        GET YOUR MUSIC ON THE SITE
       </h2>
       <p className="relative mt-4 max-w-lg text-lg font-semibold text-ivory">
-        Every week we feature one member&apos;s track in the player at the
-        bottom of the site — everyone who visits hears it. Submit yours for a
-        shot at the spotlight.
+        Beats, songs, mixes — whatever you made. Everything goes head to head
+        in the weekly Spotlight Battle, everyone votes, and the winner plays
+        at the bottom of the site for the whole week.
       </p>
 
       {done ? (
@@ -40,16 +45,20 @@ export default function TrackSubmitSection() {
             TRACK RECEIVED
           </p>
           <p className="mt-2 text-sm text-steel-light">
-            Each week E-Board picks submissions for the Spotlight Battle.
-            Everyone votes on the site, and the winner takes over the player.{" "}
-            <Link href="/battles" className="font-semibold text-accent hover:underline">
-              See the battles &rarr;
+            {openBattleId
+              ? "You're in this week's Spotlight Battle. Voting opens when submissions close — then share the link and get your people to vote. "
+              : "You're in line for the next Spotlight Battle. Once it opens for voting, share the link and get your people to vote. "}
+            <Link
+              href={openBattleId ? `/battles/${openBattleId}` : "/battles"}
+              className="font-semibold text-accent hover:underline"
+            >
+              See the battle &rarr;
             </Link>
           </p>
         </div>
       ) : open ? (
         <div className="relative mt-6 max-w-lg">
-          <SubmitTrackForm onSubmitted={() => setDone(true)} />
+          <SubmitTrackForm battleId={openBattleId} onSubmitted={() => setDone(true)} />
         </div>
       ) : (
         <div className="relative mt-6 flex flex-wrap items-center gap-5">
@@ -58,7 +67,7 @@ export default function TrackSubmitSection() {
             onClick={() => setOpen(true)}
             className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
           >
-            Submit Your Track
+            Submit Your Music
           </button>
           <Link
             href="/battles"

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { looksLikeSpam, checkLengths } from "@/lib/formGuard";
+import { isMusicKind, isHttpsUrl } from "@/lib/musicKinds";
 
 // Public, unauthenticated action — same trust model as /join, /join-team,
 // and /dj-booking. RLS (0029_track_submissions.sql) allows the insert but
@@ -19,6 +20,7 @@ export async function submitTrackSubmission({
   artistInstagramUrl,
   appleMusicUrl,
   spotifyUrl,
+  kind,
   guard,
 }: {
   storagePath: string;
@@ -27,6 +29,7 @@ export async function submitTrackSubmission({
   artistInstagramUrl: string;
   appleMusicUrl?: string | null;
   spotifyUrl?: string | null;
+  kind?: string;
   guard?: Record<string, string>;
 }): Promise<{ error: string | null }> {
   // Bots get a fake success and nothing is saved (src/lib/formGuard.ts).
@@ -48,6 +51,9 @@ export async function submitTrackSubmission({
     "Spotify link": [spotifyUrl, 500],
   });
   if (tooLong) return { error: tooLong };
+  if (!isHttpsUrl(appleMusicUrl) || !isHttpsUrl(spotifyUrl)) {
+    return { error: "Streaming links should start with https://" };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("track_submissions").insert({
@@ -57,6 +63,7 @@ export async function submitTrackSubmission({
     artist_instagram_url: artistInstagramUrl,
     apple_music_url: appleMusicUrl || null,
     spotify_url: spotifyUrl || null,
+    kind: kind && isMusicKind(kind) ? kind : null,
   });
   if (error) return { error: error.message };
 

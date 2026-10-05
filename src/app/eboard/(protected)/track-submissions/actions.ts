@@ -161,7 +161,7 @@ export async function addSubmissionToBattle(formData: FormData) {
   const [{ data: sub }, { data: battle }] = await Promise.all([
     supabase
       .from("track_submissions")
-      .select("storage_path, track_title, artist_name, artist_instagram_url, apple_music_url, spotify_url")
+      .select("storage_path, track_title, artist_name, artist_instagram_url, apple_music_url, spotify_url, kind")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("beat_battles").select("status").eq("id", battleId).maybeSingle(),
@@ -194,6 +194,7 @@ export async function addSubmissionToBattle(formData: FormData) {
     producer_instagram_url: sub.artist_instagram_url,
     apple_music_url: sub.apple_music_url,
     spotify_url: sub.spotify_url,
+    kind: sub.kind,
     source_submission_id: id,
     approved_at: now,
     read_at: now,

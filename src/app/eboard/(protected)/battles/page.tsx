@@ -84,17 +84,17 @@ export default async function BattlesAdminPage() {
       <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
-        This is the weekly spotlight now. Weekly loop: create a battle → add
-        shortlisted tracks from{" "}
+        This is the weekly spotlight. One flow for all music (beats, songs,
+        mixes): while a battle is on &quot;Taking submissions&quot;, the homepage
+        form and the battle page drop entries straight into it. When no battle
+        is open, submissions wait in{" "}
         <Link href="/eboard/track-submissions" className="text-accent hover:underline">
           Track Submissions
         </Link>{" "}
-        (&quot;Add to battle&quot;) → open voting and post the link → close voting
-        → owner crowns the winner, which closes the battle and puts it in the
-        site-wide player. Optional: open submissions to let people upload
-        straight into a battle — everything still pending gets auto-approved
-        when you open voting, so just delete anything you don't want first. Vote counts stay hidden
-        publicly until voting closes.
+        — use &quot;Add to battle&quot; there. Opening voting auto-approves
+        everything pending (delete anything you don&apos;t want first). Close
+        voting → owner crowns the winner → it goes in the site-wide player.
+        Vote counts stay hidden publicly until voting closes.
       </p>
 
       <form action={createBattle} className="mt-6 max-w-lg space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-5">

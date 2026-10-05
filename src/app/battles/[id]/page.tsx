@@ -10,7 +10,7 @@ import {
   STATUS_LABEL,
   VOTER_COOKIE,
 } from "@/lib/battles";
-import EntryForm from "./EntryForm";
+import BattleSubmit from "./BattleSubmit";
 import VoteButton from "./VoteButton";
 
 export async function generateMetadata({
@@ -75,7 +75,7 @@ export default async function BattlePage({
             Submissions are open. Voting starts once E-Board closes
             submissions — check back here to vote.
           </p>
-          <EntryForm battleId={battle.id} />
+          <BattleSubmit battleId={battle.id} />
         </div>
       )}
 
@@ -109,6 +109,11 @@ export default async function BattlePage({
                           <span className="font-normal text-steel-light">— {e.producer_name}</span>
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-2">
+                          {e.kind && (
+                            <span className="rounded-full border border-navy-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-steel-light">
+                              {e.kind}
+                            </span>
+                          )}
                           {isWinner && (
                             <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                               Winner

@@ -8,6 +8,7 @@ import NextEventCountdown, {
 } from "@/components/NextEventCountdown";
 import TrackSubmitSection from "@/components/trackSubmit/TrackSubmitSection";
 import { createClient } from "@/lib/supabase/server";
+import { getOpenSubmissionsBattleId } from "@/lib/battles";
 
 const BUCKET = "feed-videos";
 
@@ -50,9 +51,10 @@ async function getNextEvent(): Promise<NextEvent | null> {
 }
 
 export default async function HomePage() {
-  const [videos, nextEvent] = await Promise.all([
+  const [videos, nextEvent, openBattleId] = await Promise.all([
     getFeedVideos(),
     getNextEvent(),
+    getOpenSubmissionsBattleId(),
   ]);
 
   return (
@@ -210,7 +212,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <TrackSubmitSection />
+      <TrackSubmitSection openBattleId={openBattleId} />
 
       {videos.length > 0 && (
         <div className="relative mt-16 sm:mt-20">

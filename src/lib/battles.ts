@@ -31,6 +31,7 @@ export type PublicEntry = {
   producer_instagram_url: string | null;
   apple_music_url: string | null;
   spotify_url: string | null;
+  kind: string | null;
   audio_url: string | null;
   votes: number;
 };
@@ -82,7 +83,7 @@ export async function getApprovedEntriesWithVotes(
   const [{ data: entries, error }, { data: votes }] = await Promise.all([
     service
       .from("battle_entries")
-      .select("id, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, storage_path")
+      .select("id, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, kind, storage_path")
       .eq("battle_id", battleId)
       .not("approved_at", "is", null)
       .order("created_at", { ascending: true }),
@@ -108,6 +109,7 @@ export async function getApprovedEntriesWithVotes(
         producer_instagram_url: e.producer_instagram_url,
         apple_music_url: e.apple_music_url ?? null,
         spotify_url: e.spotify_url ?? null,
+        kind: e.kind ?? null,
         audio_url: signed?.signedUrl ?? null,
         votes: tally.get(e.id) ?? 0,
       };
@@ -138,4 +140,19 @@ export function hashNetwork(battleId: string, ip: string): string {
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     "";
   return createHash("sha256").update(`${salt}:${battleId}:${ip}`).digest("hex");
+}
+
+// The battle currently taking submissions (newest first), if any — the
+// homepage submit form drops entries straight into it.
+export async function getOpenSubmissionsBattleId(): Promise<string | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("beat_battles")
+    .select("id")
+    .eq("status", "submissions")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.id ?? null;
 }

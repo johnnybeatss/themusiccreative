@@ -8,6 +8,7 @@ import { createServiceClient } from "@/lib/supabase/serviceClient";
 import { looksLikeSpam, checkLengths } from "@/lib/formGuard";
 import { normalizeInstagram } from "@/lib/normalizeInstagram";
 import { hashNetwork, MAX_VOTES_PER_NETWORK, VOTER_COOKIE } from "@/lib/battles";
+import { isMusicKind, isHttpsUrl } from "@/lib/musicKinds";
 
 // ---------------------------------------------------------------------------
 // Entries
@@ -22,6 +23,9 @@ export async function submitBattleEntry(input: {
   producerName: string;
   beatTitle: string;
   instagram: string;
+  kind?: string;
+  spotifyUrl?: string | null;
+  appleMusicUrl?: string | null;
   guard?: Record<string, string>;
 }): Promise<{ error: string | null }> {
   if (looksLikeSpam(input.guard)) return { error: null };
@@ -32,10 +36,18 @@ export async function submitBattleEntry(input: {
   if (!input.battleId || !input.storagePath || !producerName) {
     return { error: "Producer name and a beat file are required." };
   }
+  const kind = input.kind && isMusicKind(input.kind) ? input.kind : null;
+  const spotify = input.spotifyUrl?.trim() || null;
+  const apple = input.appleMusicUrl?.trim() || null;
+  if (!isHttpsUrl(spotify) || !isHttpsUrl(apple)) {
+    return { error: "Streaming links should start with https://" };
+  }
   const tooLong = checkLengths({
-    "Producer name": [producerName, 80],
-    "Beat title": [beatTitle, 120],
+    Name: [producerName, 120],
+    Title: [beatTitle, 150],
     Instagram: [ig, 300],
+    "Spotify link": [spotify, 500],
+    "Apple Music link": [apple, 500],
   });
   if (tooLong) return { error: tooLong };
 
@@ -46,10 +58,13 @@ export async function submitBattleEntry(input: {
     producer_name: producerName,
     beat_title: beatTitle,
     producer_instagram_url: ig,
+    kind,
+    spotify_url: spotify,
+    apple_music_url: apple,
   });
   if (error) {
     // Most likely cause: submissions closed between page load and submit.
-    return { error: "Submissions for this battle are closed." };
+    return { error: "This battle just stopped taking submissions — refresh the page and submit again." };
   }
   return { error: null };
 }
