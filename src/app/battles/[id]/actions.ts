@@ -63,8 +63,12 @@ export async function submitBattleEntry(input: {
     apple_music_url: apple,
   });
   if (error) {
-    // Most likely cause: submissions closed between page load and submit.
-    return { error: "This battle just stopped taking submissions — refresh the page and submit again." };
+    console.error("submitBattleEntry failed:", error.code, error.message);
+    // 42501 = RLS refused the row: the battle isn't taking entries anymore.
+    if (error.code === "42501") {
+      return { error: "This battle isn't taking submissions right now — refresh the page and try again." };
+    }
+    return { error: "Couldn't submit that — try again in a minute." };
   }
   return { error: null };
 }
