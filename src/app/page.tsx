@@ -10,6 +10,7 @@ import TrackSubmitSection from "@/components/trackSubmit/TrackSubmitSection";
 import { createClient } from "@/lib/supabase/server";
 import { getOpenSubmissionsBattleId } from "@/lib/battles";
 import { getLeaderboard } from "@/lib/checkins";
+import LeaderboardList from "@/components/LeaderboardList";
 
 const BUCKET = "feed-videos";
 
@@ -239,19 +240,9 @@ export default async function HomePage() {
             No check-ins yet — the first person to scan in at an event takes #1.
           </p>
         ) : (
-          <ol className="mt-6 divide-y divide-navy-800 rounded-xl border border-navy-800 bg-navy-900">
-            {leaders.map((r, i) => (
-              <li key={`${r.display_name}-${i}`} className="flex items-center gap-4 px-4 py-3">
-                <span className={`w-8 font-display text-xl ${i < 3 ? "text-accent" : "text-steel-light"}`}>
-                  {i + 1}
-                </span>
-                <span className="flex-1 font-semibold text-ivory">{r.display_name}</span>
-                <span className="text-sm text-steel-light">
-                  {r.events_attended} event{r.events_attended === 1 ? "" : "s"}
-                </span>
-              </li>
-            ))}
-          </ol>
+          <div className="mt-6">
+            <LeaderboardList rows={leaders} />
+          </div>
         )}
       </div>
 
