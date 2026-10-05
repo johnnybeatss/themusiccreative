@@ -92,7 +92,8 @@ export default async function BattlesAdminPage() {
         (&quot;Add to battle&quot;) → open voting and post the link → close voting
         → owner crowns the winner, which closes the battle and puts it in the
         site-wide player. Optional: open submissions to let people upload
-        straight into a battle (needs approval). Vote counts stay hidden
+        straight into a battle — everything still pending gets auto-approved
+        when you open voting, so just delete anything you don't want first. Vote counts stay hidden
         publicly until voting closes.
       </p>
 

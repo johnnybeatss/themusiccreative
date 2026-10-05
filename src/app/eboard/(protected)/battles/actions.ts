@@ -36,9 +36,25 @@ export async function setBattleStatus(formData: FormData) {
   if (!id || !STATUSES.includes(status)) return;
 
   const supabase = await createClient();
+  // Opening voting auto-approves every pending entry in the battle, so
+  // nobody has to approve beats one by one. Anything you don't want in
+  // the battle: delete it before opening voting (or unapprove it after).
+  if (status === "voting") {
+    const { error: approveError } = await supabase
+      .from("battle_entries")
+      .update({ approved_at: new Date().toISOString() })
+      .eq("battle_id", id)
+      .is("approved_at", null);
+    if (approveError) {
+      console.error("Failed to auto-approve entries:", approveError.message);
+      return; // don't open voting with entries stuck in pending
+    }
+  }
+
   const { error } = await supabase.from("beat_battles").update({ status }).eq("id", id);
   if (error) console.error("Failed to update battle status:", error.message);
   revalidateBattle(id);
+  revalidatePath("/eboard", "layout");
 }
 
 // Deletes the battle, its entries/votes (FK cascade), and the audio files.
