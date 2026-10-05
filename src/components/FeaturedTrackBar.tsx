@@ -28,8 +28,12 @@ export type FeaturedTrack = {
 // it needs to actually look like a prize, not a quiet utility bar.
 export default function FeaturedTrackBar({
   track,
+  votingBattleId = null,
 }: {
   track: FeaturedTrack;
+  // Set while a Spotlight Battle is open for voting — swaps the
+  // "Submit yours" pill for a vote link.
+  votingBattleId?: string | null;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -246,12 +250,22 @@ export default function FeaturedTrackBar({
             </div>
           )}
 
-          <Link
-            href="/#submit-track"
-            className="hidden shrink-0 rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white sm:block"
-          >
-            Submit yours →
-          </Link>
+          {votingBattleId ? (
+            <Link
+              href={`/battles/${votingBattleId}`}
+              className="shrink-0 rounded-full bg-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
+            >
+              <span className="sm:hidden">Vote →</span>
+              <span className="hidden sm:inline">Vote for next week →</span>
+            </Link>
+          ) : (
+            <Link
+              href="/#submit-track"
+              className="hidden shrink-0 rounded-full border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-gold hover:text-white sm:block"
+            >
+              Submit yours →
+            </Link>
+          )}
 
           <button
             type="button"

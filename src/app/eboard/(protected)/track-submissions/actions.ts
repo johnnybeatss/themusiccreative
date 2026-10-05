@@ -143,3 +143,72 @@ export async function featureSubmission(formData: FormData) {
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
 }
+
+// Shortlists a submission into a Spotlight Battle (0037_spotlight_battles.sql)
+// — replaces the old Instagram Story bracket: the community votes on the
+// site, and crowning the winner on /eboard/battles makes it the weekly
+// spotlight. Copies the audio into the battle-entries bucket so the entry
+// keeps playing even if the submission is later deleted. Added pre-approved
+// (E-Board is the one picking it).
+export async function addSubmissionToBattle(formData: FormData) {
+  if (!canManage(await getMyRole())) return;
+
+  const id = formData.get("id") as string;
+  const battleId = formData.get("battle_id") as string;
+  if (!id || !battleId) return;
+
+  const supabase = await createClient();
+  const [{ data: sub }, { data: battle }] = await Promise.all([
+    supabase
+      .from("track_submissions")
+      .select("storage_path, track_title, artist_name, artist_instagram_url, apple_music_url, spotify_url")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase.from("beat_battles").select("status").eq("id", battleId).maybeSingle(),
+  ]);
+  if (!sub?.storage_path || !battle || battle.status === "closed") return;
+
+  const { data: file, error: downloadError } = await supabase.storage
+    .from(SUBMISSIONS_BUCKET)
+    .download(sub.storage_path);
+  if (downloadError || !file) {
+    console.error("Failed to download submission audio:", downloadError?.message);
+    return;
+  }
+  const ext = sub.storage_path.split(".").pop() || "mp3";
+  const newPath = `${battleId}/${crypto.randomUUID()}.${ext}`;
+  const { error: uploadError } = await supabase.storage
+    .from("battle-entries")
+    .upload(newPath, file, { contentType: file.type || "audio/mpeg" });
+  if (uploadError) {
+    console.error("Failed to copy audio into battle:", uploadError.message);
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const { error: insertError } = await supabase.from("battle_entries").insert({
+    battle_id: battleId,
+    storage_path: newPath,
+    producer_name: sub.artist_name,
+    beat_title: sub.track_title,
+    producer_instagram_url: sub.artist_instagram_url,
+    apple_music_url: sub.apple_music_url,
+    spotify_url: sub.spotify_url,
+    source_submission_id: id,
+    approved_at: now,
+    read_at: now,
+  });
+  if (insertError) {
+    // 23505 = already in this battle; clean up the copied file either way.
+    if (insertError.code !== "23505") {
+      console.error("Failed to add submission to battle:", insertError.message);
+    }
+    await supabase.storage.from("battle-entries").remove([newPath]);
+    return;
+  }
+
+  await supabase.from("track_submissions").update({ read_at: now }).eq("id", id).is("read_at", null);
+  revalidatePath("/eboard/track-submissions");
+  revalidatePath("/eboard/battles");
+  revalidatePath(`/battles/${battleId}`);
+}

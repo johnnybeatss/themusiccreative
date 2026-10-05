@@ -156,11 +156,20 @@ export async function GET(request: NextRequest) {
     .order("updated_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  // Spotlight Battle open for voting → add a vote link (0037).
+  const { data: votingBattle } = await supabase
+    .from("beat_battles")
+    .select("id")
+    .eq("status", "voting")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const spotlightTrack: SpotlightTrack | null = trackRow
     ? {
         trackTitle: trackRow.track_title,
         artistName: trackRow.artist_name,
         artistInstagramUrl: trackRow.artist_instagram_url ?? null,
+        voteUrl: votingBattle ? `${siteUrl}/battles/${votingBattle.id}` : null,
       }
     : null;
 

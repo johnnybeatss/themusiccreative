@@ -10,6 +10,7 @@ export type AdminEntry = {
   producer_name: string;
   beat_title: string | null;
   producer_instagram_url: string | null;
+  source_submission_id: string | null;
   storage_path: string;
   approved_at: string | null;
   read_at: string | null;
@@ -73,6 +74,9 @@ export default function BattleEntryItem({
             <span className={`${pill} border border-navy-800 text-steel-light`}>Pending</span>
           )}
           {isWinner && <span className={`${pill} bg-gold text-white`}>Winner</span>}
+          {e.source_submission_id && (
+            <span className={`${pill} border border-navy-800 text-steel-light`}>From submissions</span>
+          )}
         </div>
         <p className="text-xs text-steel-light">
           {e.votes} vote{e.votes === 1 ? "" : "s"}

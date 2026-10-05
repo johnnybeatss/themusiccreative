@@ -4,9 +4,9 @@ import Reveal from "@/components/Reveal";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 import { getPublicBattles, STATUS_LABEL } from "@/lib/battles";
 
-const TITLE = "Beat Battles";
+const TITLE = "Spotlight Battles";
 const DESCRIPTION =
-  "Producers submit, everyone votes. Beat battles from The Music Creative @ FIU.";
+  "Vote on who gets the weekly spotlight at The Music Creative @ FIU. Winner plays site-wide.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -22,11 +22,15 @@ export default async function BattlesPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl tracking-wide text-ivory">BEAT BATTLES</h1>
+      <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 max-w-2xl text-sm text-steel-light">
-        Submit a beat while a battle is open, then anyone can vote — one vote
-        per person. Winner gets featured in the site-wide player.
+        Every week the best submitted tracks go head to head here. Anyone can
+        vote — one vote per person — and the winner takes over the player at
+        the bottom of the site.{" "}
+        <a href="/#submit-track" className="text-accent hover:underline">
+          Submit your track
+        </a>
       </p>
 
       {battles.length === 0 && (

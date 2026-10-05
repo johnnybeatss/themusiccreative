@@ -29,6 +29,8 @@ export type PublicEntry = {
   producer_name: string;
   beat_title: string | null;
   producer_instagram_url: string | null;
+  apple_music_url: string | null;
+  spotify_url: string | null;
   audio_url: string | null;
   votes: number;
 };
@@ -80,7 +82,7 @@ export async function getApprovedEntriesWithVotes(
   const [{ data: entries, error }, { data: votes }] = await Promise.all([
     service
       .from("battle_entries")
-      .select("id, producer_name, beat_title, producer_instagram_url, storage_path")
+      .select("id, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, storage_path")
       .eq("battle_id", battleId)
       .not("approved_at", "is", null)
       .order("created_at", { ascending: true }),
@@ -104,6 +106,8 @@ export async function getApprovedEntriesWithVotes(
         producer_name: e.producer_name,
         beat_title: e.beat_title,
         producer_instagram_url: e.producer_instagram_url,
+        apple_music_url: e.apple_music_url ?? null,
+        spotify_url: e.spotify_url ?? null,
         audio_url: signed?.signedUrl ?? null,
         votes: tally.get(e.id) ?? 0,
       };

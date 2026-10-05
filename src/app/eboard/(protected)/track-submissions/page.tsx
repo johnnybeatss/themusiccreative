@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
 import TrackSubmissionItem, {
   type TrackSubmission,
+  type OpenBattle,
 } from "./TrackSubmissionItem";
 
 const BUCKET = "track-submissions";
@@ -36,6 +37,34 @@ async function getSubmissions(): Promise<TrackSubmission[]> {
   );
 }
 
+// Battles a submission can be shortlisted into (anything not closed), plus
+// which of those each submission is already in — see
+// 0037_spotlight_battles.sql.
+async function getOpenBattles(): Promise<{
+  battles: OpenBattle[];
+  bySubmission: Record<string, string[]>;
+}> {
+  const supabase = await createClient();
+  const { data: battles } = await supabase
+    .from("beat_battles")
+    .select("id, title, status")
+    .neq("status", "closed")
+    .order("created_at", { ascending: false });
+  const ids = (battles ?? []).map((b) => b.id);
+  const bySubmission: Record<string, string[]> = {};
+  if (ids.length) {
+    const { data: entries } = await supabase
+      .from("battle_entries")
+      .select("battle_id, source_submission_id")
+      .in("battle_id", ids)
+      .not("source_submission_id", "is", null);
+    for (const e of entries ?? []) {
+      (bySubmission[e.source_submission_id] ??= []).push(e.battle_id);
+    }
+  }
+  return { battles: (battles ?? []) as OpenBattle[], bySubmission };
+}
+
 // Same owner/admin-only pattern as Team Applications / Join Submissions —
 // RLS already blocks eboard-tier reads at the database level (see
 // supabase/migrations/0029_track_submissions.sql). "Feature this" is
@@ -58,7 +87,7 @@ export default async function TrackSubmissionsPage() {
     );
   }
 
-  const submissions = await getSubmissions();
+  const [submissions, openBattles] = await Promise.all([getSubmissions(), getOpenBattles()]);
   const ownerView = isOwner(role);
 
   return (
@@ -81,9 +110,10 @@ export default async function TrackSubmissionsPage() {
       </div>
       <p className="mt-4 text-sm text-steel-light">
         Responses from the &quot;Get Your Track On The Site&quot; card on the
-        homepage. Shortlist a few for the weekly Instagram Story bracket,
-        then hit &quot;Feature this&quot; on the winner to push it straight
-        into the site-wide player.
+        homepage. Shortlist the best ones with &quot;Add to battle&quot; — they
+        go into this week&apos;s Spotlight Battle for the community to vote
+        on, and the crowned winner becomes the spotlight. &quot;Feature
+        this&quot; (owner) still skips the vote if you ever need to.
       </p>
 
       {submissions.length === 0 ? (
@@ -91,7 +121,13 @@ export default async function TrackSubmissionsPage() {
       ) : (
         <ul className="mt-6 space-y-4">
           {submissions.map((s) => (
-            <TrackSubmissionItem key={s.id} submission={s} isOwnerView={ownerView} />
+            <TrackSubmissionItem
+              key={s.id}
+              submission={s}
+              isOwnerView={ownerView}
+              openBattles={openBattles.battles}
+              inBattleIds={openBattles.bySubmission[s.id] ?? []}
+            />
           ))}
         </ul>
       )}

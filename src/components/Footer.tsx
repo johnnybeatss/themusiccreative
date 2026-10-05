@@ -35,7 +35,7 @@ export default function Footer() {
             Spotlights
           </Link>
           <Link href="/battles" className="transition-colors hover:text-accent">
-            Beat Battles
+            Spotlight Battles
           </Link>
           <Link href="/collab" className="transition-colors hover:text-accent">
             Collab Board

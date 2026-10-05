@@ -42,7 +42,7 @@ const NAV_GROUPS = [
       { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
       { href: "/eboard/videos", label: "Feed Videos", icon: Video },
       { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
-      { href: "/eboard/battles", label: "Beat Battles", icon: Swords },
+      { href: "/eboard/battles", label: "Spotlight Battles", icon: Swords },
       { href: "/eboard/checkin", label: "Check-in", icon: QrCode },
     ],
   },

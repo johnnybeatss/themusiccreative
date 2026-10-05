@@ -69,9 +69,9 @@ export default async function BattlesAdminPage() {
   if (!canManage(role)) {
     return (
       <div>
-        <h1 className="font-display text-3xl tracking-wide text-ivory">BEAT BATTLES</h1>
+        <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
         <div className="mt-2 h-1 w-16 bg-gold" />
-        <p className="mt-6 text-steel-light">Beat battles are managed by owner/admin accounts.</p>
+        <p className="mt-6 text-steel-light">Spotlight battles are managed by owner/admin accounts.</p>
       </div>
     );
   }
@@ -81,13 +81,19 @@ export default async function BattlesAdminPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl tracking-wide text-ivory">BEAT BATTLES</h1>
+      <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
-        Flow: Draft → Submissions → Voting → Closed. Only approved beats show
-        publicly. Vote counts stay hidden on the public page until voting
-        closes. Crowning a winner (owner) closes the battle and drops the beat
-        into the site-wide player.
+        This is the weekly spotlight now. Weekly loop: create a battle → add
+        shortlisted tracks from{" "}
+        <Link href="/eboard/track-submissions" className="text-accent hover:underline">
+          Track Submissions
+        </Link>{" "}
+        (&quot;Add to battle&quot;) → open voting and post the link → close voting
+        → owner crowns the winner, which closes the battle and puts it in the
+        site-wide player. Optional: open submissions to let people upload
+        straight into a battle (needs approval). Vote counts stay hidden
+        publicly until voting closes.
       </p>
 
       <form action={createBattle} className="mt-6 max-w-lg space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-5">
@@ -115,7 +121,7 @@ export default async function BattlesAdminPage() {
             const flagged = flagNetworks(votes.filter((v) => v.battle_id === b.id));
             const entryLabel = (id: string) => {
               const e = mine.find((x) => x.id === id);
-              return e ? `${e.beat_title || "Untitled"} (${e.producer_name})` : "Removed beat";
+              return e ? `${e.beat_title || "Untitled"} (${e.producer_name})` : "Removed track";
             };
             return (
               <section key={b.id} className="rounded-xl border border-navy-800 bg-navy-900 p-5">
@@ -171,7 +177,7 @@ export default async function BattlesAdminPage() {
                     </p>
                     <p className="mt-1 text-xs text-steel-light">
                       {FLAG_NETWORK_VOTES}+ votes from one network. Normal if it&apos;s a room
-                      voting at an event; suspicious if it&apos;s all one beat outside event time.
+                      voting at an event; suspicious if it&apos;s all one track outside event time.
                     </p>
                     <ul className="mt-2 space-y-2">
                       {flagged.map((n) => (

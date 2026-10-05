@@ -54,6 +54,8 @@ export type SpotlightTrack = {
   trackTitle: string;
   artistName: string;
   artistInstagramUrl: string | null;
+  // Spotlight Battle currently open for voting, if any.
+  voteUrl?: string | null;
 };
 
 export type MemberSpotlight = {
@@ -178,7 +180,11 @@ function buildSpotlightSection(track: SpotlightTrack, siteUrl: string): string {
                     ? ` &nbsp;&middot;&nbsp; <a href="${track.artistInstagramUrl}" style="color:${COLOR.accent};text-decoration:none;">Follow ${artistName} &rarr;</a>`
                     : ""
                 }
-              </p>
+              </p>${
+                track.voteUrl
+                  ? `<p style="margin:10px 0 0;font-size:12px;font-family:Arial,Helvetica,sans-serif;"><a href="${escapeHtml(track.voteUrl)}" style="font-weight:bold;color:${COLOR.accent};text-decoration:none;">Vote for next week&rsquo;s spotlight &rarr;</a></p>`
+                  : ""
+              }
             </td>
           </tr>
         </table>

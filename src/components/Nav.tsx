@@ -20,7 +20,7 @@ const links = [
 // Secondary pages behind a "More" dropdown on desktop — the top bar
 // already holds 7 links and more would overflow on laptop widths.
 const moreLinks = [
-  { href: "/battles", label: "Beat Battles" },
+  { href: "/battles", label: "Spotlight Battles" },
   { href: "/collab", label: "Collab Board" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/spotlights", label: "Spotlights" },

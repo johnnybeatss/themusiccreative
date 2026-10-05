@@ -156,7 +156,9 @@ export async function crownWinner(formData: FormData) {
   const supabase = await createClient();
   const { data: entry } = await supabase
     .from("battle_entries")
-    .select("storage_path, producer_name, beat_title, producer_instagram_url, approved_at")
+    .select(
+      "storage_path, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, source_submission_id, approved_at"
+    )
     .eq("id", entryId)
     .eq("battle_id", battleId)
     .maybeSingle();
@@ -185,6 +187,8 @@ export async function crownWinner(formData: FormData) {
     track_title: entry.beat_title || "Beat Battle Winner",
     artist_name: entry.producer_name,
     artist_instagram_url: entry.producer_instagram_url,
+    apple_music_url: entry.apple_music_url,
+    spotify_url: entry.spotify_url,
   });
   if (insertError) {
     console.error("Failed to insert weekly_track row:", insertError.message);
@@ -196,6 +200,18 @@ export async function crownWinner(formData: FormData) {
     .update({ winner_entry_id: entryId, status: "closed" })
     .eq("id", battleId);
   if (battleError) console.error("Failed to set battle winner:", battleError.message);
+
+  // Came from the track submissions inbox → mark that submission featured
+  // too, same as the old "Feature this" button did.
+  if (entry.source_submission_id) {
+    const now = new Date().toISOString();
+    const { error: subError } = await supabase
+      .from("track_submissions")
+      .update({ featured_at: now, read_at: now })
+      .eq("id", entry.source_submission_id);
+    if (subError) console.error("Failed to mark submission featured:", subError.message);
+    revalidatePath("/eboard/track-submissions");
+  }
 
   revalidateBattle(battleId);
   revalidatePath("/eboard/track");

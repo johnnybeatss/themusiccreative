@@ -66,8 +66,8 @@ const sections = [
   },
   {
     href: "/eboard/battles",
-    label: "Beat Battles",
-    description: "Run battles, approve entries, crown the winner.",
+    label: "Spotlight Battles",
+    description: "Weekly spotlight vote — add tracks, open voting, crown the winner.",
     icon: Swords,
   },
   {

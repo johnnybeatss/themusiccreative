@@ -40,9 +40,11 @@ export default function TrackSubmitSection() {
             TRACK RECEIVED
           </p>
           <p className="mt-2 text-sm text-steel-light">
-            We post a bracket to Instagram Stories each week and the
-            community votes on the winner — follow along to see if yours
-            makes the cut.
+            Each week E-Board picks submissions for the Spotlight Battle.
+            Everyone votes on the site, and the winner takes over the player.{" "}
+            <Link href="/battles" className="font-semibold text-accent hover:underline">
+              See the battles &rarr;
+            </Link>
           </p>
         </div>
       ) : open ? (
@@ -58,6 +60,12 @@ export default function TrackSubmitSection() {
           >
             Submit Your Track
           </button>
+          <Link
+            href="/battles"
+            className="text-sm font-semibold text-accent transition-colors hover:text-accent"
+          >
+            Vote in this week&apos;s battle &rarr;
+          </Link>
           <Link
             href="/spotlights"
             className="text-sm font-semibold text-accent transition-colors hover:text-accent"

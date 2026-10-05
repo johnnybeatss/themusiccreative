@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { markTrackSubmissionRead } from "./actions";
+import { markTrackSubmissionRead, addSubmissionToBattle } from "./actions";
 import DeleteSubmissionButton from "./DeleteSubmissionButton";
 import FeatureButton from "./FeatureButton";
 import StreamingEmbedButtons from "@/components/StreamingEmbedButtons";
@@ -21,6 +21,8 @@ export type TrackSubmission = {
   created_at: string;
 };
 
+export type OpenBattle = { id: string; title: string; status: string };
+
 // Marks itself read the moment it scrolls into view — same
 // IntersectionObserver pattern as TeamApplicationItem/JoinSubmissionItem/
 // DjInquiryItem. Shared team-inbox model: once anyone's seen it, it's read
@@ -28,10 +30,16 @@ export type TrackSubmission = {
 export default function TrackSubmissionItem({
   submission: s,
   isOwnerView,
+  openBattles,
+  inBattleIds,
 }: {
   submission: TrackSubmission;
   isOwnerView: boolean;
+  openBattles: OpenBattle[];
+  inBattleIds: string[];
 }) {
+  const addable = openBattles.filter((b) => !inBattleIds.includes(b.id));
+  const inTitles = openBattles.filter((b) => inBattleIds.includes(b.id)).map((b) => b.title);
   const [read, setRead] = useState(!!s.read_at);
   const ref = useRef<HTMLLIElement>(null);
 
@@ -110,7 +118,34 @@ export default function TrackSubmissionItem({
         </p>
       )}
 
+      {inTitles.length > 0 && (
+        <p className="mt-2 text-xs text-accent">In battle: {inTitles.join(", ")}</p>
+      )}
+
       <div className="mt-3 flex flex-wrap items-center gap-4">
+        {addable.length > 0 && s.storage_path && (
+          <form action={addSubmissionToBattle} className="flex items-center gap-2">
+            <input type="hidden" name="id" value={s.id} />
+            <select
+              name="battle_id"
+              defaultValue={addable[0].id}
+              aria-label="Battle"
+              className="rounded-lg border border-navy-800 bg-navy-950 px-2 py-1.5 text-xs text-ivory focus:border-gold focus:outline-none"
+            >
+              {addable.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.title}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="rounded-full bg-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
+            >
+              Add to battle
+            </button>
+          </form>
+        )}
         {isOwnerView && (
           <FeatureButton
             id={s.id}

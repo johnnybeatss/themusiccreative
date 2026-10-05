@@ -20,10 +20,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const battle = await getPublicBattle(id);
-  if (!battle) return { title: "Beat Battle" };
+  if (!battle) return { title: "Spotlight Battle" };
   return {
     title: battle.title,
-    description: battle.description ?? "Beat battle — The Music Creative @ FIU.",
+    description: battle.description ?? "Vote for the weekly spotlight — The Music Creative @ FIU.",
     alternates: { canonical: `/battles/${id}` },
   };
 }
@@ -81,11 +81,11 @@ export default async function BattlePage({
             <p className="mt-6 text-sm text-steel-light">
               {myVote
                 ? "Vote locked in. Results drop when voting closes."
-                : "Listen to every beat, then vote for your favorite. One vote per person."}
+                : "Listen to every track, then vote for your favorite. One vote per person. Winner becomes the weekly spotlight."}
             </p>
           )}
           {ordered.length === 0 ? (
-            <p className="mt-6 text-steel-light">No beats in this battle yet.</p>
+            <p className="mt-6 text-steel-light">No tracks in this battle yet.</p>
           ) : (
             <ul className="mt-6 space-y-4">
               {ordered.map((e) => {
@@ -123,6 +123,16 @@ export default async function BattlePage({
                               className="inline-flex items-center gap-1 text-xs text-steel-light hover:text-accent"
                             >
                               <Instagram size={12} /> Instagram
+                            </a>
+                          )}
+                          {e.spotify_url && (
+                            <a href={e.spotify_url} target="_blank" rel="noreferrer" className="text-xs text-steel-light hover:text-accent">
+                              Spotify
+                            </a>
+                          )}
+                          {e.apple_music_url && (
+                            <a href={e.apple_music_url} target="_blank" rel="noreferrer" className="text-xs text-steel-light hover:text-accent">
+                              Apple Music
                             </a>
                           )}
                         </div>

@@ -35,6 +35,21 @@ async function getFeaturedTrack() {
   };
 }
 
+// The Spotlight Battle currently open for voting, if any — the bottom
+// player points people at it ("Vote for next week's spotlight").
+async function getVotingBattleId(): Promise<string | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("beat_battles")
+    .select("id")
+    .eq("status", "voting")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
@@ -96,7 +111,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const track = await getFeaturedTrack();
+  const [track, votingBattleId] = await Promise.all([getFeaturedTrack(), getVotingBattleId()]);
 
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
@@ -110,7 +125,7 @@ export default async function RootLayout({
           <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
-        {track && <FeaturedTrackBar track={track} />}
+        {track && <FeaturedTrackBar track={track} votingBattleId={votingBattleId} />}
         {/* Retro CRT-TV vignette + scanlines, see globals.css — purely
             decorative (pointer-events: none), doesn't affect any
             interaction on the page underneath it. */}
