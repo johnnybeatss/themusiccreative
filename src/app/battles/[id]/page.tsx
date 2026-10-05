@@ -10,6 +10,7 @@ import {
   STATUS_LABEL,
   VOTER_COOKIE,
   battleDeadlines,
+  resultsPending,
 } from "@/lib/battles";
 import BattleSubmit from "./BattleSubmit";
 import VoteButton from "./VoteButton";
@@ -49,7 +50,9 @@ export default async function BattlePage({
 
   // Counts stay hidden while voting is open so nobody piles onto whoever's
   // already ahead. Revealed (and sorted) once the battle closes.
-  const closed = battle.status === "closed";
+  // Saturday until the Sunday reveal: closed, but results stay hidden.
+  const pending = resultsPending(battle);
+  const closed = battle.status === "closed" && !pending;
   const ordered = closed ? [...entries].sort((a, b) => b.votes - a.votes) : entries;
 
   return (
@@ -66,7 +69,7 @@ export default async function BattlePage({
       <div className="mt-2 h-1 w-16 bg-gold" />
       {battle.week_start && battle.status !== "closed" && (
         <p className="mt-4 text-sm font-semibold text-accent">
-          {`Submitting + voting close ${battleDeadlines(battle.week_start).closes} · winner takes over the site player Monday`}
+          {`Submitting + voting close ${battleDeadlines(battle.week_start).closes} · winner revealed Sunday`}
         </p>
       )}
       {battle.description && (
@@ -87,6 +90,12 @@ export default async function BattlePage({
 
       {showEntries && (
         <>
+          {pending && (
+            <p className="mt-6 text-sm font-semibold text-accent">
+              Voting&apos;s closed. Winner gets revealed Sunday and takes over the
+              site player. New battle opens Monday at 12 AM.
+            </p>
+          )}
           {battle.status === "voting" && (
             <p className="mt-6 text-sm text-steel-light">
               {myVote
@@ -152,7 +161,7 @@ export default async function BattlePage({
                           )}
                         </div>
                       </div>
-                      {closed ? (
+                      {pending ? null : closed ? (
                         <p className="font-display text-2xl text-ivory">
                           {e.votes} <span className="text-sm text-steel-light">vote{e.votes === 1 ? "" : "s"}</span>
                         </p>

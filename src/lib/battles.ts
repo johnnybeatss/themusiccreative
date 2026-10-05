@@ -33,8 +33,19 @@ export function battleDeadlines(weekStart: string) {
     d.setUTCDate(d.getUTCDate() + offset);
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
   };
-  // Submissions and voting both close Sunday 11:59 PM ET (0041).
-  return { closes: `${day(6)}, 11:59 PM ET` };
+  // Submissions and voting both close Friday 11:59 PM ET; winner is
+  // revealed Sunday (0042).
+  return { closes: `${day(4)}, 11:59 PM ET` };
+}
+
+// Scheduled battle that's closed but not crowned yet (Sat until the Sunday
+// reveal): keep the results hidden so the reveal means something. Falls
+// back to showing them once the week is fully over.
+export function resultsPending(b: Pick<Battle, "status" | "week_start" | "winner_entry_id">): boolean {
+  if (!b.week_start || b.status !== "closed" || b.winner_entry_id) return false;
+  const weekEnd = new Date(`${b.week_start}T12:00:00Z`);
+  weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
+  return Date.now() < weekEnd.getTime();
 }
 
 export type PublicEntry = {

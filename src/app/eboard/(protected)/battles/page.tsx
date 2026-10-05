@@ -85,8 +85,8 @@ export default async function BattlesAdminPage() {
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
         Runs itself every week (Eastern time): a new battle opens Monday
-        12:00 AM and people can submit and vote all week, weekend included.
-        Everything closes Sunday 11:59 PM, and Monday ~1–2 AM the most-voted entry (tie →
+        12:00 AM and people can submit and vote until Friday 11:59 PM. Saturday
+        nothing happens (results stay hidden), and Sunday around noon the most-voted entry (tie →
         earliest submitted) becomes the site player. New entries show up
         instantly, so your job is to delete junk and void suspicious votes.
         Old items still in{" "}
