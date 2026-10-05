@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/weekly-email-draft",
       "schedule": "0 12 * * 1"
+    },
+    {
+      "path": "/api/cron/crown-battle",
+      "schedule": "0 6 * * 1"
     }
   ]
 }

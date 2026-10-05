@@ -84,17 +84,17 @@ export default async function BattlesAdminPage() {
       <h1 className="font-display text-3xl tracking-wide text-ivory">SPOTLIGHT BATTLES</h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
-        This is the weekly spotlight. One flow for all music (beats, songs,
-        mixes): while a battle is on &quot;Taking submissions&quot;, the homepage
-        form and the battle page drop entries straight into it. When no battle
-        is open, submissions wait in{" "}
+        Runs itself every week (Eastern time): a new battle opens Monday
+        12:00 AM, submissions close Friday 11:59 PM, voting runs Saturday–Sunday
+        (everything pending auto-approves when it opens), and Monday ~1–2 AM the
+        most-voted entry (tie → earliest submitted) becomes the site player. All
+        music goes in through the homepage form or the battle page; anything
+        submitted while no battle is open waits in{" "}
         <Link href="/eboard/track-submissions" className="text-accent hover:underline">
           Track Submissions
-        </Link>{" "}
-        — use &quot;Add to battle&quot; there. Opening voting auto-approves
-        everything pending (delete anything you don&apos;t want first). Close
-        voting → owner crowns the winner → it goes in the site-wide player.
-        Vote counts stay hidden publicly until voting closes.
+        </Link>
+        . Your job: delete junk before Saturday, and void suspicious votes. The
+        buttons below still work as manual overrides.
       </p>
 
       <form action={createBattle} className="mt-6 max-w-lg space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-5">
@@ -130,6 +130,7 @@ export default async function BattlesAdminPage() {
                   <div>
                     <p className="font-display text-xl tracking-wide text-ivory">{b.title}</p>
                     <p className="mt-1 text-xs text-steel-light">
+                      {b.week_start ? "Auto · " : ""}
                       {STATUS_LABEL[b.status]} · {mine.length} entr{mine.length === 1 ? "y" : "ies"}
                       {b.status !== "draft" && (
                         <>

@@ -21,8 +21,23 @@ export type Battle = {
   description: string | null;
   status: BattleStatus;
   winner_entry_id: string | null;
+  // Set for auto-scheduled weekly battles (0039_battle_schedule.sql).
+  week_start: string | null;
   created_at: string;
 };
+
+// Human-readable deadlines for a scheduled battle (week_start = Monday).
+export function battleDeadlines(weekStart: string) {
+  const day = (offset: number) => {
+    const d = new Date(`${weekStart}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + offset);
+    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+  };
+  return {
+    submissionsClose: `${day(4)}, 11:59 PM ET`,
+    votingCloses: `${day(6)}, 11:59 PM ET`,
+  };
+}
 
 export type PublicEntry = {
   id: string;

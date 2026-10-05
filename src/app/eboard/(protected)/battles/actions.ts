@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage, isOwner } from "@/lib/supabase/role";
 import { BATTLE_ENTRIES_BUCKET, type BattleStatus } from "@/lib/battles";
+import { crownEntry } from "@/lib/crownBattle";
 
-const WEEKLY_TRACK_BUCKET = "weekly-track";
 const STATUSES: BattleStatus[] = ["draft", "submissions", "voting", "closed"];
 
 // RLS (0033_beat_battles.sql) restricts every write here to owner/admin
@@ -170,65 +170,13 @@ export async function crownWinner(formData: FormData) {
   if (!entryId || !battleId) return;
 
   const supabase = await createClient();
-  const { data: entry } = await supabase
-    .from("battle_entries")
-    .select(
-      "storage_path, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, source_submission_id, approved_at"
-    )
-    .eq("id", entryId)
-    .eq("battle_id", battleId)
-    .maybeSingle();
-  if (!entry?.approved_at) return;
-
-  const { data: file, error: downloadError } = await supabase.storage
-    .from(BATTLE_ENTRIES_BUCKET)
-    .download(entry.storage_path);
-  if (downloadError || !file) {
-    console.error("Failed to download winning beat:", downloadError?.message);
+  const err = await crownEntry(supabase, battleId, entryId);
+  if (err) {
+    console.error("Failed to crown winner:", err);
     return;
   }
 
-  const ext = entry.storage_path.split(".").pop() || "mp3";
-  const newPath = `${crypto.randomUUID()}.${ext}`;
-  const { error: uploadError } = await supabase.storage
-    .from(WEEKLY_TRACK_BUCKET)
-    .upload(newPath, file, { contentType: file.type || "audio/mpeg" });
-  if (uploadError) {
-    console.error("Failed to copy winning beat:", uploadError.message);
-    return;
-  }
-
-  const { error: insertError } = await supabase.from("weekly_track").insert({
-    storage_path: newPath,
-    track_title: entry.beat_title || "Beat Battle Winner",
-    artist_name: entry.producer_name,
-    artist_instagram_url: entry.producer_instagram_url,
-    apple_music_url: entry.apple_music_url,
-    spotify_url: entry.spotify_url,
-  });
-  if (insertError) {
-    console.error("Failed to insert weekly_track row:", insertError.message);
-    return;
-  }
-
-  const { error: battleError } = await supabase
-    .from("beat_battles")
-    .update({ winner_entry_id: entryId, status: "closed" })
-    .eq("id", battleId);
-  if (battleError) console.error("Failed to set battle winner:", battleError.message);
-
-  // Came from the track submissions inbox → mark that submission featured
-  // too, same as the old "Feature this" button did.
-  if (entry.source_submission_id) {
-    const now = new Date().toISOString();
-    const { error: subError } = await supabase
-      .from("track_submissions")
-      .update({ featured_at: now, read_at: now })
-      .eq("id", entry.source_submission_id);
-    if (subError) console.error("Failed to mark submission featured:", subError.message);
-    revalidatePath("/eboard/track-submissions");
-  }
-
+  revalidatePath("/eboard/track-submissions");
   revalidateBattle(battleId);
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");

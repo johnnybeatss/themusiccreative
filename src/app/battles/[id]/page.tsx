@@ -9,6 +9,7 @@ import {
   getMyVote,
   STATUS_LABEL,
   VOTER_COOKIE,
+  battleDeadlines,
 } from "@/lib/battles";
 import BattleSubmit from "./BattleSubmit";
 import VoteButton from "./VoteButton";
@@ -63,6 +64,13 @@ export default async function BattlePage({
         </span>
       </div>
       <div className="mt-2 h-1 w-16 bg-gold" />
+      {battle.week_start && battle.status !== "closed" && (
+        <p className="mt-4 text-sm font-semibold text-accent">
+          {battle.status === "submissions"
+            ? `Submissions close ${battleDeadlines(battle.week_start).submissionsClose} · voting runs all weekend`
+            : `Voting closes ${battleDeadlines(battle.week_start).votingCloses} · winner takes the site player Monday`}
+        </p>
+      )}
       {battle.description && (
         <p className="mt-4 max-w-2xl whitespace-pre-line text-sm text-steel-light">
           {battle.description}
