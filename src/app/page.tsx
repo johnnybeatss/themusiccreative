@@ -9,6 +9,7 @@ import NextEventCountdown, {
 import TrackSubmitSection from "@/components/trackSubmit/TrackSubmitSection";
 import { createClient } from "@/lib/supabase/server";
 import { getOpenSubmissionsBattleId } from "@/lib/battles";
+import { getLeaderboard } from "@/lib/checkins";
 
 const BUCKET = "feed-videos";
 
@@ -51,10 +52,11 @@ async function getNextEvent(): Promise<NextEvent | null> {
 }
 
 export default async function HomePage() {
-  const [videos, nextEvent, openBattleId] = await Promise.all([
+  const [videos, nextEvent, openBattleId, leaders] = await Promise.all([
     getFeedVideos(),
     getNextEvent(),
     getOpenSubmissionsBattleId(),
+    getLeaderboard(5),
   ]);
 
   return (
@@ -213,6 +215,45 @@ export default async function HomePage() {
       </div>
 
       <TrackSubmitSection openBattleId={openBattleId} />
+
+      {/* Top 5 from the check-in leaderboard (real QR check-ins only —
+          see supabase/migrations/0034_event_checkins.sql). */}
+      <div className="relative mt-16 sm:mt-20">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="font-display text-3xl tracking-wide text-ivory">
+              LEADERBOARD
+            </h2>
+            <div className="mt-3 h-1 w-16 bg-gold" />
+          </div>
+          <Link href="/leaderboard" className="text-sm font-semibold text-accent hover:underline">
+            Full leaderboard &rarr;
+          </Link>
+        </div>
+        <p className="mt-4 text-sm text-steel-light">
+          Most events attended this school year. Scan the QR at any TMC event
+          to check in.
+        </p>
+        {leaders.length === 0 ? (
+          <p className="mt-6 rounded-xl border border-navy-800 bg-navy-900 p-5 text-steel-light">
+            No check-ins yet — the first person to scan in at an event takes #1.
+          </p>
+        ) : (
+          <ol className="mt-6 divide-y divide-navy-800 rounded-xl border border-navy-800 bg-navy-900">
+            {leaders.map((r, i) => (
+              <li key={`${r.display_name}-${i}`} className="flex items-center gap-4 px-4 py-3">
+                <span className={`w-8 font-display text-xl ${i < 3 ? "text-accent" : "text-steel-light"}`}>
+                  {i + 1}
+                </span>
+                <span className="flex-1 font-semibold text-ivory">{r.display_name}</span>
+                <span className="text-sm text-steel-light">
+                  {r.events_attended} event{r.events_attended === 1 ? "" : "s"}
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
 
       {videos.length > 0 && (
         <div className="relative mt-16 sm:mt-20">
