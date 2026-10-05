@@ -46,7 +46,7 @@ export default function TrackSubmitSection({
           </p>
           <p className="mt-2 text-sm text-steel-light">
             {openBattleId
-              ? "You're in this week's Spotlight Battle. Share the link and get your people to vote before Friday 11:59 PM. "
+              ? "You're in this week's Spotlight Battle. Share the link and get your people to vote before Sunday 11:59 PM. "
               : "Got it — E-Board will add it to the next Spotlight Battle. "}
             <Link
               href={openBattleId ? `/battles/${openBattleId}` : "/battles"}
@@ -71,8 +71,7 @@ export default function TrackSubmitSection({
               Submit Your Music
             </button>
           ) : (
-            // Weekend: this week's battle closed Friday 11:59 PM, the next
-            // one opens Monday 12 AM (0040_vote_all_week.sql).
+            // Only between battles (they run Mon 12 AM - Sun 11:59 PM, 0041).
             <p className="text-sm font-semibold text-ivory">
               Submissions open Monday at 12 AM.
             </p>

@@ -33,8 +33,8 @@ export function battleDeadlines(weekStart: string) {
     d.setUTCDate(d.getUTCDate() + offset);
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
   };
-  // Submissions and voting both close Friday 11:59 PM ET (0040).
-  return { closes: `${day(4)}, 11:59 PM ET` };
+  // Submissions and voting both close Sunday 11:59 PM ET (0041).
+  return { closes: `${day(6)}, 11:59 PM ET` };
 }
 
 export type PublicEntry = {

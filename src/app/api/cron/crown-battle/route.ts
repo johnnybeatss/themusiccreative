@@ -3,10 +3,10 @@ import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
 import { crownEntry, pickTopEntry } from "@/lib/crownBattle";
 
-// Saturday auto-crown (vercel.json). Each scheduled Spotlight Battle closes
-// Fri 11:59 PM ET (supabase/migrations/0040_vote_all_week.sql); this picks
+// Monday auto-crown (vercel.json). Each scheduled Spotlight Battle closes
+// Sun 11:59 PM ET (supabase/migrations/0041_full_week_battles.sql); this picks
 // the entry with the most votes (tie -> earliest submission) and makes it the
-// site-wide spotlight. Runs Sat 06:00 UTC = 1-2 AM ET, after the database
+// site-wide spotlight. Runs Mon 06:00 UTC = 1-2 AM ET, after the database
 // closes the battle at midnight ET in both EST and EDT. Oldest first, so a
 // missed run catches up and the newest winner ends up live. Zero votes ->
 // current spotlight stays. Same CRON_SECRET lock as the weekly email cron.

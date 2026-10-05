@@ -66,7 +66,7 @@ export default async function BattlePage({
       <div className="mt-2 h-1 w-16 bg-gold" />
       {battle.week_start && battle.status !== "closed" && (
         <p className="mt-4 text-sm font-semibold text-accent">
-          {`Submitting + voting close ${battleDeadlines(battle.week_start).closes} · winner takes over the site player Saturday`}
+          {`Submitting + voting close ${battleDeadlines(battle.week_start).closes} · winner takes over the site player Monday`}
         </p>
       )}
       {battle.description && (
