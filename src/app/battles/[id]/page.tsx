@@ -66,9 +66,7 @@ export default async function BattlePage({
       <div className="mt-2 h-1 w-16 bg-gold" />
       {battle.week_start && battle.status !== "closed" && (
         <p className="mt-4 text-sm font-semibold text-accent">
-          {battle.status === "submissions"
-            ? `Submissions close ${battleDeadlines(battle.week_start).submissionsClose} · voting runs all weekend`
-            : `Voting closes ${battleDeadlines(battle.week_start).votingCloses} · winner takes the site player Monday`}
+          {`Submitting + voting close ${battleDeadlines(battle.week_start).closes} · winner takes over the site player Saturday`}
         </p>
       )}
       {battle.description && (
@@ -77,7 +75,7 @@ export default async function BattlePage({
         </p>
       )}
 
-      {battle.status === "submissions" && (
+      {battle.status === "submissions" && !battle.week_start && (
         <div className="mt-8">
           <p className="mb-4 text-sm text-steel-light">
             Submissions are open. Voting starts once E-Board closes
@@ -171,6 +169,11 @@ export default async function BattlePage({
             </ul>
           )}
         </>
+      )}
+      {battle.week_start && battle.status !== "closed" && (
+        <div className="mt-10">
+          <BattleSubmit battleId={battle.id} />
+        </div>
       )}
     </div>
   );

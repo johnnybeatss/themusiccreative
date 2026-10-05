@@ -3,17 +3,13 @@ import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
 import { crownEntry, pickTopEntry } from "@/lib/crownBattle";
 
-// Monday auto-crown (vercel.json). Voting on each scheduled Spotlight
-// Battle ends Sun 11:59 PM ET (supabase/migrations/0039_battle_schedule.sql);
-// this picks the entry with the most votes (tie → earliest submission) and
-// makes it the site-wide spotlight. Runs at 06:00 UTC = 1-2 AM ET, safely
-// after the database closes voting at midnight ET in both EST and EDT.
-//
-// Only touches scheduled battles (week_start set) from previous weeks
-// with no winner yet, oldest first — so if a run is ever missed, the next
-// one catches up and the newest winner ends up live. A battle with zero
-// votes is just closed; the current spotlight stays. Same CRON_SECRET
-// lock as the weekly email cron.
+// Saturday auto-crown (vercel.json). Each scheduled Spotlight Battle closes
+// Fri 11:59 PM ET (supabase/migrations/0040_vote_all_week.sql); this picks
+// the entry with the most votes (tie -> earliest submission) and makes it the
+// site-wide spotlight. Runs Sat 06:00 UTC = 1-2 AM ET, after the database
+// closes the battle at midnight ET in both EST and EDT. Oldest first, so a
+// missed run catches up and the newest winner ends up live. Zero votes ->
+// current spotlight stays. Same CRON_SECRET lock as the weekly email cron.
 export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret || request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
@@ -27,13 +23,18 @@ export async function GET(request: NextRequest) {
   d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
   const thisWeek = d.toISOString().slice(0, 10);
 
+  // Closed scheduled battles from this week or the last two, no winner yet.
+  // (The 2-week floor stops zero-vote battles from being rechecked forever.)
+  const floor = new Date(`${thisWeek}T12:00:00Z`);
+  floor.setUTCDate(floor.getUTCDate() - 14);
   const { data: battles, error } = await supabase
     .from("beat_battles")
     .select("id, title")
     .not("week_start", "is", null)
-    .lt("week_start", thisWeek)
+    .lte("week_start", thisWeek)
+    .gte("week_start", floor.toISOString().slice(0, 10))
     .is("winner_entry_id", null)
-    .in("status", ["voting", "closed"])
+    .eq("status", "closed")
     .order("week_start", { ascending: true });
   if (error) {
     console.error("crown-battle: query failed:", error.message);

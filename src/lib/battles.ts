@@ -33,10 +33,8 @@ export function battleDeadlines(weekStart: string) {
     d.setUTCDate(d.getUTCDate() + offset);
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
   };
-  return {
-    submissionsClose: `${day(4)}, 11:59 PM ET`,
-    votingCloses: `${day(6)}, 11:59 PM ET`,
-  };
+  // Submissions and voting both close Friday 11:59 PM ET (0040).
+  return { closes: `${day(4)}, 11:59 PM ET` };
 }
 
 export type PublicEntry = {
@@ -165,7 +163,9 @@ export async function getOpenSubmissionsBattleId(): Promise<string | null> {
   const { data } = await supabase
     .from("beat_battles")
     .select("id")
-    .eq("status", "submissions")
+    // Manual battles take entries only in 'submissions'; scheduled weekly
+    // battles take them all week while voting is open (0040).
+    .or("status.eq.submissions,and(status.eq.voting,week_start.not.is.null)")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

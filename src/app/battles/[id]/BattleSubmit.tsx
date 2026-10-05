@@ -11,8 +11,8 @@ export default function BattleSubmit({ battleId }: { battleId: string }) {
       <div className="max-w-lg rounded-xl border border-gold/50 bg-navy-900 p-5">
         <p className="font-semibold text-ivory">You&apos;re in.</p>
         <p className="mt-1 text-sm text-steel-light">
-          Voting opens when submissions close — share this page and get your
-          people to vote.
+          Refresh to see your entry, then share this page and get your people
+          to vote.
         </p>
       </div>
     );

@@ -46,8 +46,8 @@ export default function TrackSubmitSection({
           </p>
           <p className="mt-2 text-sm text-steel-light">
             {openBattleId
-              ? "You're in this week's Spotlight Battle. Voting opens when submissions close — then share the link and get your people to vote. "
-              : "You're in line for the next Spotlight Battle. Once it opens for voting, share the link and get your people to vote. "}
+              ? "You're in this week's Spotlight Battle. Share the link and get your people to vote before Friday 11:59 PM. "
+              : "Got it — E-Board will add it to the next Spotlight Battle. "}
             <Link
               href={openBattleId ? `/battles/${openBattleId}` : "/battles"}
               className="font-semibold text-accent hover:underline"
@@ -62,13 +62,21 @@ export default function TrackSubmitSection({
         </div>
       ) : (
         <div className="relative mt-6 flex flex-wrap items-center gap-5">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
-          >
-            Submit Your Music
-          </button>
+          {openBattleId ? (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-block w-fit rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
+            >
+              Submit Your Music
+            </button>
+          ) : (
+            // Weekend: this week's battle closed Friday 11:59 PM, the next
+            // one opens Monday 12 AM (0040_vote_all_week.sql).
+            <p className="text-sm font-semibold text-ivory">
+              Submissions open Monday at 12 AM.
+            </p>
+          )}
           <Link
             href="/battles"
             className="text-sm font-semibold text-accent transition-colors hover:text-accent"

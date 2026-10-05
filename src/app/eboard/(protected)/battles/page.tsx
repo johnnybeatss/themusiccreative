@@ -85,16 +85,16 @@ export default async function BattlesAdminPage() {
       <div className="mt-2 h-1 w-16 bg-gold" />
       <p className="mt-4 text-sm text-steel-light">
         Runs itself every week (Eastern time): a new battle opens Monday
-        12:00 AM, submissions close Friday 11:59 PM, voting runs Saturday–Sunday
-        (everything pending auto-approves when it opens), and Monday ~1–2 AM the
-        most-voted entry (tie → earliest submitted) becomes the site player. All
-        music goes in through the homepage form or the battle page; anything
-        submitted while no battle is open waits in{" "}
+        12:00 AM and people can submit and vote all week. Everything closes
+        Friday 11:59 PM, and Saturday ~1–2 AM the most-voted entry (tie →
+        earliest submitted) becomes the site player. New entries show up
+        instantly, so your job is to delete junk and void suspicious votes.
+        Old items still in{" "}
         <Link href="/eboard/track-submissions" className="text-accent hover:underline">
           Track Submissions
-        </Link>
-        . Your job: delete junk before Saturday, and void suspicious votes. The
-        buttons below still work as manual overrides.
+        </Link>{" "}
+        can be added with &quot;Add to battle&quot;. The buttons below still work
+        as manual overrides.
       </p>
 
       <form action={createBattle} className="mt-6 max-w-lg space-y-3 rounded-xl border border-navy-800 bg-navy-900 p-5">
