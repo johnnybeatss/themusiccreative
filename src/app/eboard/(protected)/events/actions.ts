@@ -36,6 +36,12 @@ function parseEventForm(formData: FormData) {
   // public input. See supabase/migrations/0031_posh_embed.sql.
   const poshEmbedHtml =
     ((formData.get("posh_embed_html") as string) || "").trim() || null;
+  // Post-event write-up — shows on the event page once it's in the past and
+  // auto-feeds the weekly email's "Last week at TMC" block (0036).
+  const recap = ((formData.get("recap") as string) || "").trim() || null;
+  if (recap && recap.length > 2000) {
+    return { error: "Recap is too long (2000 characters max).", values: null };
+  }
 
   if (!name || !rawDate) {
     return { error: "Name and date are required.", values: null };
@@ -60,6 +66,7 @@ function parseEventForm(formData: FormData) {
       description,
       guest_instagram_url: guestInstagramUrl,
       posh_embed_html: poshEmbedHtml,
+      recap,
     },
   } as const;
 }

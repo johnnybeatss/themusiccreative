@@ -6,14 +6,7 @@ import {
   isOwner,
   isDemoViewActive,
 } from "@/lib/supabase/role";
-import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
-import {
-  getUnreadJoinSubmissionCount,
-  getUnreadDjInquiryCount,
-  getUnreadTeamApplicationCount,
-  getUnreadWeeklyEmailDraftCount,
-  getUnreadTrackSubmissionCount,
-} from "@/lib/supabase/unreadCounts";
+import { getUnreadCountsByHref } from "@/lib/supabase/unreadCounts";
 import EboardNav from "@/components/EboardNav";
 import SessionGuard from "@/components/SessionGuard";
 
@@ -38,26 +31,11 @@ export default async function EboardProtectedLayout({
     redirect("/eboard/login");
   }
 
-  const [
-    profile,
-    realRole,
-    demoActive,
-    unreadFeedbackCount,
-    unreadJoinSubmissionCount,
-    unreadDjInquiryCount,
-    unreadTeamApplicationCount,
-    unreadWeeklyEmailDraftCount,
-    unreadTrackSubmissionCount,
-  ] = await Promise.all([
+  const [profile, realRole, demoActive, unreadCounts] = await Promise.all([
     getEffectiveProfile(),
     getMyRole(),
     isDemoViewActive(),
-    getUnreadFeedbackCount(),
-    getUnreadJoinSubmissionCount(),
-    getUnreadDjInquiryCount(),
-    getUnreadTeamApplicationCount(),
-    getUnreadWeeklyEmailDraftCount(),
-    getUnreadTrackSubmissionCount(),
+    getUnreadCountsByHref(),
   ]);
   // "View as E-Board" toggle is owner-only (see demoViewActions.ts, which
   // re-checks this server-side too — this is just what decides whether
@@ -71,11 +49,7 @@ export default async function EboardProtectedLayout({
         profile={profile}
         isDemoActive={demoActive}
         canToggleDemo={canToggleDemo}
-        unreadFeedbackCount={unreadFeedbackCount}
-        unreadJoinSubmissionCount={unreadJoinSubmissionCount}
-        unreadDjInquiryCount={unreadDjInquiryCount}
-        unreadTeamApplicationCount={unreadTeamApplicationCount}
-        unreadWeeklyEmailDraftCount={unreadWeeklyEmailDraftCount}
+        unreadCounts={unreadCounts}
       />
       <div className="min-w-0 flex-1">{children}</div>
     </div>

@@ -34,6 +34,15 @@ export default function Footer() {
           <Link href="/spotlights" className="transition-colors hover:text-accent">
             Spotlights
           </Link>
+          <Link href="/battles" className="transition-colors hover:text-accent">
+            Beat Battles
+          </Link>
+          <Link href="/collab" className="transition-colors hover:text-accent">
+            Collab Board
+          </Link>
+          <Link href="/leaderboard" className="transition-colors hover:text-accent">
+            Leaderboard
+          </Link>
           <Link href="/dj-booking" className="transition-colors hover:text-accent">
             DJ Booking
           </Link>

@@ -19,6 +19,7 @@ type Event = {
   image_url: string | null;
   photo_urls: string[];
   posh_embed_html: string | null;
+  recap: string | null;
 };
 
 export default function EventListItem({
@@ -52,6 +53,11 @@ export default function EventListItem({
               {event.posh_embed_html && (
                 <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
                   Posh
+                </span>
+              )}
+              {event.recap && (
+                <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                  Recap
                 </span>
               )}
             </p>

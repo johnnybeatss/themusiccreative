@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "./server";
 import { getMyRole, canManage } from "./role";
+import { getUnreadFeedbackCount } from "./feedback";
 
 // Same shared-team-inbox model as getUnreadFeedbackCount (feedback.ts):
 // read state lives on the row itself, not per-user — once any owner/admin
@@ -13,6 +14,8 @@ async function getUnreadCount(
     | "dj_inquiries"
     | "team_applications"
     | "track_submissions"
+    | "battle_entries"
+    | "collab_posts"
 ) {
   const role = await getMyRole();
   if (!canManage(role)) return 0;
@@ -64,4 +67,42 @@ export async function getUnreadWeeklyEmailDraftCount(): Promise<number> {
     return 0;
   }
   return count ?? 0;
+}
+
+// battle_entries / collab_posts use the same read_at inbox model — "unread"
+// = submitted but not yet opened in the hub (see 0033/0035 migrations).
+export function getUnreadBattleEntryCount(): Promise<number> {
+  return getUnreadCount("battle_entries");
+}
+
+export function getUnreadCollabPostCount(): Promise<number> {
+  return getUnreadCount("collab_posts");
+}
+
+// Single source of truth for every unread badge in the hub, keyed by the
+// page's href. The sidebar (EboardNav via layout.tsx) and the dashboard
+// tiles both read this map, so adding a new inbox is one line here instead
+// of threading another prop through three files.
+export async function getUnreadCountsByHref(): Promise<Record<string, number>> {
+  const [feedback, join, dj, team, email, track, battles, collab] =
+    await Promise.all([
+      getUnreadFeedbackCount(),
+      getUnreadJoinSubmissionCount(),
+      getUnreadDjInquiryCount(),
+      getUnreadTeamApplicationCount(),
+      getUnreadWeeklyEmailDraftCount(),
+      getUnreadTrackSubmissionCount(),
+      getUnreadBattleEntryCount(),
+      getUnreadCollabPostCount(),
+    ]);
+  return {
+    "/eboard/feedback": feedback,
+    "/eboard/join-submissions": join,
+    "/eboard/dj-inquiries": dj,
+    "/eboard/team-applications": team,
+    "/eboard/weekly-email": email,
+    "/eboard/track-submissions": track,
+    "/eboard/battles": battles,
+    "/eboard/collab": collab,
+  };
 }

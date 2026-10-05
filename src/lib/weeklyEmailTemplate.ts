@@ -60,6 +60,8 @@ export type MemberSpotlight = {
 export type WeeklyRecap = {
   photoUrl: string;
   caption: string | null;
+  // Set when the recap is auto-pulled from an event page (see cron route).
+  link?: string | null;
 };
 
 function escapeHtml(value: string): string {
@@ -216,6 +218,7 @@ function buildRecapSection(recap: WeeklyRecap): string {
             <td style="padding:14px 20px;">
               <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${COLOR.gold};font-family:Arial,Helvetica,sans-serif;">Last Week at TMC</p>
               ${caption ? `<p style="margin:6px 0 0;font-size:13px;line-height:1.6;color:${COLOR.body};font-family:Arial,Helvetica,sans-serif;">${caption}</p>` : ""}
+              ${recap.link ? `<p style="margin:8px 0 0;font-size:13px;font-family:Arial,Helvetica,sans-serif;"><a href="${escapeHtml(recap.link)}" style="color:${COLOR.gold};font-weight:bold;text-decoration:none;">See the full recap &rarr;</a></p>` : ""}
             </td>
           </tr>
         </table>

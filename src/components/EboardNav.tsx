@@ -16,6 +16,9 @@ import {
   Mail,
   BarChart3,
   Mic2,
+  Swords,
+  Handshake,
+  QrCode,
 } from "lucide-react";
 import SignOutButton from "@/components/SignOutButton";
 import { canManage, isOwner, type MyProfile } from "@/lib/supabase/role";
@@ -39,6 +42,8 @@ const NAV_GROUPS = [
       { href: "/eboard/opportunities", label: "Opportunities", icon: Briefcase },
       { href: "/eboard/videos", label: "Feed Videos", icon: Video },
       { href: "/eboard/track", label: "Weekly Spotlight", icon: Music },
+      { href: "/eboard/battles", label: "Beat Battles", icon: Swords },
+      { href: "/eboard/checkin", label: "Check-in", icon: QrCode },
     ],
   },
   {
@@ -60,6 +65,7 @@ const NAV_GROUPS = [
         label: "Track Submissions",
         icon: Mic2,
       },
+      { href: "/eboard/collab", label: "Collab Board", icon: Handshake },
       { href: "/eboard/feedback", label: "Feedback", icon: MessageSquare },
     ],
   },
@@ -94,12 +100,7 @@ export default function EboardNav({
   profile,
   isDemoActive = false,
   canToggleDemo = false,
-  unreadFeedbackCount = 0,
-  unreadJoinSubmissionCount = 0,
-  unreadDjInquiryCount = 0,
-  unreadTeamApplicationCount = 0,
-  unreadWeeklyEmailDraftCount = 0,
-  unreadTrackSubmissionCount = 0,
+  unreadCounts = {},
 }: {
   profile: MyProfile | null;
   // profile is already role-downgraded when demo mode is active (see
@@ -107,23 +108,12 @@ export default function EboardNav({
   // only for rendering the toggle control itself.
   isDemoActive?: boolean;
   canToggleDemo?: boolean;
-  unreadFeedbackCount?: number;
-  unreadJoinSubmissionCount?: number;
-  unreadDjInquiryCount?: number;
-  unreadTeamApplicationCount?: number;
-  unreadWeeklyEmailDraftCount?: number;
-  unreadTrackSubmissionCount?: number;
+  // Keyed by href — see getUnreadCountsByHref() in unreadCounts.ts.
+  unreadCounts?: Record<string, number>;
 }) {
   // Same shared-team-inbox unread badge as Feedback, now covering all
   // five owner/admin-only inboxes (see supabase/migrations/0017, 0021, 0022).
-  const UNREAD_COUNTS: Record<string, number> = {
-    "/eboard/feedback": unreadFeedbackCount,
-    "/eboard/join-submissions": unreadJoinSubmissionCount,
-    "/eboard/dj-inquiries": unreadDjInquiryCount,
-    "/eboard/team-applications": unreadTeamApplicationCount,
-    "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
-    "/eboard/track-submissions": unreadTrackSubmissionCount,
-  };
+  const UNREAD_COUNTS = unreadCounts;
   // Feedback, Join Submissions, DJ Inquiries, Team Applications, Weekly
   // Email, and Track Submissions are all owner/admin-only (see
   // supabase/migrations/0011_feedback_admin_only.sql,
@@ -142,6 +132,10 @@ export default function EboardNav({
     "/eboard/videos",
     "/eboard/track",
     "/eboard/track-submissions",
+    // 0033/0034/0035 — all owner/admin-only at the RLS level.
+    "/eboard/battles",
+    "/eboard/checkin",
+    "/eboard/collab",
   ];
   // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only
   // (see src/app/eboard/(protected)/analytics/page.tsx).

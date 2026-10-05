@@ -10,6 +10,12 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 // should keep using the cookie-based client from ./server.ts so RLS still
 // applies. This mirrors why scripts/dev-login-link.mjs uses the service
 // role key directly instead of a session.
+//
+// Deliberate exceptions (each validates every input itself before writing):
+//   * src/app/battles/[id]/actions.ts castVote — battle_votes has no public
+//     RLS policies, so votes can ONLY be written through that action.
+//   * src/lib/battles.ts — signs URLs for approved entries only.
+//   * src/app/checkin/[code]/actions.ts — check-ins, same reasoning as votes.
 export function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

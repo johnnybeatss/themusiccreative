@@ -20,6 +20,7 @@ type Event = {
   image_url: string | null;
   photo_urls: string[];
   posh_embed_html: string | null;
+  recap: string | null;
 };
 
 async function getEvent(id: string): Promise<Event | null> {
@@ -98,6 +99,28 @@ export async function generateMetadata({
   };
 }
 
+// Same count-only service-client pattern as getRsvpCount — event_checkins
+// has no public SELECT policy (0034_event_checkins.sql).
+async function getCheckinCount(id: string): Promise<number> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return 0;
+  }
+  try {
+    const { count, error } = await createServiceClient()
+      .from("event_checkins")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", id);
+    if (error) {
+      console.error("Failed to load check-in count:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (err) {
+    console.error("Failed to load check-in count:", err);
+    return 0;
+  }
+}
+
 export default async function EventDetailPage({
   params,
 }: {
@@ -107,7 +130,11 @@ export default async function EventDetailPage({
   const event = await getEvent(id);
   if (!event) notFound();
 
-  const rsvpCount = await getRsvpCount(id);
+  const isPast = new Date(event.date).getTime() < Date.now();
+  const [rsvpCount, checkinCount] = await Promise.all([
+    getRsvpCount(id),
+    isPast ? getCheckinCount(id) : Promise.resolve(0),
+  ]);
 
   const eventSchema = {
     "@context": "https://schema.org",
@@ -167,7 +194,12 @@ export default async function EventDetailPage({
         {event.location ? ` · ${event.location}` : ""} · {event.type}
       </p>
 
-      {rsvpCount > 0 && (
+      {isPast && checkinCount > 0 ? (
+        <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+          <Users size={14} />
+          {checkinCount} {checkinCount === 1 ? "person" : "people"} pulled up
+        </p>
+      ) : !isPast && rsvpCount > 0 && (
         <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
           <Users size={14} />
           {rsvpCount} {rsvpCount === 1 ? "person" : "people"} going
@@ -184,6 +216,13 @@ export default async function EventDetailPage({
           <Instagram size={14} />
           Guest on Instagram
         </a>
+      )}
+
+      {isPast && event.recap && (
+        <div className="mt-6 max-w-2xl rounded-xl border border-gold/50 bg-navy-900 p-5">
+          <p className="font-display text-lg tracking-wide text-ivory">RECAP</p>
+          <p className="mt-2 whitespace-pre-wrap text-sm text-steel-light">{event.recap}</p>
+        </div>
       )}
 
       {event.photo_urls.length > 0 && (

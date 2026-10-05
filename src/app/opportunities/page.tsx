@@ -124,6 +124,23 @@ export default async function OpportunitiesPage() {
         </a>
       </div>
 
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-navy-800 bg-navy-900 p-5">
+        <div>
+          <p className="font-display text-lg tracking-wide text-ivory">
+            LOOKING FOR A COLLAB?
+          </p>
+          <p className="mt-1 text-sm text-steel-light">
+            Producers, artists, songwriters, DJs — find people to make music with.
+          </p>
+        </div>
+        <a
+          href="/collab"
+          className="rounded-lg border border-gold px-5 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
+        >
+          Collab Board &rarr;
+        </a>
+      </div>
+
       {opportunities.length === 0 ? (
         <p className="mt-6 text-steel-light">
           No opportunities posted right now — check back soon.

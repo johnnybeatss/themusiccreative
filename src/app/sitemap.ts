@@ -16,6 +16,9 @@ const ROUTES = [
   "/dj-booking",
   "/feedback",
   "/spotlights",
+  "/battles",
+  "/collab",
+  "/leaderboard",
   "/privacy",
   "/terms",
 ];

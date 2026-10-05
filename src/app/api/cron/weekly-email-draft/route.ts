@@ -120,9 +120,33 @@ export async function GET(request: NextRequest) {
         }
       : null;
 
-  const recap: WeeklyRecap | null = extras?.recap_photo_url
+  // Manual recap photo (queued on /eboard/weekly-email) wins. Otherwise
+  // auto-pull the most recent event from the past 8 days that has a recap
+  // write-up and at least one photo (0036_event_recap.sql).
+  let recap: WeeklyRecap | null = extras?.recap_photo_url
     ? { photoUrl: extras.recap_photo_url, caption: extras.recap_caption || null }
     : null;
+  if (!recap) {
+    const { data: recent } = await supabase
+      .from("events")
+      .select("id, recap, image_url, photo_urls, date")
+      .not("recap", "is", null)
+      .lt("date", new Date().toISOString())
+      .gte("date", new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString())
+      .order("date", { ascending: false })
+      .limit(5);
+    const withPhoto = (recent ?? []).find(
+      (e) => (e.photo_urls?.length ?? 0) > 0 || e.image_url
+    );
+    if (withPhoto) {
+      const text: string = withPhoto.recap ?? "";
+      recap = {
+        photoUrl: withPhoto.photo_urls?.[0] ?? withPhoto.image_url,
+        caption: text.length > 280 ? `${text.slice(0, 277).trimEnd()}...` : text,
+        link: `${siteUrl}/events/${withPhoto.id}`,
+      };
+    }
+  }
 
   // Weekly Spotlight track — mirrors src/app/layout.tsx's getFeaturedTrack,
   // just via the service client instead of the cookie-based one.

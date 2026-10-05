@@ -13,17 +13,13 @@ import {
   Mail,
   BarChart3,
   Mic2,
+  Swords,
+  Handshake,
+  QrCode,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
-import { getUnreadFeedbackCount } from "@/lib/supabase/feedback";
-import {
-  getUnreadJoinSubmissionCount,
-  getUnreadDjInquiryCount,
-  getUnreadTeamApplicationCount,
-  getUnreadWeeklyEmailDraftCount,
-  getUnreadTrackSubmissionCount,
-} from "@/lib/supabase/unreadCounts";
+import { getUnreadCountsByHref } from "@/lib/supabase/unreadCounts";
 
 const sections = [
   {
@@ -67,6 +63,24 @@ const sections = [
     label: "Track Submissions",
     description: "Songs submitted for the Weekly Spotlight — export to Excel.",
     icon: Mic2,
+  },
+  {
+    href: "/eboard/battles",
+    label: "Beat Battles",
+    description: "Run battles, approve entries, crown the winner.",
+    icon: Swords,
+  },
+  {
+    href: "/eboard/checkin",
+    label: "Check-in",
+    description: "Event QR codes, attendance, and Excel export.",
+    icon: QrCode,
+  },
+  {
+    href: "/eboard/collab",
+    label: "Collab Board",
+    description: "Approve collab posts before they go public.",
+    icon: Handshake,
   },
   {
     href: "/eboard/feedback",
@@ -113,22 +127,9 @@ const sections = [
 ];
 
 export default async function EboardHomePage() {
-  const [
-    role,
-    unreadFeedbackCount,
-    unreadJoinSubmissionCount,
-    unreadDjInquiryCount,
-    unreadTeamApplicationCount,
-    unreadWeeklyEmailDraftCount,
-    unreadTrackSubmissionCount,
-  ] = await Promise.all([
+  const [role, UNREAD_COUNTS] = await Promise.all([
     getEffectiveRole(),
-    getUnreadFeedbackCount(),
-    getUnreadJoinSubmissionCount(),
-    getUnreadDjInquiryCount(),
-    getUnreadTeamApplicationCount(),
-    getUnreadWeeklyEmailDraftCount(),
-    getUnreadTrackSubmissionCount(),
+    getUnreadCountsByHref(),
   ]);
   // Feedback, Join Submissions, DJ Inquiries, Team Applications, Weekly
   // Email, and Track Submissions are owner/admin-only — see
@@ -142,6 +143,9 @@ export default async function EboardHomePage() {
     "/eboard/team-applications",
     "/eboard/weekly-email",
     "/eboard/track-submissions",
+    "/eboard/battles",
+    "/eboard/checkin",
+    "/eboard/collab",
   ];
   // Stricter than OWNER_ADMIN_ONLY — site traffic data, owner account only.
   const OWNER_ONLY = ["/eboard/analytics"];
@@ -150,15 +154,6 @@ export default async function EboardHomePage() {
     if (OWNER_ADMIN_ONLY.includes(s.href)) return canManage(role);
     return true;
   });
-  // Same shared-team-inbox unread badge as the sidebar (0017, 0021, 0022).
-  const UNREAD_COUNTS: Record<string, number> = {
-    "/eboard/feedback": unreadFeedbackCount,
-    "/eboard/join-submissions": unreadJoinSubmissionCount,
-    "/eboard/dj-inquiries": unreadDjInquiryCount,
-    "/eboard/team-applications": unreadTeamApplicationCount,
-    "/eboard/weekly-email": unreadWeeklyEmailDraftCount,
-    "/eboard/track-submissions": unreadTrackSubmissionCount,
-  };
 
   return (
     <div>

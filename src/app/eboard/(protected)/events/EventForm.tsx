@@ -20,6 +20,7 @@ type Event = {
   image_url: string | null;
   photo_urls: string[];
   posh_embed_html: string | null;
+  recap: string | null;
 };
 
 const initialState: EventFormState = { error: null };
@@ -187,6 +188,17 @@ export default function EventForm({
           name="guest_instagram_url"
           defaultValue={event?.guest_instagram_url ?? ""}
           placeholder="https://instagram.com/handle"
+          className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
+        />
+      </label>
+      <label className="block text-sm">
+        <span className="text-steel-light">Recap (after the event)</span>
+        <textarea
+          name="recap"
+          rows={3}
+          maxLength={2000}
+          defaultValue={event?.recap ?? ""}
+          placeholder="How it went — shows on the event page once it's over and goes into next Monday's email. Add photos below."
           className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-950 px-3 py-2 text-sm text-ivory placeholder:text-steel-light/60 transition-colors focus:border-gold focus:outline-none"
         />
       </label>
