@@ -43,6 +43,15 @@ function parseEventForm(formData: FormData) {
   if (recap && recap.length > 2000) {
     return { error: "Recap is too long (2000 characters max).", values: null };
   }
+  // Recap renders as plain text (event page + weekly email). Embed code
+  // pasted here shows up as raw <iframe ...> text — it belongs in the Posh
+  // embed field instead. Found live on "TMC X BMB STUDIOS CAMP" (Oct 11).
+  if (recap && /<\s*(iframe|script|div|a)\b/i.test(recap)) {
+    return {
+      error: "Recap is plain text — that looks like embed code. Paste Posh embed code in the Posh embed field instead.",
+      values: null,
+    };
+  }
 
   if (!name || !rawDate) {
     return { error: "Name and date are required.", values: null };
