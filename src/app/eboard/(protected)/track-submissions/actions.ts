@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { SITE_PLAYER_TAG } from "@/lib/sitePlayer";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage, isOwner } from "@/lib/supabase/role";
 
@@ -142,6 +143,7 @@ export async function featureSubmission(formData: FormData) {
   revalidatePath("/eboard/track-submissions");
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
+  updateTag(SITE_PLAYER_TAG);
 }
 
 // Shortlists a submission into a Spotlight Battle (0037_spotlight_battles.sql)

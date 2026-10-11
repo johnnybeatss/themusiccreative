@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { SITE_PLAYER_TAG } from "@/lib/sitePlayer";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, isOwner } from "@/lib/supabase/role";
 import { normalizeInstagram } from "@/lib/normalizeInstagram";
@@ -49,6 +50,7 @@ export async function saveWeeklyTrack({
 
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
+  updateTag(SITE_PLAYER_TAG);
   return { error: null };
 }
 
@@ -81,6 +83,7 @@ export async function deleteWeeklyTrack(formData: FormData) {
 
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
+  updateTag(SITE_PLAYER_TAG);
 }
 
 // Re-promotes a past weekly_track row back to current — same "insert a
@@ -121,6 +124,7 @@ export async function refeatureTrack(formData: FormData) {
 
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
+  updateTag(SITE_PLAYER_TAG);
 }
 
 export type TrackFormState = { error: string | null };
@@ -170,5 +174,6 @@ export async function editTrack(
 
   revalidatePath("/eboard/track");
   revalidatePath("/", "layout");
+  updateTag(SITE_PLAYER_TAG);
   return { error: null };
 }

@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { SITE_PLAYER_TAG } from "@/lib/sitePlayer";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage, isOwner } from "@/lib/supabase/role";
 import { BATTLE_ENTRIES_BUCKET, type BattleStatus } from "@/lib/battles";
@@ -12,6 +13,8 @@ const STATUSES: BattleStatus[] = ["draft", "submissions", "voting", "closed"];
 // too — the role checks are defense in depth, same as other inboxes.
 
 function revalidateBattle(battleId?: string) {
+  // Battle status / winner feed the site-wide player (sitePlayer.ts).
+  updateTag(SITE_PLAYER_TAG);
   revalidatePath("/eboard/battles");
   revalidatePath("/battles");
   if (battleId) revalidatePath(`/battles/${battleId}`);

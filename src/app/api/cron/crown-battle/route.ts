@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { SITE_PLAYER_TAG } from "@/lib/sitePlayer";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
 import { crownEntry, pickTopEntry } from "@/lib/crownBattle";
 
@@ -57,6 +58,9 @@ export async function GET(request: NextRequest) {
   if (results.length) {
     revalidatePath("/", "layout");
     revalidatePath("/battles");
+    // Route handlers can't use updateTag; expire: 0 = drop the cached
+    // player immediately so the new winner shows on the next page view.
+    revalidateTag(SITE_PLAYER_TAG, { expire: 0 });
   }
   return NextResponse.json({ ok: true, results });
 }

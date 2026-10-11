@@ -7,48 +7,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import FeaturedTrackBar from "@/components/FeaturedTrackBar";
-import { createClient } from "@/lib/supabase/server";
-
-const TRACK_BUCKET = "weekly-track";
-
-async function getFeaturedTrack() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("weekly_track")
-    .select(
-      "track_title, artist_name, storage_path, artist_instagram_url, apple_music_url, spotify_url"
-    )
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  return {
-    track_title: data.track_title,
-    artist_name: data.artist_name,
-    artist_instagram_url: data.artist_instagram_url,
-    apple_music_url: data.apple_music_url,
-    spotify_url: data.spotify_url,
-    audio_url: supabase.storage
-      .from(TRACK_BUCKET)
-      .getPublicUrl(data.storage_path).data.publicUrl,
-  };
-}
-
-// The Spotlight Battle currently open for voting, if any — the bottom
-// player points people at it ("Vote for next week's spotlight").
-async function getVotingBattleId(): Promise<string | null> {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("beat_battles")
-    .select("id")
-    .eq("status", "voting")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return data?.id ?? null;
-}
+import { getSitePlayer } from "@/lib/sitePlayer";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -111,7 +70,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [track, votingBattleId] = await Promise.all([getFeaturedTrack(), getVotingBattleId()]);
+  // Cached 60s + invalidated on every spotlight/battle change (sitePlayer.ts).
+  const { track, votingBattleId } = await getSitePlayer();
 
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
