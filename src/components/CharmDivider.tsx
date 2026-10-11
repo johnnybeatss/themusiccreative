@@ -42,6 +42,8 @@ export default function CharmDivider({
       {charms.map((name, i) => (
         // eslint-disable-next-line @next/next/no-img-element -- tiny decorative asset, no need for next/image optimization
         <img
+            loading="lazy"
+            decoding="async"
           key={`${name}-${i}`}
           src={`/charms/${name}.webp`}
           alt=""

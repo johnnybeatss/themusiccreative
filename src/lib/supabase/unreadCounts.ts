@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "./server";
 import { getMyRole, canManage } from "./role";
 import { getUnreadFeedbackCount } from "./feedback";
@@ -83,7 +84,8 @@ export function getUnreadCollabPostCount(): Promise<number> {
 // page's href. The sidebar (EboardNav via layout.tsx) and the dashboard
 // tiles both read this map, so adding a new inbox is one line here instead
 // of threading another prop through three files.
-export async function getUnreadCountsByHref(): Promise<Record<string, number>> {
+// cache(): the E-Board layout and dashboard both call this in one request.
+export const getUnreadCountsByHref = cache(async (): Promise<Record<string, number>> => {
   const [feedback, join, dj, team, email, track, battles, collab] =
     await Promise.all([
       getUnreadFeedbackCount(),
@@ -105,4 +107,4 @@ export async function getUnreadCountsByHref(): Promise<Record<string, number>> {
     "/eboard/battles": battles,
     "/eboard/collab": collab,
   };
-}
+});

@@ -230,6 +230,8 @@ export default async function EventDetailPage({
           {event.photo_urls.map((url) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
+            loading="lazy"
+            decoding="async"
               key={url}
               src={url}
               alt=""

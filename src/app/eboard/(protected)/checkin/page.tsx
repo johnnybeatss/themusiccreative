@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import { formatEventDateTime } from "@/lib/eventTimezone";
+import { attendanceCounts } from "@/lib/dbAggregates";
 
 // Events from the last 120 days plus everything upcoming.
 const LOOKBACK_DAYS = 120;
@@ -20,14 +21,14 @@ export default async function CheckinAdminPage() {
 
   const supabase = await createClient();
   const since = new Date(Date.now() - LOOKBACK_DAYS * 86400000).toISOString();
-  const [{ data: events }, { data: checkins }, { data: codes }] = await Promise.all([
+  const [{ data: events }, attendance, { data: codes }] = await Promise.all([
     supabase.from("events").select("id, name, date").gte("date", since).order("date", { ascending: false }),
-    supabase.from("event_checkins").select("event_id"),
+    attendanceCounts(supabase),
     supabase.from("event_checkin_codes").select("event_id"),
   ]);
 
   const counts = new Map<string, number>();
-  for (const c of checkins ?? []) counts.set(c.event_id, (counts.get(c.event_id) ?? 0) + 1);
+  for (const [id, a] of attendance) counts.set(id, a.checkins);
   const hasCode = new Set((codes ?? []).map((c) => c.event_id));
 
   return (

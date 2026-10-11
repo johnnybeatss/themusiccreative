@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { signedUrlMap } from "@/lib/dbAggregates";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import TeamApplicationItem, {
   type TeamApplication,
@@ -23,14 +24,9 @@ async function getApplications(): Promise<TeamApplication[]> {
   // Resumes live in a private bucket — there's no public URL to read
   // directly off the row, so a signed URL has to be generated server-side
   // for each one, scoped to this request.
-  return Promise.all(
-    (data ?? []).map(async (row) => {
-      const { data: signed } = await supabase.storage
-        .from(RESUME_BUCKET)
-        .createSignedUrl(row.resume_path, SIGNED_URL_TTL_SECONDS);
-      return { ...row, resume_url: signed?.signedUrl ?? null };
-    })
-  );
+  // One batched Storage request for every resume (was one per row).
+  const urls = await signedUrlMap(supabase, RESUME_BUCKET, (data ?? []).map((r) => r.resume_path), SIGNED_URL_TTL_SECONDS);
+  return (data ?? []).map((row) => ({ ...row, resume_url: urls.get(row.resume_path) ?? null }));
 }
 
 // Same owner/admin-only pattern as Join Submissions / DJ Inquiries — RLS

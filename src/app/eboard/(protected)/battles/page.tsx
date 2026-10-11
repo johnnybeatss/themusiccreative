@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
 import { BATTLE_ENTRIES_BUCKET, STATUS_LABEL, type Battle, type BattleStatus } from "@/lib/battles";
 import ConfirmSubmitButton from "@/components/ConfirmSubmitButton";
+import { voteTally, signedUrlMap } from "@/lib/dbAggregates";
 import BattleEntryItem, { type AdminEntry } from "./BattleEntryItem";
 import { createBattle, setBattleStatus, deleteBattle, voidNetworkVotes } from "./actions";
 
@@ -11,20 +12,28 @@ const SIGNED_URL_TTL_SECONDS = 60 * 60;
 // Not auto-removed — a full room on FIU Wi-Fi legitimately looks like this.
 const FLAG_NETWORK_VOTES = 5;
 
-type Vote = { battle_id: string; entry_id: string; ip_hash: string; created_at: string };
-type FlaggedNetwork = { ipHash: string; total: number; byEntry: Map<string, number>; first: string; last: string };
+// One row per (battle, network, entry) from battle_network_flags() —
+// counted in Postgres (0044), so it stays correct past 1,000 votes.
+type FlagRow = {
+  battle_id: string; ip_hash: string; entry_id: string; votes: number | string;
+  network_total: number | string; first_vote: string; last_vote: string;
+};
+type FlaggedNetwork = { battleId: string; ipHash: string; total: number; byEntry: Map<string, number>; first: string; last: string };
 
-function flagNetworks(votes: Vote[]): FlaggedNetwork[] {
+function groupFlags(rows: FlagRow[]): FlaggedNetwork[] {
   const byNet = new Map<string, FlaggedNetwork>();
-  for (const v of votes) {
-    const n = byNet.get(v.ip_hash) ?? { ipHash: v.ip_hash, total: 0, byEntry: new Map(), first: v.created_at, last: v.created_at };
-    n.total += 1;
-    n.byEntry.set(v.entry_id, (n.byEntry.get(v.entry_id) ?? 0) + 1);
-    if (v.created_at < n.first) n.first = v.created_at;
-    if (v.created_at > n.last) n.last = v.created_at;
-    byNet.set(v.ip_hash, n);
+  for (const r of rows) {
+    const key = `${r.battle_id}:${r.ip_hash}`;
+    const n = byNet.get(key) ?? {
+      battleId: r.battle_id, ipHash: r.ip_hash, total: Number(r.network_total),
+      byEntry: new Map<string, number>(), first: r.first_vote, last: r.last_vote,
+    };
+    n.byEntry.set(r.entry_id, Number(r.votes));
+    if (r.first_vote < n.first) n.first = r.first_vote;
+    if (r.last_vote > n.last) n.last = r.last_vote;
+    byNet.set(key, n);
   }
-  return [...byNet.values()].filter((n) => n.total >= FLAG_NETWORK_VOTES).sort((a, b) => b.total - a.total);
+  return [...byNet.values()].sort((a, b) => b.total - a.total);
 }
 
 function minutesBetween(a: string, b: string) {
@@ -36,26 +45,26 @@ const inputClass =
 // Owner/admin read everything here through the normal cookie client —
 // RLS grants them full access to battles, entries, votes, and the private
 // battle-entries bucket (0033_beat_battles.sql).
-async function getData(): Promise<{ battles: Battle[]; entries: AdminEntry[]; votes: Vote[] }> {
+async function getData(): Promise<{ battles: Battle[]; entries: AdminEntry[]; flags: FlaggedNetwork[] }> {
   const supabase = await createClient();
-  const [{ data: battles }, { data: entries }, { data: votes }] = await Promise.all([
+  const [{ data: battles }, { data: entries }, tally, { data: flagRows, error: flagError }] = await Promise.all([
     supabase.from("beat_battles").select("*").order("created_at", { ascending: false }),
     supabase.from("battle_entries").select("*").order("created_at", { ascending: true }),
-    supabase.from("battle_votes").select("battle_id, entry_id, ip_hash, created_at"),
+    voteTally(supabase, null),
+    supabase.rpc("battle_network_flags", { p_min_votes: FLAG_NETWORK_VOTES }),
   ]);
+  if (flagError) console.error("battle_network_flags failed:", flagError.message);
 
-  const tally = new Map<string, number>();
-  for (const v of votes ?? []) tally.set(v.entry_id, (tally.get(v.entry_id) ?? 0) + 1);
-
-  const withAudio = await Promise.all(
-    (entries ?? []).map(async (e) => {
-      const { data: signed } = await supabase.storage
-        .from(BATTLE_ENTRIES_BUCKET)
-        .createSignedUrl(e.storage_path, SIGNED_URL_TTL_SECONDS);
-      return { ...e, audio_url: signed?.signedUrl ?? null, votes: tally.get(e.id) ?? 0 } as AdminEntry;
-    })
+  const urls = await signedUrlMap(
+    supabase,
+    BATTLE_ENTRIES_BUCKET,
+    (entries ?? []).map((e) => e.storage_path),
+    SIGNED_URL_TTL_SECONDS
   );
-  return { battles: battles ?? [], entries: withAudio, votes: (votes ?? []) as Vote[] };
+  const withAudio = (entries ?? []).map(
+    (e) => ({ ...e, audio_url: urls.get(e.storage_path) ?? null, votes: tally.get(e.id) ?? 0 }) as AdminEntry
+  );
+  return { battles: battles ?? [], entries: withAudio, flags: groupFlags((flagRows ?? []) as FlagRow[]) };
 }
 
 const NEXT_STEP: Partial<Record<BattleStatus, { to: BattleStatus; label: string }>> = {
@@ -76,7 +85,7 @@ export default async function BattlesAdminPage() {
     );
   }
 
-  const { battles, entries, votes } = await getData();
+  const { battles, entries, flags } = await getData();
   const ownerView = isOwner(role);
 
   return (
@@ -119,7 +128,7 @@ export default async function BattlesAdminPage() {
           {battles.map((b) => {
             const mine = entries.filter((e) => e.battle_id === b.id);
             const next = NEXT_STEP[b.status];
-            const flagged = flagNetworks(votes.filter((v) => v.battle_id === b.id));
+            const flagged = flags.filter((f) => f.battleId === b.id);
             const entryLabel = (id: string) => {
               const e = mine.find((x) => x.id === id);
               return e ? `${e.beat_title || "Untitled"} (${e.producer_name})` : "Removed track";

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { signedUrlMap } from "@/lib/dbAggregates";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
 import TrackSubmissionItem, {
   type TrackSubmission,
@@ -24,17 +25,12 @@ async function getSubmissions(): Promise<TrackSubmission[]> {
   // Audio files live in a private bucket — no public URL to read directly
   // off the row, so a signed URL has to be generated server-side for each
   // one that has a file at all.
-  return Promise.all(
-    (data ?? []).map(async (row) => {
-      if (!row.storage_path) {
-        return { ...row, audio_url: null };
-      }
-      const { data: signed } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(row.storage_path, SIGNED_URL_TTL_SECONDS);
-      return { ...row, audio_url: signed?.signedUrl ?? null };
-    })
-  );
+  // One batched Storage request for every row (was one request per row).
+  const urls = await signedUrlMap(supabase, BUCKET, (data ?? []).map((r) => r.storage_path), SIGNED_URL_TTL_SECONDS);
+  return (data ?? []).map((row) => ({
+    ...row,
+    audio_url: row.storage_path ? urls.get(row.storage_path) ?? null : null,
+  }));
 }
 
 // Battles a submission can be shortlisted into (anything not closed), plus

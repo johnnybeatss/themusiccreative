@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createClient } from "./server";
 
@@ -8,7 +9,11 @@ export type MemberRole = "owner" | "admin" | "eboard";
 // supabase/migrations/0003_roles.sql has run, but the trigger/backfill
 // could theoretically miss someone), or a query error all resolve to
 // `null` — treat that as "not privileged" rather than guessing.
-export async function getMyRole(): Promise<MemberRole | null> {
+// Memoized per request with React cache(): the E-Board layout, the page,
+// and every unread badge all ask "who is this and what's their role" —
+// without this, each call was its own Auth API round trip + profiles query
+// (~18 of each per dashboard load). Same result, fetched once.
+export const getMyRole = cache(async (): Promise<MemberRole | null> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,7 +28,7 @@ export async function getMyRole(): Promise<MemberRole | null> {
 
   if (error || !data) return null;
   return data.role as MemberRole;
-}
+});
 
 export function canManage(role: MemberRole | null): boolean {
   return role === "owner" || role === "admin";
@@ -39,7 +44,7 @@ export type MyProfile = { role: MemberRole; displayName: string | null };
 
 // Same fail-closed behavior as getMyRole(), but also returns display_name
 // for pages that need to show/edit it (e.g. /eboard/profile).
-export async function getMyProfile(): Promise<MyProfile | null> {
+export const getMyProfile = cache(async (): Promise<MyProfile | null> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -54,7 +59,7 @@ export async function getMyProfile(): Promise<MyProfile | null> {
 
   if (error || !data) return null;
   return { role: data.role as MemberRole, displayName: data.display_name };
-}
+});
 
 // --- "View as E-Board" demo mode ---
 // Lets the real owner simulate what an eboard-tier member sees, for live

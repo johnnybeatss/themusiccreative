@@ -153,6 +153,8 @@ export default async function OpportunitiesPage() {
                 {o.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
+            loading={i < 3 ? "eager" : "lazy"}
+            decoding="async"
                     src={o.image_url}
                     alt=""
                     className="h-32 w-full object-cover"
@@ -203,6 +205,8 @@ export default async function OpportunitiesPage() {
                   {e.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
+            loading="lazy"
+            decoding="async"
                       src={e.imageUrl}
                       alt=""
                       className="h-32 w-full object-cover"

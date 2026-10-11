@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { BATTLE_ENTRIES_BUCKET } from "@/lib/battles";
+import { voteTally } from "@/lib/dbAggregates";
 
 const WEEKLY_TRACK_BUCKET = "weekly-track";
 
@@ -69,16 +70,15 @@ export async function pickTopEntry(
   supabase: SupabaseClient,
   battleId: string
 ): Promise<string | null> {
-  const [{ data: entries }, { data: votes }] = await Promise.all([
+  const [{ data: entries }, tally] = await Promise.all([
     supabase
       .from("battle_entries")
       .select("id, created_at")
       .eq("battle_id", battleId)
       .not("approved_at", "is", null),
-    supabase.from("battle_votes").select("entry_id").eq("battle_id", battleId),
+    // Counted in Postgres — correct past 1,000 votes (0044).
+    voteTally(supabase, battleId),
   ]);
-  const tally = new Map<string, number>();
-  for (const v of votes ?? []) tally.set(v.entry_id, (tally.get(v.entry_id) ?? 0) + 1);
 
   const ranked = (entries ?? [])
     .map((e) => ({ id: e.id as string, created: e.created_at as string, votes: tally.get(e.id) ?? 0 }))

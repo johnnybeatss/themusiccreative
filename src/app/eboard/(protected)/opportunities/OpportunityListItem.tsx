@@ -62,6 +62,8 @@ export default function OpportunityListItem({
         {opportunity.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            loading="lazy"
+            decoding="async"
             src={opportunity.image_url}
             alt=""
             className="h-14 w-14 shrink-0 rounded-lg object-cover"

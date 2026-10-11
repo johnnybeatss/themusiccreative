@@ -25,6 +25,8 @@ export default function CharmScatter({
         <span key={`${item.name}-${i}`} className={`absolute ${item.className}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative asset, no need for next/image optimization */}
           <img
+            loading="lazy"
+            decoding="async"
             src={`/charms/${item.name}.webp`}
             alt=""
             className="w-full animate-charm-float opacity-[0.12]"

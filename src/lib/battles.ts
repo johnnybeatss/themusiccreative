@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
+import { voteTally, signedUrlMap } from "@/lib/dbAggregates";
 
 // Shared data layer for Beat Battles (supabase/migrations/0033_beat_battles.sql).
 
@@ -104,41 +105,38 @@ export async function getApprovedEntriesWithVotes(
   battleId: string
 ): Promise<PublicEntry[]> {
   const service = createServiceClient();
-  const [{ data: entries, error }, { data: votes }] = await Promise.all([
+  const [{ data: entries, error }, tally] = await Promise.all([
     service
       .from("battle_entries")
       .select("id, producer_name, beat_title, producer_instagram_url, apple_music_url, spotify_url, kind, storage_path")
       .eq("battle_id", battleId)
       .not("approved_at", "is", null)
       .order("created_at", { ascending: true }),
-    service.from("battle_votes").select("entry_id").eq("battle_id", battleId),
+    voteTally(service, battleId),
   ]);
   if (error) {
     console.error("Failed to load battle entries:", error.message);
     return [];
   }
 
-  const tally = new Map<string, number>();
-  for (const v of votes ?? []) tally.set(v.entry_id, (tally.get(v.entry_id) ?? 0) + 1);
-
-  return Promise.all(
-    (entries ?? []).map(async (e) => {
-      const { data: signed } = await service.storage
-        .from(BATTLE_ENTRIES_BUCKET)
-        .createSignedUrl(e.storage_path, SIGNED_URL_TTL_SECONDS);
-      return {
-        id: e.id,
-        producer_name: e.producer_name,
-        beat_title: e.beat_title,
-        producer_instagram_url: e.producer_instagram_url,
-        apple_music_url: e.apple_music_url ?? null,
-        spotify_url: e.spotify_url ?? null,
-        kind: e.kind ?? null,
-        audio_url: signed?.signedUrl ?? null,
-        votes: tally.get(e.id) ?? 0,
-      };
-    })
+  const urls = await signedUrlMap(
+    service,
+    BATTLE_ENTRIES_BUCKET,
+    (entries ?? []).map((e) => e.storage_path),
+    SIGNED_URL_TTL_SECONDS
   );
+
+  return (entries ?? []).map((e) => ({
+    id: e.id,
+    producer_name: e.producer_name,
+    beat_title: e.beat_title,
+    producer_instagram_url: e.producer_instagram_url,
+    apple_music_url: e.apple_music_url ?? null,
+    spotify_url: e.spotify_url ?? null,
+    kind: e.kind ?? null,
+    audio_url: urls.get(e.storage_path) ?? null,
+    votes: tally.get(e.id) ?? 0,
+  }));
 }
 
 // Which entry (if any) this browser already voted for in this battle.

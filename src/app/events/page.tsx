@@ -112,6 +112,8 @@ export default async function EventsPage() {
                 {e.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
+            loading={i < 3 ? "eager" : "lazy"}
+            decoding="async"
                     src={e.image_url}
                     alt=""
                     className="h-40 w-full object-cover"
