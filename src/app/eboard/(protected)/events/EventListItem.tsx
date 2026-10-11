@@ -87,7 +87,7 @@ export default function EventListItem({
           <form
             action={deleteEvent}
             onSubmit={(e) => {
-              if (!confirm(`Delete "${event.name}"? This can't be undone.`)) {
+              if (!confirm(`Delete "${event.name}"? This can't be undone. (Events with RSVPs or check-ins are kept, not deleted.)`)) {
                 e.preventDefault();
               }
             }}

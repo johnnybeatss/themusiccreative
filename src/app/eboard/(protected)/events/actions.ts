@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import {
@@ -187,9 +188,13 @@ export async function deleteEvent(formData: FormData) {
 
   const { error } = await supabase.from("events").delete().eq("id", id);
   if (error) {
-    console.error("Failed to delete event:", error.message);
+    console.error("Failed to delete event:", error.code, error.message);
+    // 23503 = foreign key: the event has RSVPs or check-ins, which are
+    // protected from cascade deletes (0043_protect_event_attendance.sql).
+    if (error.code === "23503") redirect("/eboard/events?deleteBlocked=1");
   }
 
   revalidatePath("/eboard/events");
+  revalidatePath("/eboard/events/past");
   revalidatePath("/events");
 }

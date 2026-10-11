@@ -11,6 +11,8 @@ export default function EboardLoginForm() {
     "idle"
   );
   const [error, setError] = useState("");
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
 
   // Surface *why* a magic-link click bounced back here. The most common
   // cause isn't a bug in this app — email providers (Outlook Safe Links,
@@ -44,16 +46,42 @@ export default function EboardLoginForm() {
       email,
       options: {
         emailRedirectTo: `${siteUrl}/auth/callback`,
+        // Invite-only: never create an account from this form. Without
+        // this, anyone typing any email would get a brand-new account
+        // (and the default 'eboard' role from the profiles trigger).
+        shouldCreateUser: false,
       },
     });
 
     if (error) {
       setStatus("error");
-      setError(error.message);
+      // With shouldCreateUser:false, an email with no account comes back
+      // as "Signups not allowed for otp".
+      setError(
+        /signups? not allowed/i.test(error.message)
+          ? "That email doesn't have E-Board access. Ask an admin to invite you."
+          : error.message
+      );
       return;
     }
 
     setStatus("sent");
+  }
+
+  // Fallback that works even when the link doesn't: the same email has a
+  // one-time code (see the Magic Link email template in Supabase).
+  async function handleCode(e: React.FormEvent) {
+    e.preventDefault();
+    setVerifying(true);
+    setError("");
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: "email" });
+    setVerifying(false);
+    if (error) {
+      setError("That code didn't work — double-check it or request a new email.");
+      return;
+    }
+    window.location.href = "/eboard";
   }
 
   if (status === "sent") {
@@ -68,6 +96,28 @@ export default function EboardLoginForm() {
           <span className="font-medium text-ivory">{email}</span>. Click it
           to get into the E-Board area — no password needed.
         </p>
+        <form onSubmit={handleCode} className="mt-6 space-y-3">
+          <label className="block text-sm text-steel-light">
+            Or enter the code from the email
+            <input
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              maxLength={10}
+              placeholder="123456"
+              className="mt-1 w-full rounded-lg border border-navy-800 bg-navy-900 px-3 py-2 text-center text-lg tracking-[0.4em] text-ivory placeholder:text-steel-light/50 focus:border-gold focus:outline-none"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={verifying || code.length < 6}
+            className="w-full rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-light disabled:opacity-50"
+          >
+            {verifying ? "Checking..." : "Sign in with code"}
+          </button>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+        </form>
       </div>
     );
   }
