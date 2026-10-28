@@ -15,10 +15,16 @@ export default function HoneypotFields() {
   return (
     <>
       <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
-        <label>
-          Leave this empty
-          <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" defaultValue="" />
-        </label>
+        <input
+          type="text"
+          name={HONEYPOT_FIELD}
+          tabIndex={-1}
+          autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          defaultValue=""
+        />
       </div>
       <input type="hidden" name={STARTED_AT_FIELD} value={startedAt} readOnly />
     </>

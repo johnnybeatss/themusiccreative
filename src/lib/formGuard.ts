@@ -11,7 +11,10 @@
 // members). If a form starts getting hammered anyway, the next step up is
 // Cloudflare Turnstile.
 
-export const HONEYPOT_FIELD = "company_website";
+// Deliberately meaningless name: browser autofill fills anything that looks
+// like "company", "website", "address", etc. even with autocomplete="off",
+// which made real submissions look like bots and get silently dropped.
+export const HONEYPOT_FIELD = "tmc_hp_x7";
 export const STARTED_AT_FIELD = "form_started_at";
 const MIN_FILL_MS = 1500;
 
@@ -24,11 +27,15 @@ function read(src: FieldSource, key: string): string {
 }
 
 export function looksLikeSpam(src: FieldSource): boolean {
-  if (read(src, HONEYPOT_FIELD).trim() !== "") return true;
+  if (read(src, HONEYPOT_FIELD).trim() !== "") {
+    console.warn("[formGuard] dropped submission: honeypot filled");
+    return true;
+  }
   const started = Number(read(src, STARTED_AT_FIELD));
   // Missing/invalid timestamp is NOT treated as spam (e.g. JS failed to
   // hydrate) — only a provably-too-fast submission is.
   if (Number.isFinite(started) && started > 0 && Date.now() - started < MIN_FILL_MS) {
+    console.warn("[formGuard] dropped submission: filled too fast");
     return true;
   }
   return false;
