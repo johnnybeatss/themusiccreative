@@ -51,6 +51,15 @@ export async function checkIn(input: {
     console.error("Check-in failed:", error.message);
     return { error: "Couldn't check you in — try again." };
   }
+  if (already) {
+    // Checking in again still updates their leaderboard choice.
+    const { error: prefError } = await service
+      .from("event_checkins")
+      .update({ show_on_leaderboard: input.showOnLeaderboard })
+      .eq("event_id", event.id)
+      .eq("identity_key", identityKey);
+    if (prefError) console.error("Check-in preference update failed:", prefError.message);
+  }
 
   // School-year total for the "that's N events" confirmation.
   const { data: rows } = await service

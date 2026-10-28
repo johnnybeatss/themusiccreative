@@ -18,7 +18,7 @@
 // weekly_email_extras controls which of these show up in a given week.
 
 import { formatWeekRange } from "./weekReports";
-import { formatEventDateTime } from "./eventTimezone";
+import { formatEventDateTime, formatMiamiEventDate } from "./eventTimezone";
 import type { MiamiMusicEvent } from "./miamiMusicEvents";
 
 // Mirrors src/app/globals.css's --color-* custom properties — email
@@ -241,10 +241,7 @@ function buildMiamiMusicSection(events: MiamiMusicEvent[]): string {
   const rows = events
     .map((e) => {
       const name = escapeHtml(e.name);
-      const dateLabel = new Date(e.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+      const dateLabel = formatMiamiEventDate(e.date);
       const venue = e.venue ? escapeHtml(e.venue) : null;
       return `<p style="margin:0 0 8px;font-size:13px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;"><a href="${e.url}" style="color:${COLOR.heading};font-weight:bold;text-decoration:none;">${name}</a><span style="color:${COLOR.meta};"> &mdash; ${dateLabel}${venue ? ` &middot; ${venue}` : ""}</span></p>`;
     })

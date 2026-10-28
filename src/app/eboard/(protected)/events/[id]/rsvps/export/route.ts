@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/dbAggregates";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import { buildXlsxResponse } from "@/lib/exportXlsx";
 
@@ -16,11 +17,13 @@ export async function GET(
 
   const [{ data: event }, { data, error }] = await Promise.all([
     supabase.from("events").select("name").eq("id", id).maybeSingle(),
-    supabase
-      .from("event_rsvps")
-      .select("*")
-      .eq("event_id", id)
-      .order("created_at", { ascending: false }),
+    fetchAllRows(() =>
+      supabase
+        .from("event_rsvps")
+        .select("*")
+        .eq("event_id", id)
+        .order("created_at", { ascending: false })
+    ),
   ]);
 
   if (error) {

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { pageRange, parsePage } from "@/lib/pagination";
+import { redirect } from "next/navigation";
+import { lastPage, pageRange, parsePage } from "@/lib/pagination";
 import Pagination from "@/components/Pagination";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import DjInquiryItem, { type DjInquiry } from "./DjInquiryItem";
@@ -42,6 +43,8 @@ export default async function DjInquiriesPage({
   }
 
   const { rows: inquiries, total } = await getInquiries(page);
+  // e.g. ?page=9 after deletes shrank the list: jump to the real last page.
+  if (page > lastPage(total)) redirect(`/eboard/dj-inquiries?page=${lastPage(total)}`);
 
   return (
     <div>

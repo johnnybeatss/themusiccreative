@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/dbAggregates";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import { buildXlsxResponse } from "@/lib/exportXlsx";
 
@@ -7,11 +8,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ eventId
   const { eventId } = await params;
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("event_checkins")
-    .select("first_name, last_name, fiu_email, created_at")
-    .eq("event_id", eventId)
-    .order("created_at", { ascending: true });
+  const { data, error } = await fetchAllRows(() =>
+    supabase
+      .from("event_checkins")
+      .select("first_name, last_name, fiu_email, created_at")
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: true })
+  );
   if (error) return new Response(error.message, { status: 500 });
 
   const rows = (data ?? []).map((c) => ({

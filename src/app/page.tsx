@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { upcomingCutoffIso } from "@/lib/eventTimezone";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import CharmScatter from "@/components/CharmScatter";
@@ -34,17 +35,16 @@ async function getFeedVideos(): Promise<FeedVideo[]> {
   }));
 }
 
-// Soonest event that hasn't happened yet — powers the homepage countdown
-// banner. `gte` (not `gt`) so an event starting in the next few seconds
-// doesn't briefly vanish from the homepage right before the events list
-// would also drop it.
+// Soonest event that hasn't wrapped up yet — powers the homepage countdown
+// banner. Same "upcoming" cutoff as /events, so an event that's happening
+// right now stays up (shown as "Happening now").
 async function getNextEvent(): Promise<NextEvent | null> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("events")
     .select("id, name, date, location")
-    .gte("date", new Date().toISOString())
+    .gte("date", upcomingCutoffIso())
     .order("date", { ascending: true })
     .limit(1)
     .maybeSingle();

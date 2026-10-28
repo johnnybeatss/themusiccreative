@@ -111,10 +111,7 @@ export default function SubmitTrackForm({
             guard,
           });
       if (result.error) {
-        if (storagePath && !battleId) {
-          const supabase = createClient();
-          await supabase.storage.from(INBOX_BUCKET).remove([storagePath]);
-        }
+        // The server action already removed the orphaned upload.
         setError(result.error);
         return;
       }

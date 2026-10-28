@@ -6,7 +6,7 @@ import { createServiceClient } from "@/lib/supabase/serviceClient";
 import RsvpForm from "./RsvpForm";
 import ShareEventButton from "./ShareEventButton";
 import AddToCalendarButton from "./AddToCalendarButton";
-import { formatEventDateTime } from "@/lib/eventTimezone";
+import { formatEventDateTime, isEventPast } from "@/lib/eventTimezone";
 
 type Event = {
   id: string;
@@ -130,7 +130,7 @@ export default async function EventDetailPage({
   const event = await getEvent(id);
   if (!event) notFound();
 
-  const isPast = new Date(event.date).getTime() < Date.now();
+  const isPast = isEventPast(event.date);
   const [rsvpCount, checkinCount] = await Promise.all([
     getRsvpCount(id),
     isPast ? getCheckinCount(id) : Promise.resolve(0),
@@ -257,7 +257,8 @@ export default async function EventDetailPage({
           dangerouslySetInnerHTML={{ __html: event.posh_embed_html }}
         />
       ) : (
-        <RsvpForm eventId={event.id} />
+        // No RSVPs once an event is over (submitRsvp also refuses them).
+        !isPast && <RsvpForm eventId={event.id} />
       )}
     </div>
   );

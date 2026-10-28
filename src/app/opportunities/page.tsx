@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import CharmScatter from "@/components/CharmScatter";
 import { getMiamiMusicEvents } from "@/lib/miamiMusicEvents";
 import { pageOpenGraph } from "@/lib/pageMetadata";
+import { easternToday, formatMiamiEventDate } from "@/lib/eventTimezone";
 
 const TITLE = "Opportunities";
 const DESCRIPTION =
@@ -47,7 +48,7 @@ async function getOpportunities(): Promise<Opportunity[]> {
   const cutoff = new Date(
     Date.now() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000
   ).toISOString();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = easternToday();
   // Pinned listings (e.g. "EVENT DJ INQUIRIES") skip the staleness filter
   // entirely — see supabase/migrations/0014_join_and_dj_inquiries.sql.
   const { data, error } = await supabase
@@ -217,10 +218,7 @@ export default async function OpportunitiesPage() {
                       {e.name}
                     </p>
                     <p className="mt-1 text-sm text-steel-light">
-                      {new Date(e.date).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {formatMiamiEventDate(e.date)}
                       {e.venue ? ` · ${e.venue}` : ""}
                     </p>
                   </div>

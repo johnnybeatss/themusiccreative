@@ -9,6 +9,7 @@ import { looksLikeSpam, checkLengths } from "@/lib/formGuard";
 import { normalizeInstagram } from "@/lib/normalizeInstagram";
 import { hashNetwork, MAX_VOTES_PER_NETWORK, VOTER_COOKIE } from "@/lib/battles";
 import { isMusicKind, isHttpsUrl } from "@/lib/musicKinds";
+import { discardUpload } from "@/lib/discardUpload";
 
 // ---------------------------------------------------------------------------
 // Entries
@@ -64,6 +65,7 @@ export async function submitBattleEntry(input: {
   });
   if (error) {
     console.error("submitBattleEntry failed:", error.code, error.message);
+    await discardUpload("battle-entries", "battle_entries", input.storagePath);
     // 42501 = RLS refused the row: the battle isn't taking entries anymore.
     if (error.code === "42501") {
       return { error: "This battle isn't taking submissions right now — refresh the page and try again." };

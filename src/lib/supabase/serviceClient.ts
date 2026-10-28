@@ -16,6 +16,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 //     RLS policies, so votes can ONLY be written through that action.
 //   * src/lib/battles.ts — signs URLs for approved entries only.
 //   * src/app/checkin/[code]/actions.ts — check-ins, same reasoning as votes.
+//   * src/lib/discardUpload.ts — removes orphaned public uploads (guarded).
 export function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

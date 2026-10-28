@@ -14,7 +14,9 @@ export async function confirmSignIn(formData: FormData) {
   const tokenHash = (formData.get("token_hash") as string) || "";
   const type = formData.get("type") as EmailOtpType;
   const next = (formData.get("next") as string) || "/eboard";
-  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/eboard";
+  // Same-site paths only. Backslashes are rejected too: browsers treat
+  // "/\\evil.com" like "//evil.com", i.e. another site.
+  const safeNext = next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : "/eboard";
 
   if (!tokenHash || !ALLOWED.includes(type)) redirect("/eboard/login?error=auth-failed");
 

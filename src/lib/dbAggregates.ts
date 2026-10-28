@@ -54,3 +54,22 @@ export async function signedUrlMap(
   }
   return map;
 }
+
+// Every row of a query, fetched 1,000 at a time. A single Supabase response
+// caps at 1,000 rows, which would silently cut off big Excel exports.
+// `build` must return a fresh, ordered query on each call.
+type RangeQuery<T> = {
+  range: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>;
+};
+export async function fetchAllRows<T>(
+  build: () => RangeQuery<T>
+): Promise<{ data: T[]; error: { message: string } | null }> {
+  const PAGE = 1000;
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await build().range(from, from + PAGE - 1);
+    if (error) return { data: rows, error };
+    rows.push(...(data ?? []));
+    if ((data?.length ?? 0) < PAGE) return { data: rows, error: null };
+  }
+}

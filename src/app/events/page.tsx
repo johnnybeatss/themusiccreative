@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Reveal from "@/components/Reveal";
 import CharmScatter from "@/components/CharmScatter";
-import { formatEventDateTime } from "@/lib/eventTimezone";
+import { formatEventDateTime, upcomingCutoffIso } from "@/lib/eventTimezone";
 import { pageOpenGraph } from "@/lib/pageMetadata";
 
 const TITLE = "Events";
@@ -29,16 +29,12 @@ type Event = {
   image_url: string | null;
 };
 
-// Events stay under "Upcoming" for a few hours after their start time so a
-// show that's currently happening doesn't jump to "Past" the moment it begins.
-const IN_PROGRESS_GRACE_MS = 6 * 60 * 60 * 1000;
-
 type Tab = "upcoming" | "past";
 
 async function getEvents(tab: Tab): Promise<Event[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
   const supabase = await createClient();
-  const cutoff = new Date(Date.now() - IN_PROGRESS_GRACE_MS).toISOString();
+  const cutoff = upcomingCutoffIso();
   const query = supabase.from("events").select("*");
   const { data, error } =
     tab === "past"

@@ -12,3 +12,8 @@ export function pageRange(page: number): [number, number] {
   const from = (page - 1) * PAGE_SIZE;
   return [from, from + PAGE_SIZE - 1];
 }
+
+// Last valid page for `total` rows (1 when empty).
+export function lastPage(total: number): number {
+  return Math.max(1, Math.ceil(total / PAGE_SIZE));
+}

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/dbAggregates";
 import { getMyRole, canManage } from "@/lib/supabase/role";
 import { buildXlsxResponse } from "@/lib/exportXlsx";
 
@@ -12,10 +13,12 @@ export async function GET() {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("join_submissions")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data, error } = await fetchAllRows(() =>
+    supabase
+      .from("join_submissions")
+      .select("*")
+      .order("created_at", { ascending: false })
+  );
 
   if (error) {
     return new Response(error.message, { status: 500 });

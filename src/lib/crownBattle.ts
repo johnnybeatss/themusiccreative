@@ -25,17 +25,47 @@ export async function crownEntry(
     .maybeSingle();
   if (!entry?.approved_at) return "Entry not found or not approved.";
 
+  // Claim the crown before copying anything. Vercel crons can fire twice at
+  // once (and an owner can double-click); only the call that flips
+  // winner_entry_id to this entry goes on, so the audio copy and
+  // weekly_track row happen exactly once. Re-crowning a different entry
+  // still works.
+  const { data: before } = await supabase
+    .from("beat_battles")
+    .select("winner_entry_id")
+    .eq("id", battleId)
+    .maybeSingle();
+  const { data: claimed } = await supabase
+    .from("beat_battles")
+    .update({ winner_entry_id: entryId })
+    .eq("id", battleId)
+    .or(`winner_entry_id.is.null,winner_entry_id.neq.${entryId}`)
+    .select("id");
+  if (!claimed?.length) return "Already crowned.";
+  const release = () =>
+    supabase
+      .from("beat_battles")
+      .update({ winner_entry_id: before?.winner_entry_id ?? null })
+      .eq("id", battleId)
+      .eq("winner_entry_id", entryId);
+
   const { data: file, error: downloadError } = await supabase.storage
     .from(BATTLE_ENTRIES_BUCKET)
     .download(entry.storage_path);
-  if (downloadError || !file) return `Download failed: ${downloadError?.message}`;
+  if (downloadError || !file) {
+    await release();
+    return `Download failed: ${downloadError?.message}`;
+  }
 
   const ext = entry.storage_path.split(".").pop() || "mp3";
   const newPath = `${crypto.randomUUID()}.${ext}`;
   const { error: uploadError } = await supabase.storage
     .from(WEEKLY_TRACK_BUCKET)
     .upload(newPath, file, { contentType: file.type || "audio/mpeg" });
-  if (uploadError) return `Copy failed: ${uploadError.message}`;
+  if (uploadError) {
+    await release();
+    return `Copy failed: ${uploadError.message}`;
+  }
 
   const { error: insertError } = await supabase.from("weekly_track").insert({
     storage_path: newPath,
@@ -45,13 +75,16 @@ export async function crownEntry(
     apple_music_url: entry.apple_music_url,
     spotify_url: entry.spotify_url,
   });
-  if (insertError) return `weekly_track insert failed: ${insertError.message}`;
+  if (insertError) {
+    await release();
+    return `weekly_track insert failed: ${insertError.message}`;
+  }
 
   const { error: battleError } = await supabase
     .from("beat_battles")
-    .update({ winner_entry_id: entryId, status: "closed" })
+    .update({ status: "closed" })
     .eq("id", battleId);
-  if (battleError) console.error("Failed to set battle winner:", battleError.message);
+  if (battleError) console.error("Failed to close battle:", battleError.message);
 
   if (entry.source_submission_id) {
     const now = new Date().toISOString();

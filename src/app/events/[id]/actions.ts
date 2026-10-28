@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { looksLikeSpam, isValidEmail, checkLengths } from "@/lib/formGuard";
+import { isEventPast } from "@/lib/eventTimezone";
 
 export type RsvpFormState = { error: string | null };
 
@@ -31,6 +32,14 @@ export async function submitRsvp(
   if (tooLong) return { error: tooLong };
 
   const supabase = await createClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("date")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (!event) return { error: "That event doesn't exist." };
+  if (isEventPast(event.date)) return { error: "This event already happened." };
+
   const { error } = await supabase.from("event_rsvps").insert({
     event_id: eventId,
     name,

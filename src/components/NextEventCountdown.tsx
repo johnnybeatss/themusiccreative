@@ -65,10 +65,16 @@ export default function NextEventCountdown({ event }: { event: NextEvent }) {
         {event.name}
       </p>
       <p className="relative mt-1 text-xs text-steel-light">{shortDate}</p>
-      {parts && (
+      {parts ? (
         <p className="relative mt-3 font-display text-2xl tracking-wide text-accent">
           {parts.days}d {parts.hours}h {parts.minutes}m
         </p>
+      ) : (
+        now !== null && (
+          <p className="relative mt-3 font-display text-2xl tracking-wide text-accent">
+            HAPPENING NOW
+          </p>
+        )
       )}
     </Link>
   );

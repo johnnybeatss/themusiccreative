@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { looksLikeSpam, checkLengths } from "@/lib/formGuard";
 import { isMusicKind, isHttpsUrl } from "@/lib/musicKinds";
+import { discardUpload } from "@/lib/discardUpload";
 
 // Public, unauthenticated action — same trust model as /join, /join-team,
 // and /dj-booking. RLS (0029_track_submissions.sql) allows the insert but
@@ -65,7 +66,10 @@ export async function submitTrackSubmission({
     spotify_url: spotifyUrl || null,
     kind: kind && isMusicKind(kind) ? kind : null,
   });
-  if (error) return { error: error.message };
+  if (error) {
+    await discardUpload("track-submissions", "track_submissions", storagePath);
+    return { error: error.message };
+  }
 
   return { error: null };
 }

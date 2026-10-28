@@ -108,3 +108,35 @@ export function formatEventDateTime(
     timeZoneName: "short",
   });
 }
+
+// An event counts as upcoming until this long after its start time, so a
+// show that's happening right now doesn't flip to "past" the moment it
+// begins. Shared by /events, the event page, and the homepage countdown.
+export const EVENT_IN_PROGRESS_MS = 6 * 60 * 60 * 1000;
+
+export function isEventPast(iso: string, now: number = Date.now()): boolean {
+  return new Date(iso).getTime() + EVENT_IN_PROGRESS_MS < now;
+}
+
+// Events on or after this instant are still "upcoming" (see above).
+export function upcomingCutoffIso(now: number = Date.now()): string {
+  return new Date(now - EVENT_IN_PROGRESS_MS).toISOString();
+}
+
+// Today's date (YYYY-MM-DD) in Eastern, not UTC — UTC rolls over at
+// 7/8 PM Eastern, which made "due today" listings vanish in the evening.
+export function easternToday(now: Date = new Date()): string {
+  return now.toLocaleDateString("en-CA", { timeZone: EVENT_TIMEZONE });
+}
+
+// "Oct 28" for a Ticketmaster show. Their `dateTime` is a UTC instant, so it
+// has to be read in Eastern — formatted in UTC (what the server runs in), an
+// 8 PM show landed on the next day. Date-only values ("2026-10-28", no time
+// announced) parse as UTC midnight, so those stay in UTC.
+export function formatMiamiEventDate(date: string): string {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: /^\d{4}-\d{2}-\d{2}$/.test(date) ? "UTC" : EVENT_TIMEZONE,
+  });
+}

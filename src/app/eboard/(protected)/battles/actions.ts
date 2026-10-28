@@ -163,6 +163,8 @@ export async function voidNetworkVotes(formData: FormData) {
   revalidateBattle(battleId);
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // Owner-only, like every weekly_track write. Sets the winner, closes the
 // battle, and copies the winning beat into the site-wide player — same
 // copy-then-insert flow as featureSubmission in track-submissions/actions.ts.
@@ -170,7 +172,7 @@ export async function crownWinner(formData: FormData) {
   if (!isOwner(await getMyRole())) return;
   const entryId = formData.get("entry_id") as string;
   const battleId = formData.get("battle_id") as string;
-  if (!entryId || !battleId) return;
+  if (!UUID_RE.test(entryId) || !UUID_RE.test(battleId)) return;
 
   const supabase = await createClient();
   const err = await crownEntry(supabase, battleId, entryId);

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { pageRange, parsePage } from "@/lib/pagination";
+import { redirect } from "next/navigation";
+import { lastPage, pageRange, parsePage } from "@/lib/pagination";
 import Pagination from "@/components/Pagination";
 import { signedUrlMap } from "@/lib/dbAggregates";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
@@ -93,6 +94,8 @@ export default async function TrackSubmissionsPage({
   }
 
   const [{ rows: submissions, total }, openBattles] = await Promise.all([getSubmissions(page), getOpenBattles()]);
+  // e.g. ?page=9 after deletes shrank the list: jump to the real last page.
+  if (page > lastPage(total)) redirect(`/eboard/track-submissions?page=${lastPage(total)}`);
   const ownerView = isOwner(role);
 
   return (
