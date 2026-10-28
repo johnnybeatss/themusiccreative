@@ -74,8 +74,8 @@ export default function DjBookingForm() {
           <input type="email" name="email" required className={inputClass} />
         </label>
         <label className={labelClass}>
-          <span className="text-steel-light">Phone (optional)</span>
-          <input type="tel" name="phone" className={inputClass} />
+          <span className="text-steel-light">Phone</span>
+          <input type="tel" name="phone" required className={inputClass} />
         </label>
       </div>
       <label className={labelClass}>

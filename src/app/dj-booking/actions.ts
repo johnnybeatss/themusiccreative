@@ -21,7 +21,7 @@ export async function submitDjBooking(
 
   const requesterName = req(formData, "requester_name");
   const email = req(formData, "email");
-  const phone = req(formData, "phone") || null;
+  const phone = req(formData, "phone");
   const eventDate = req(formData, "event_date") || null;
   const eventType = req(formData, "event_type");
   const guestCount = req(formData, "guest_count") || null;
@@ -33,17 +33,19 @@ export async function submitDjBooking(
   if (
     !requesterName ||
     !email ||
+    !phone ||
     !eventType ||
     !portfolioLink ||
     !experience
   ) {
     return {
       error:
-        "Name, email, event type, portfolio link, and experience are required.",
+        "Name, email, phone, event type, portfolio link, and experience are required.",
     };
   }
 
   if (!isValidEmail(email)) return { error: "Enter a valid email address." };
+  if (phone.replace(/\D/g, "").length < 7) return { error: "Enter a valid phone number." };
   const tooLong = checkLengths({ Name: [requesterName, 120], Phone: [phone, 40], "Portfolio link": [portfolioLink, 500], Details: [details, 2000] });
   if (tooLong) return { error: tooLong };
 
