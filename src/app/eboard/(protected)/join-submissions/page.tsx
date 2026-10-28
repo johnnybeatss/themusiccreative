@@ -1,26 +1,34 @@
 import { createClient } from "@/lib/supabase/server";
+import { pageRange, parsePage } from "@/lib/pagination";
+import Pagination from "@/components/Pagination";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import JoinSubmissionItem, {
   type JoinSubmission,
 } from "./JoinSubmissionItem";
 
-async function getSubmissions(): Promise<JoinSubmission[]> {
+async function getSubmissions(page: number): Promise<{ rows: JoinSubmission[]; total: number }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("join_submissions")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page));
   if (error) {
     console.error("Failed to load join submissions:", error.message);
-    return [];
+    return { rows: [], total: 0 };
   }
-  return data ?? [];
+  return { rows: data ?? [], total: count ?? 0 };
 }
 
 // Same owner/admin-only pattern as the Feedback hub page — RLS already
 // blocks eboard-tier reads at the database level (see
 // supabase/migrations/0014_join_and_dj_inquiries.sql).
-export default async function JoinSubmissionsPage() {
+export default async function JoinSubmissionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const page = parsePage((await searchParams).page);
   const role = await getEffectiveRole();
 
   if (!canManage(role)) {
@@ -37,7 +45,7 @@ export default async function JoinSubmissionsPage() {
     );
   }
 
-  const submissions = await getSubmissions();
+  const { rows: submissions, total } = await getSubmissions(page);
 
   return (
     <div>
@@ -48,7 +56,7 @@ export default async function JoinSubmissionsPage() {
           </h1>
           <div className="mt-2 h-1 w-16 bg-gold" />
         </div>
-        {submissions.length > 0 && (
+        {total > 0 && (
           <a
             href="/eboard/join-submissions/export"
             className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
@@ -62,7 +70,7 @@ export default async function JoinSubmissionsPage() {
         E-Board area. New ones are marked read as you scroll past them.
       </p>
 
-      {submissions.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 text-steel-light">No submissions yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
@@ -71,6 +79,7 @@ export default async function JoinSubmissionsPage() {
           ))}
         </ul>
       )}
+      <Pagination basePath="/eboard/join-submissions" page={page} total={total} />
     </div>
   );
 }

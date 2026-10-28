@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { pageRange, parsePage } from "@/lib/pagination";
+import Pagination from "@/components/Pagination";
 import { signedUrlMap } from "@/lib/dbAggregates";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import TeamApplicationItem, {
@@ -10,15 +12,16 @@ const RESUME_BUCKET = "team-resumes";
 // link sitting in someone's browser history doesn't stay valid forever.
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
-async function getApplications(): Promise<TeamApplication[]> {
+async function getApplications(page: number): Promise<{ rows: TeamApplication[]; total: number }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("team_applications")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page));
   if (error) {
     console.error("Failed to load team applications:", error.message);
-    return [];
+    return { rows: [], total: 0 };
   }
 
   // Resumes live in a private bucket — there's no public URL to read
@@ -26,13 +29,19 @@ async function getApplications(): Promise<TeamApplication[]> {
   // for each one, scoped to this request.
   // One batched Storage request for every resume (was one per row).
   const urls = await signedUrlMap(supabase, RESUME_BUCKET, (data ?? []).map((r) => r.resume_path), SIGNED_URL_TTL_SECONDS);
-  return (data ?? []).map((row) => ({ ...row, resume_url: urls.get(row.resume_path) ?? null }));
+  const rows = (data ?? []).map((row) => ({ ...row, resume_url: urls.get(row.resume_path) ?? null }));
+  return { rows, total: count ?? 0 };
 }
 
 // Same owner/admin-only pattern as Join Submissions / DJ Inquiries — RLS
 // already blocks eboard-tier reads at the database level (see
 // supabase/migrations/0021_team_applications.sql).
-export default async function TeamApplicationsPage() {
+export default async function TeamApplicationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const page = parsePage((await searchParams).page);
   const role = await getEffectiveRole();
 
   if (!canManage(role)) {
@@ -49,7 +58,7 @@ export default async function TeamApplicationsPage() {
     );
   }
 
-  const applications = await getApplications();
+  const { rows: applications, total } = await getApplications(page);
 
   return (
     <div>
@@ -60,7 +69,7 @@ export default async function TeamApplicationsPage() {
           </h1>
           <div className="mt-2 h-1 w-16 bg-gold" />
         </div>
-        {applications.length > 0 && (
+        {total > 0 && (
           <a
             href="/eboard/team-applications/export"
             className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
@@ -74,7 +83,7 @@ export default async function TeamApplicationsPage() {
         the E-Board area. New ones are marked read as you scroll past them.
       </p>
 
-      {applications.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 text-steel-light">No applications yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
@@ -83,6 +92,7 @@ export default async function TeamApplicationsPage() {
           ))}
         </ul>
       )}
+      <Pagination basePath="/eboard/team-applications" page={page} total={total} />
     </div>
   );
 }

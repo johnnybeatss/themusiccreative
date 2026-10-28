@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { pageRange, parsePage } from "@/lib/pagination";
+import Pagination from "@/components/Pagination";
 import { signedUrlMap } from "@/lib/dbAggregates";
 import { getEffectiveRole, canManage, isOwner } from "@/lib/supabase/role";
 import TrackSubmissionItem, {
@@ -11,15 +13,16 @@ const BUCKET = "track-submissions";
 // as team-resumes signed URLs (see team-applications/page.tsx).
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
-async function getSubmissions(): Promise<TrackSubmission[]> {
+async function getSubmissions(page: number): Promise<{ rows: TrackSubmission[]; total: number }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("track_submissions")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page));
   if (error) {
     console.error("Failed to load track submissions:", error.message);
-    return [];
+    return { rows: [], total: 0 };
   }
 
   // Audio files live in a private bucket — no public URL to read directly
@@ -27,10 +30,11 @@ async function getSubmissions(): Promise<TrackSubmission[]> {
   // one that has a file at all.
   // One batched Storage request for every row (was one request per row).
   const urls = await signedUrlMap(supabase, BUCKET, (data ?? []).map((r) => r.storage_path), SIGNED_URL_TTL_SECONDS);
-  return (data ?? []).map((row) => ({
+  const rows = (data ?? []).map((row) => ({
     ...row,
     audio_url: row.storage_path ? urls.get(row.storage_path) ?? null : null,
   }));
+  return { rows, total: count ?? 0 };
 }
 
 // Battles a submission can be shortlisted into (anything not closed), plus
@@ -66,7 +70,12 @@ async function getOpenBattles(): Promise<{
 // supabase/migrations/0029_track_submissions.sql). "Feature this" is
 // further restricted to owner-only inside TrackSubmissionItem, matching
 // weekly_track's write policy.
-export default async function TrackSubmissionsPage() {
+export default async function TrackSubmissionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const page = parsePage((await searchParams).page);
   const role = await getEffectiveRole();
 
   if (!canManage(role)) {
@@ -83,7 +92,7 @@ export default async function TrackSubmissionsPage() {
     );
   }
 
-  const [submissions, openBattles] = await Promise.all([getSubmissions(), getOpenBattles()]);
+  const [{ rows: submissions, total }, openBattles] = await Promise.all([getSubmissions(page), getOpenBattles()]);
   const ownerView = isOwner(role);
 
   return (
@@ -95,7 +104,7 @@ export default async function TrackSubmissionsPage() {
           </h1>
           <div className="mt-2 h-1 w-16 bg-gold" />
         </div>
-        {submissions.length > 0 && (
+        {total > 0 && (
           <a
             href="/eboard/track-submissions/export"
             className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
@@ -112,7 +121,7 @@ export default async function TrackSubmissionsPage() {
         this&quot; (owner) still skips the vote if you ever need to.
       </p>
 
-      {submissions.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 text-steel-light">No submissions yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
@@ -127,6 +136,7 @@ export default async function TrackSubmissionsPage() {
           ))}
         </ul>
       )}
+      <Pagination basePath="/eboard/track-submissions" page={page} total={total} />
     </div>
   );
 }

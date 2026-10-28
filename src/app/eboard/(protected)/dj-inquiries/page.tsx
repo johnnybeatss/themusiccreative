@@ -1,22 +1,30 @@
 import { createClient } from "@/lib/supabase/server";
+import { pageRange, parsePage } from "@/lib/pagination";
+import Pagination from "@/components/Pagination";
 import { getEffectiveRole, canManage } from "@/lib/supabase/role";
 import DjInquiryItem, { type DjInquiry } from "./DjInquiryItem";
 
-async function getInquiries(): Promise<DjInquiry[]> {
+async function getInquiries(page: number): Promise<{ rows: DjInquiry[]; total: number }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("dj_inquiries")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page));
   if (error) {
     console.error("Failed to load DJ inquiries:", error.message);
-    return [];
+    return { rows: [], total: 0 };
   }
-  return data ?? [];
+  return { rows: data ?? [], total: count ?? 0 };
 }
 
 // Same owner/admin-only pattern as Feedback and Join Submissions.
-export default async function DjInquiriesPage() {
+export default async function DjInquiriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const page = parsePage((await searchParams).page);
   const role = await getEffectiveRole();
 
   if (!canManage(role)) {
@@ -33,7 +41,7 @@ export default async function DjInquiriesPage() {
     );
   }
 
-  const inquiries = await getInquiries();
+  const { rows: inquiries, total } = await getInquiries(page);
 
   return (
     <div>
@@ -44,7 +52,7 @@ export default async function DjInquiriesPage() {
           </h1>
           <div className="mt-2 h-1 w-16 bg-gold" />
         </div>
-        {inquiries.length > 0 && (
+        {total > 0 && (
           <a
             href="/eboard/dj-inquiries/export"
             className="rounded-lg border border-gold px-4 py-2 text-sm font-semibold text-accent transition-colors hover:bg-gold hover:text-white"
@@ -59,7 +67,7 @@ export default async function DjInquiriesPage() {
         scroll past them.
       </p>
 
-      {inquiries.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 text-steel-light">No inquiries yet.</p>
       ) : (
         <ul className="mt-6 space-y-4">
@@ -68,6 +76,7 @@ export default async function DjInquiriesPage() {
           ))}
         </ul>
       )}
+      <Pagination basePath="/eboard/dj-inquiries" page={page} total={total} />
     </div>
   );
 }
