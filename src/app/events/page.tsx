@@ -29,13 +29,21 @@ type Event = {
   image_url: string | null;
 };
 
-async function getEvents(): Promise<Event[]> {
+// Events stay under "Upcoming" for a few hours after their start time so a
+// show that's currently happening doesn't jump to "Past" the moment it begins.
+const IN_PROGRESS_GRACE_MS = 6 * 60 * 60 * 1000;
+
+type Tab = "upcoming" | "past";
+
+async function getEvents(tab: Tab): Promise<Event[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .order("date", { ascending: true });
+  const cutoff = new Date(Date.now() - IN_PROGRESS_GRACE_MS).toISOString();
+  const query = supabase.from("events").select("*");
+  const { data, error } =
+    tab === "past"
+      ? await query.lt("date", cutoff).order("date", { ascending: false })
+      : await query.gte("date", cutoff).order("date", { ascending: true });
   if (error) {
     console.error("Failed to load events:", error.message);
     return [];
@@ -68,9 +76,15 @@ function buildEventSchema(events: Event[]) {
   }));
 }
 
-export default async function EventsPage() {
-  const events = await getEvents();
-  const eventSchema = buildEventSchema(events);
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const tab: Tab = (await searchParams).tab === "past" ? "past" : "upcoming";
+  const events = await getEvents(tab);
+  // Only advertise upcoming events to search engines.
+  const eventSchema = tab === "upcoming" ? buildEventSchema(events) : null;
 
   return (
     <div className="relative">
@@ -93,13 +107,33 @@ export default async function EventsPage() {
         ]}
       />
       <h1 className="font-display text-3xl tracking-wide text-ivory">
-        UPCOMING EVENTS
+        {tab === "past" ? "PAST EVENTS" : "UPCOMING EVENTS"}
       </h1>
       <div className="mt-2 h-1 w-16 bg-gold" />
+      <nav
+        aria-label="Event filter"
+        className="mt-6 inline-flex rounded-full border border-navy-800 bg-navy-900 p-1"
+      >
+        {(["upcoming", "past"] as const).map((t) => (
+          <Link
+            key={t}
+            href={t === "past" ? "/events?tab=past" : "/events"}
+            aria-current={tab === t ? "page" : undefined}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+              tab === t
+                ? "bg-gold text-ivory"
+                : "text-steel-light hover:text-ivory"
+            }`}
+          >
+            {t === "past" ? "Past" : "Upcoming"}
+          </Link>
+        ))}
+      </nav>
       {events.length === 0 ? (
         <p className="mt-6 text-steel-light">
-          No events yet — this fills in once the database is connected
-          (Phase 2) and events are entered.
+          {tab === "past"
+            ? "No past events yet."
+            : "No upcoming events right now. Check back soon!"}
         </p>
       ) : (
         <div className="mt-6 space-y-4">
