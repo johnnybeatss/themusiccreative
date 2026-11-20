@@ -1,61 +1,80 @@
 import "server-only";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Thin client for the Instagram API with Instagram Login (graph.instagram.com).
-// Docs: https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/messaging-api
+// Thin Graph API client for Instagram messaging under Meta's "Instagram API
+// setup with Unified login". Since late Oct 2026 that's the only setup new
+// Meta apps get; it replaced "API setup with Instagram login". Differences
+// from the old setup:
+//  * Host is graph.facebook.com, not graph.instagram.com.
+//  * The token is a system-user token owned by the business portfolio, and
+//    it's configured to never expire, so there's nothing to refresh.
+//  * Calls use the Instagram account ID in the path (/{ig-id}/messages);
+//    /me would mean the system user, not the account.
 //
-// The version is pinned so a change to Meta's default version can't change
-// behavior without warning. To upgrade, set INSTAGRAM_GRAPH_API_VERSION
-// after reading the changelog.
-const GRAPH_HOST = "https://graph.instagram.com";
+// The version is pinned so a change to Meta's default can't change behavior
+// without warning. To upgrade, set INSTAGRAM_GRAPH_API_VERSION after
+// reading Meta's changelog.
+const GRAPH_HOST = "https://graph.facebook.com";
 const API_VERSION = process.env.INSTAGRAM_GRAPH_API_VERSION || "v26.0";
 const TIMEOUT_MS = 10_000;
 
-type GraphError = { error?: { message?: string; code?: number; type?: string } };
+type GraphError = { error?: { message?: string; code?: number } };
 
-async function graphFetch<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(TIMEOUT_MS), cache: "no-store" });
+async function graphFetch<T>(path: string, token: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${GRAPH_HOST}/${API_VERSION}${path}`, {
+    ...init,
+    headers: { ...init?.headers, Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: "no-store",
+  });
   const body = (await res.json().catch(() => ({}))) as T & GraphError;
   if (!res.ok || body.error) {
     const e = body.error;
-    // Code 190 means an expired or invalid token. See docs/instagram-dm-bot.md.
-    throw new Error(`Instagram API ${res.status}: ${e?.message ?? "unknown error"} (code ${e?.code ?? "?"})`);
+    // Code 190 means an invalid or revoked token. See docs/instagram-dm-bot.md.
+    throw new Error(`Graph API ${res.status}: ${e?.message ?? "unknown error"} (code ${e?.code ?? "?"})`);
   }
   return body;
 }
 
-// The stored (auto-refreshed) token comes first. The env var only
-// bootstraps it: the first cron run copies a refreshed token into the
-// table, and from then on the table wins.
-export async function getAccessToken(supabase: SupabaseClient): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("instagram_credentials")
-    .select("access_token")
-    .eq("id", 1)
-    .maybeSingle();
-  if (error) throw new Error(`instagram_credentials read failed: ${error.message}`);
-  return data?.access_token ?? process.env.INSTAGRAM_ACCESS_TOKEN ?? null;
+export function getAccessToken(): string | null {
+  return process.env.INSTAGRAM_ACCESS_TOKEN || null;
+}
+
+// Uses INSTAGRAM_ACCOUNT_ID when it's set. Otherwise asks Meta which
+// Instagram account the token is assigned to, and caches the answer for
+// as long as this server instance stays warm.
+let cachedAccountId: Promise<string> | null = null;
+export function getInstagramAccountId(token: string): Promise<string> {
+  const fromEnv = process.env.INSTAGRAM_ACCOUNT_ID;
+  if (fromEnv) return Promise.resolve(fromEnv);
+  cachedAccountId ??= graphFetch<{ data?: { id?: string }[] }>("/me/assigned_instagram_accounts", token)
+    .then((res) => {
+      const ids = (res.data ?? []).map((a) => a.id).filter((id): id is string => !!id);
+      if (ids.length !== 1) {
+        throw new Error(`Expected 1 assigned Instagram account, got ${ids.length}; set INSTAGRAM_ACCOUNT_ID`);
+      }
+      return ids[0];
+    })
+    .catch((err) => {
+      cachedAccountId = null; // don't cache failures
+      throw err;
+    });
+  return cachedAccountId;
 }
 
 // Sends a plain-text DM to an Instagram-scoped user ID (IGSID) and returns
 // Meta's message ID. Replying to someone who just messaged us is always
 // inside Meta's standard messaging window.
-export async function sendTextMessage(token: string, recipientId: string, text: string): Promise<string> {
-  const res = await graphFetch<{ message_id?: string }>(`${GRAPH_HOST}/${API_VERSION}/me/messages`, {
+export async function sendTextMessage(
+  token: string,
+  accountId: string,
+  recipientId: string,
+  text: string
+): Promise<string> {
+  const res = await graphFetch<{ message_id?: string }>(`/${accountId}/messages`, token, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ recipient: { id: recipientId }, message: { text } }),
   });
-  if (!res.message_id) throw new Error("Instagram API: send succeeded but returned no message_id");
+  if (!res.message_id) throw new Error("Graph API: send succeeded but returned no message_id");
   return res.message_id;
-}
-
-// Exchanges a long-lived token (at least 24h old, not yet expired) for a new
-// one valid for 60 more days.
-// https://developers.facebook.com/docs/instagram-platform/reference/refresh_access_token
-export async function refreshAccessToken(token: string): Promise<{ accessToken: string; expiresIn: number | null }> {
-  const url = `${GRAPH_HOST}/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(token)}`;
-  const res = await graphFetch<{ access_token?: string; expires_in?: number }>(url);
-  if (!res.access_token) throw new Error("Instagram API: refresh returned no access_token");
-  return { accessToken: res.access_token, expiresIn: res.expires_in ?? null };
 }

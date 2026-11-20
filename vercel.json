@@ -8,10 +8,6 @@
     {
       "path": "/api/cron/crown-battle",
       "schedule": "0 16 * * 0"
-    },
-    {
-      "path": "/api/cron/instagram-token-refresh",
-      "schedule": "0 14 * * 3"
     }
   ]
 }

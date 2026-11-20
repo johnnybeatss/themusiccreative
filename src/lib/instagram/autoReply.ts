@@ -2,7 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServiceClient } from "@/lib/supabase/serviceClient";
 import { formatEventDateTime, upcomingCutoffIso } from "@/lib/eventTimezone";
-import { getAccessToken, sendTextMessage } from "./api";
+import { getAccessToken, getInstagramAccountId, sendTextMessage } from "./api";
 import { BOT_SIGNATURE, matchRule, type ReplyContext } from "./replies";
 
 // Decides whether and how to answer each incoming Instagram DM. Rules:
@@ -109,14 +109,15 @@ async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Pro
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
   if (!siteUrl) throw new Error("NEXT_PUBLIC_SITE_URL is not set; replies would contain broken links");
 
-  const token = await getAccessToken(supabase);
+  const token = getAccessToken();
   if (!token) throw new Error("No Instagram access token (set INSTAGRAM_ACCESS_TOKEN)");
+  const accountId = await getInstagramAccountId(token);
 
   const ctx: ReplyContext = {
     siteUrl,
     nextEvent: rule.needsNextEvent ? await getNextEvent(supabase) : null,
   };
-  const messageId = await sendTextMessage(token, userId, `${rule.reply(ctx)}\n\n${BOT_SIGNATURE}`);
+  const messageId = await sendTextMessage(token, accountId, userId, `${rule.reply(ctx)}\n\n${BOT_SIGNATURE}`);
 
   const { error: logError } = await supabase
     .from(TABLE)
