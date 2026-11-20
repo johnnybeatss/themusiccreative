@@ -17,6 +17,8 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 //   * src/lib/battles.ts — signs URLs for approved entries only.
 //   * src/app/checkin/[code]/actions.ts — check-ins, same reasoning as votes.
 //   * src/lib/discardUpload.ts — removes orphaned public uploads (guarded).
+//   * src/lib/instagram/autoReply.ts — Instagram DM bot. Only reached from
+//     src/app/api/instagram/webhook after Meta's HMAC signature is verified.
 export function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

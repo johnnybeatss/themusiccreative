@@ -66,4 +66,5 @@ src/app/eboard/          # gated area: dashboard, reports, calendar, resources, 
 src/lib/supabase/        # browser + server Supabase client factories
 src/proxy.ts             # Next.js 16's replacement for middleware.ts — gates /eboard/*
 supabase/migrations/     # SQL schema + RLS policies, run once a Supabase project exists
+src/lib/instagram/       # Instagram DM auto-reply bot — setup: docs/instagram-dm-bot.md
 ```
