@@ -1,8 +1,9 @@
 # Instagram DM auto-reply bot
 
 This bot automatically replies to DMs sent to @themusiccreativefiu. It uses
-Meta's official **Instagram API with Instagram Login**, which means
-webhooks plus the Send API, with no password sharing and no scraping.
+Meta's official Instagram messaging API (**Instagram API setup with Unified
+login**), which means webhooks plus the Send API, with no password sharing
+and no scraping.
 Unofficial bots that log in as the account break Instagram's Terms of Use
 and can get the account restricted.
 
@@ -30,63 +31,65 @@ To edit the reply copy and keywords, change `src/lib/instagram/replies.ts`.
   messages after responding)
 - `src/lib/instagram/autoReply.ts`: decides whether and what to reply
 - `src/lib/instagram/replies.ts`: keyword rules and reply copy
-- `src/lib/instagram/api.ts`: Send API and token refresh
-- `src/app/api/cron/instagram-token-refresh/route.ts`: weekly token refresh
+- `src/lib/instagram/api.ts`: Graph API client (graph.facebook.com)
 - `supabase/migrations/0047_instagram_dm_bot.sql`: `instagram_dm_messages`
-  (IDs only, no message text) and `instagram_credentials`, both service-role only
+  (IDs only, no message text, service-role only). `0048` drops the unused
+  `instagram_credentials` table that 0047 created.
 
 ## One-time setup
 
-**Requirements:** @themusiccreativefiu must be a **Professional account
-(Business or Creator)**. In the Instagram app: Settings → Account type and
-tools. Also turn on **"Allow access to messages"** (Settings → Messages and
-story replies → Message controls → Connected tools). Without that, the API
-can't read or send DMs. Menu names change often, so check Meta's Help
-Center if these have moved.
+Since late Oct 2026, new Meta apps only get **"API setup with Unified
+login"**. The older "API setup with Instagram login" isn't offered any more.
+Meta's own docs for this flow couldn't be checked when this was written, so
+the dashboard steps below come from other developers' reports. If a screen
+differs, follow what the dashboard says.
 
-1. **Run the migration.** Run `supabase/migrations/0047_instagram_dm_bot.sql`
-   in the Supabase SQL editor, the same way as the earlier migrations.
-2. **Create a Meta app.** At developers.facebook.com → My Apps → Create
-   App, pick the use case for managing messaging and content on Instagram,
-   then open **Instagram → API setup with Instagram login**.
-3. **Add the club account and generate a token.** Under "Generate access
-   tokens", add @themusiccreativefiu and log in. Copy the token into
-   `INSTAGRAM_ACCESS_TOKEN`.
-4. **Set the env vars in Vercel** (Production), then redeploy:
-   - `INSTAGRAM_APP_SECRET`: the *Instagram app secret* from that same page
-   - `INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: any random string (`openssl rand -hex 32`)
-   - `INSTAGRAM_ACCESS_TOKEN`: from step 3
+**Requirements:** @themusiccreativefiu must be a **Professional account
+(Business or Creator)**, with **"Allow access to messages"** turned on
+(Instagram app → Settings → Messages and story replies → Message controls →
+Connected tools). No Facebook Page is needed.
+
+1. **Run the migrations.** Run `0047` and then `0048` in the Supabase SQL
+   editor.
+2. **Create the Meta app.** Pick the Instagram use case (manage messaging
+   and content on Instagram).
+3. **Connect a business portfolio.** This is mandatory for Unified login.
+   Create one (e.g. "The Music Creative") and add the club's Instagram
+   account to it as an asset.
+4. **Create the token.** Go to Facebook Login for Business → Configurations
+   → create a configuration with token type **System-user access token**,
+   expiration **Never**, the club's Instagram account as the asset, and
+   permissions including `instagram_basic` and `instagram_manage_messages`.
+   Generate the token and copy it.
+5. **Set the env vars in Vercel** (Production), then redeploy:
+   - `INSTAGRAM_APP_SECRET`: App settings → Basic → **App secret**
+   - `INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: any random string
+   - `INSTAGRAM_ACCESS_TOKEN`: the token from step 4
+   - `INSTAGRAM_ACCOUNT_ID` is optional; it's looked up automatically
    - Leave `INSTAGRAM_AUTOREPLY_ENABLED` unset for now
-   - `NEXT_PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET`
-     should already be set
-5. **Configure webhooks.** On the same page, set the callback URL to
-   `https://<your-domain>/api/instagram/webhook` and the verify token to the
-   value from step 4. Then verify and save, and subscribe to the
-   **`messages`** field. If the dashboard also offers `message_echoes`,
-   subscribe to that too. Echoes are how the bot notices a team member
-   replying by hand. Turn on the account's webhook subscription toggle
-   next to the generated token.
-6. **Test.** While the app is unpublished, only people with a role on the
-   app (Admin, Developer, Tester under App roles) trigger webhooks and get
-   replies. Set `INSTAGRAM_AUTOREPLY_ENABLED=true`, redeploy, and DM the club
-   account from a tester's personal account.
-7. **Go live.** To reply to *everyone*, the app needs **Advanced Access** for
-   `instagram_business_basic` and `instagram_business_manage_messages`.
-   That means submitting it for **App Review** (and Business Verification
-   if Meta asks for it), then switching the app to Live. Meta's review
-   usually wants a screencast of the bot working, plus a privacy policy URL
-   (you can use `/privacy`).
+6. **Configure webhooks.** In the Instagram use case's webhook settings, set
+   the callback URL to `https://<your-domain>/api/instagram/webhook` and
+   the verify token to the value from step 5. Verify and save, then
+   subscribe to **`messages`**, plus **`message_echoes`** if it's offered.
+   The account itself also has to be subscribed:
+   `POST https://graph.facebook.com/v26.0/<IG_ID>/subscribed_apps?subscribed_fields=messages`
+   with the token (the dashboard may offer a toggle that does the same).
+7. **Test.** Until App Review, only people with a role on the app get
+   replies. Set `INSTAGRAM_AUTOREPLY_ENABLED=true`, redeploy, and DM the
+   club account from a tester's account.
+8. **Go live.** Request **Advanced Access** for `instagram_manage_messages`
+   (and `instagram_basic`) through **App Review**. Meta may ask for
+   **Business Verification** of the portfolio. Then switch the app to Live.
 
 ## Operations
 
 - **Turn it off:** set `INSTAGRAM_AUTOREPLY_ENABLED` to anything other than
   `true` and redeploy. Webhooks are still accepted, but nothing is sent.
-- **Token:** the cron refreshes it every Wednesday at 14:00 UTC.
-  A token that goes 60 days without a refresh dies, and the logs show
-  `code 190` errors. To recover, generate a new token (step 3), update the
-  env var, and run `delete from instagram_credentials;` so the new env
-  token gets picked up.
-- **Logs:** look in Vercel → Logs for entries starting with `instagram-dm:` and `instagram-token-refresh:`.
+- **Token:** the system-user token doesn't expire, but it stops working if
+  it's revoked, if the configuration is deleted, or if the Instagram account
+  is removed from the portfolio. The logs then show `code 190` errors. To fix
+  it, generate a new token (step 4), update the env var and redeploy.
+- **Logs:** look in Vercel → Logs for entries starting with `instagram-dm:`.
 - **Data:** `instagram_dm_messages` stores only Meta IDs, direction and
   timestamps, never message text. To clear old rows:
   `delete from instagram_dm_messages where created_at < now() - interval '90 days';`
