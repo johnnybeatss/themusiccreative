@@ -11,6 +11,11 @@ import { processWebhook, type InstagramWebhookPayload } from "@/lib/instagram/au
 // saved in the App Dashboard.
 export function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
+  // Meta (user agent facebookexternalua) also sends plain GETs with no hub.*
+  // params, apparently to check the URL is reachable. Answer them with 200
+  // so the endpoint doesn't look unhealthy. This reveals nothing; only a
+  // real handshake gets the challenge echoed back.
+  if (!params.has("hub.mode")) return NextResponse.json({ ok: true });
   const expected = process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN;
   if (expected && params.get("hub.mode") === "subscribe" && params.get("hub.verify_token") === expected) {
     return new NextResponse(params.get("hub.challenge") ?? "", {
