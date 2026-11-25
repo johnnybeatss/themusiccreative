@@ -18,6 +18,15 @@ export function GET(request: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     });
   }
+  // Records why a check failed without logging the token itself: only its
+  // length and first 4 characters, which are enough to tell an empty, stale
+  // or different token apart from the right one.
+  const got = params.get("hub.verify_token") ?? "";
+  console.warn(
+    `instagram-webhook: GET rejected mode=${params.get("hub.mode") ?? "none"} ` +
+      `params=[${[...params.keys()].join(",")}] tokenLen=${got.length} tokenStart=${got.slice(0, 4) || "none"} ` +
+      `expectedSet=${!!expected} ua=${request.headers.get("user-agent") ?? "none"}`
+  );
   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }
 
