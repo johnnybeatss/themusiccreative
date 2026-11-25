@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
   // checked before any JSON parsing.
   const raw = await request.text();
   if (!hasValidSignature(raw, request.headers.get("x-hub-signature-256"), secret)) {
+    console.warn("instagram-webhook: rejected delivery with a bad signature (check INSTAGRAM_APP_SECRET)");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
