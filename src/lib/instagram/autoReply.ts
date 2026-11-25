@@ -37,46 +37,62 @@ export type InstagramWebhookPayload = {
   entry?: { id?: string; messaging?: MessagingEvent[] }[];
 };
 
+// Every delivery logs one line saying what the bot did with it, and why
+// when it didn't reply. The line holds no message text and no user IDs,
+// only the payload's shape and the outcome for each event. Read it in
+// Vercel → Logs (search "instagram-dm").
 export async function processWebhook(payload: InstagramWebhookPayload): Promise<void> {
-  if (payload.object !== "instagram") return;
+  const entryKeys = [...new Set((payload.entry ?? []).flatMap((e) => Object.keys(e)))];
+  const log = (outcome: string) =>
+    console.log(`instagram-dm: object=${payload.object} entryKeys=[${entryKeys.join(",")}] ${outcome}`);
+
+  if (payload.object !== "instagram") return log("skipped: not an instagram payload");
   const events = (payload.entry ?? []).flatMap((e) => e.messaging ?? []);
-  if (events.length === 0) return;
+  if (events.length === 0) return log("skipped: no messaging events");
 
   // Off by default, so deploying this code changes nothing until setup is
   // finished (docs/instagram-dm-bot.md).
-  if (process.env.INSTAGRAM_AUTOREPLY_ENABLED !== "true") return;
+  if (process.env.INSTAGRAM_AUTOREPLY_ENABLED !== "true") {
+    return log('skipped: INSTAGRAM_AUTOREPLY_ENABLED is not exactly "true"');
+  }
 
   const supabase = createServiceClient();
   // One at a time, in order. A burst of messages from one person in the
   // same delivery then sees the reply already sent for the first one.
+  const outcomes: string[] = [];
   for (const event of events) {
     try {
-      await handleEvent(supabase, event);
+      outcomes.push(await handleEvent(supabase, event));
     } catch (err) {
+      outcomes.push("error");
       console.error("instagram-dm:", err instanceof Error ? err.message : err);
     }
   }
+  log(`events=${events.length} outcomes=[${outcomes.join(", ")}]`);
 }
 
-async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Promise<void> {
+// Returns a short label describing what happened, for the log line above.
+async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Promise<string> {
   const msg = event.message;
-  if (!msg?.mid || msg.is_deleted || msg.is_unsupported) return;
+  if (!msg?.mid) return "not a message (read receipt, reaction, etc.)";
+  if (msg.is_deleted || msg.is_unsupported) return "deleted or unsupported message";
 
   if (msg.is_echo) {
     // A message the account itself sent. If it carries the bot signature it
     // was the bot's own reply, so ignore it. Otherwise a team member replied
     // by hand, which pauses the bot for this person (rule 2).
     const userId = event.recipient?.id;
-    if (!userId || msg.text?.includes(BOT_SIGNATURE)) return;
+    if (!userId) return "echo without recipient";
+    if (msg.text?.includes(BOT_SIGNATURE)) return "echo of bot reply";
     const { error } = await supabase
       .from(TABLE)
       .upsert({ mid: msg.mid, ig_user_id: userId, direction: "human" }, { onConflict: "mid", ignoreDuplicates: true });
     if (error) throw new Error(`record human reply failed: ${error.message}`);
-    return;
+    return "human reply recorded (bot paused for this person)";
   }
 
   const userId = event.sender?.id;
-  if (!userId) return;
+  if (!userId) return "message without sender";
 
   // Rule 1: insert first. A row that comes back means this is the first
   // delivery; an empty result means Meta sent a duplicate.
@@ -85,10 +101,10 @@ async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Pro
     .upsert({ mid: msg.mid, ig_user_id: userId, direction: "in" }, { onConflict: "mid", ignoreDuplicates: true })
     .select("mid");
   if (insertError) throw new Error(`record incoming failed: ${insertError.message}`);
-  if (!inserted?.length) return;
+  if (!inserted?.length) return "duplicate delivery";
 
   const text = msg.text?.trim();
-  if (!text) return; // rule 4
+  if (!text) return "no text (attachment, sticker, etc.)"; // rule 4
 
   const since = new Date(Date.now() - Math.max(HUMAN_PAUSE_MS, RULE_COOLDOWN_MS)).toISOString();
   const { data: recent, error: recentError } = await supabase
@@ -101,10 +117,14 @@ async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Pro
 
   const now = Date.now();
   const within = (iso: string, ms: number) => now - new Date(iso).getTime() < ms;
-  if (recent?.some((r) => r.direction === "human" && within(r.created_at, HUMAN_PAUSE_MS))) return; // rule 2
+  if (recent?.some((r) => r.direction === "human" && within(r.created_at, HUMAN_PAUSE_MS))) {
+    return "paused: a team member replied in the last 24h"; // rule 2
+  }
 
   const rule = matchRule(text);
-  if (recent?.some((r) => r.direction === "bot" && r.rule === rule.id && within(r.created_at, RULE_COOLDOWN_MS))) return; // rule 3
+  if (recent?.some((r) => r.direction === "bot" && r.rule === rule.id && within(r.created_at, RULE_COOLDOWN_MS))) {
+    return `cooldown: already sent "${rule.id}" in the last 24h`; // rule 3
+  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
   if (!siteUrl) throw new Error("NEXT_PUBLIC_SITE_URL is not set; replies would contain broken links");
@@ -125,6 +145,7 @@ async function handleEvent(supabase: SupabaseClient, event: MessagingEvent): Pro
   // The DM is already sent, so only log a failure here. The cost of losing
   // this row is at most one repeat of this reply later.
   if (logError) console.error("instagram-dm: record bot reply failed:", logError.message);
+  return `replied (${rule.id})`;
 }
 
 // Same "upcoming" cutoff as the homepage countdown and /events.
