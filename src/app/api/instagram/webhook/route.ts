@@ -16,8 +16,10 @@ export function GET(request: NextRequest) {
   // so the endpoint doesn't look unhealthy. This reveals nothing; only a
   // real handshake gets the challenge echoed back.
   if (!params.has("hub.mode")) return NextResponse.json({ ok: true });
-  const expected = process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN;
-  if (expected && params.get("hub.mode") === "subscribe" && params.get("hub.verify_token") === expected) {
+  // Trimmed on both sides: a space or newline pasted into the Vercel or Meta
+  // field along with the token would otherwise fail every check silently.
+  const expected = process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN?.trim() ?? "";
+  if (expected && params.get("hub.mode") === "subscribe" && params.get("hub.verify_token")?.trim() === expected) {
     return new NextResponse(params.get("hub.challenge") ?? "", {
       status: 200,
       headers: { "Content-Type": "text/plain" },
@@ -30,7 +32,8 @@ export function GET(request: NextRequest) {
   console.warn(
     `instagram-webhook: GET rejected mode=${params.get("hub.mode") ?? "none"} ` +
       `params=[${[...params.keys()].join(",")}] tokenLen=${got.length} tokenStart=${got.slice(0, 4) || "none"} ` +
-      `expectedSet=${!!expected} ua=${request.headers.get("user-agent") ?? "none"}`
+      `expectedLen=${expected.length} expectedStart=${expected.slice(0, 4) || "none"} ` +
+      `rawExpectedLen=${process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN?.length ?? 0} ua=${request.headers.get("user-agent") ?? "none"}`
   );
   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }
